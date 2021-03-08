@@ -36,6 +36,11 @@
 	uint8_t 	Communicate_ReceiceDMA( void );
 	void 		Communicate_ClearReceiveBuffer( void );
 
+	// モータ関数群
+	void 		Motor_StopPWM( void );						// モータを停止
+	void 		Motor_SetDuty_Right( int16_t );				// 右モータを指定したDutyで回転させる[0-1000]
+	void 		Motor_SetDuty_Left( int16_t );				// 左モータを指定したDutyで回転させる[0-1000]
+
 
 
 #endif /* INC_GLOBAL_H_ */

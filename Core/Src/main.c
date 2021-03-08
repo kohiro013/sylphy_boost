@@ -115,7 +115,10 @@ int main(void)
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   	Communicate_Initialize();
+  	Motor_Initialize();
   	printf("Hello World!\r\n");
+  	Motor_SetDuty_Left(30);
+  	Motor_SetDuty_Right(30);
   /* USER CODE END 2 */
 
   /* Infinite loop */
