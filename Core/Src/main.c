@@ -28,7 +28,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "defines.h"
+#include "global.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +55,14 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+extern void 	Communicate_Initialize( void );
+extern void 	Motor_Initialize( void );
+extern void 	Encoder_Initialize( void );
+extern void 	Sensor_Initialize( void );
+extern void		IMU_Initialize( void );
+extern void 	Interrupt_Initialize( void );
+extern void 	Wall_Initialize( void );
+extern void 	Mode_SelectRunMode( void );
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -106,7 +114,8 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-
+  	Communicate_Initialize();
+  	printf("Hello World!\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -116,10 +125,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  LL_GPIO_TogglePin(LED_YELLOW_GPIO_Port, 	LED_YELLOW_Pin);
-	  LL_GPIO_TogglePin(LED_RED_GPIO_Port, 		LED_RED_Pin);
-	  LL_GPIO_TogglePin(LED_GREEN_GPIO_Port, 	LED_GREEN_Pin);
-	  LL_GPIO_TogglePin(LED_BLUE_GPIO_Port, 	LED_BLUE_Pin);
+	  LED_YELLOW_TOGGLE();
+	  LED_RED_TOGGLE();
+	  LED_GREEN_TOGGLE();
+	  LED_BLUE_TOGGLE();
 	  LL_mDelay(1000);
   }
   /* USER CODE END 3 */
