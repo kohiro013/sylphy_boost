@@ -67,6 +67,18 @@
 	float 		Battery_GetBoostVoltage( void );
 	void 		Battery_LimiterVoltage( void );				// バッテリの電圧が3.2V以下になると起動しないように制限する
 
+	// 慣性センサ関数群(imu.c)
+	void		IMU_Update( void );							// 慣性センサの値を更新する
+	uint8_t		IMU_CheckWHOAMI( void );					// 慣性センサの動作確認関数
+	void 		IMU_ResetReference( void );					// 慣性センサのリファレンスを補正する
+	float 		IMU_GetAccel_X( void );						// X軸加速度計の加速度を取得する[m/s^2]
+	float 		IMU_GetGyro_Z( void );						// Z軸ジャイロの角速度を取得する[rad/s]
+	float 		IMU_GetGyroAngle_Z( void );					// Z軸ジャイロの角度を取得する[rad]
+	void 		IMU_SetGyroAngle_Z( float );
+	void 		IMU_ResetGyroAngle_Z( void );				// Z軸ジャイロの角度をリセットする[rad]
+	void 		IMU_OffsetGyroAngle_Z( void );
+	void 		IMU_DebugPrintf( void );
+
 	// 割り込み関数群(interrupt.c)
 	uint32_t 	Interrupt_GetGlobalTime( void );			// 絶対時間を取得する
 	int32_t 	Interrupt_GetDuty( void );					// 割り込み処理内の計算割合を取得する

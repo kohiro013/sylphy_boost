@@ -147,6 +147,7 @@ void Sensor_DebugPrintf( void )
 		printf("%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d\r\n",
 				adc_value[0], adc_value[1], adc_value[2], adc_value[3], adc_value[4], adc_value[5],
 				adc_value[6], adc_value[7], adc_value[8], adc_value[9], adc_value[10], adc_value[11]);
-*/	}
+*/		LL_mDelay(1);
+	}
 	Sensor_StopLED();
 }

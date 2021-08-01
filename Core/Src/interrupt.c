@@ -19,6 +19,8 @@ static volatile float		boot_time = 0.f;
 --------------------------------------------------------------- */
 void Interrupt_Main( void )
 {
+	// ジャイロと加速度の値の更新
+	IMU_Update();
 
 	// スイッチ反応中の時間の更新
 	Switch_UpdateTimer();

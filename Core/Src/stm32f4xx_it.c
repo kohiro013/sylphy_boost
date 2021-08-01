@@ -53,6 +53,9 @@ extern void Interrupt_Main( void );
 extern void Interrupt_PreProcess( void );
 extern void Interrupt_PostProcess( void );
 
+// DMA完了後のコールバック関数
+extern void IMU_Callback( void );
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -261,7 +264,7 @@ void DMA2_Stream0_IRQHandler(void)
   /* USER CODE END DMA2_Stream0_IRQn 0 */
 
   /* USER CODE BEGIN DMA2_Stream0_IRQn 1 */
-
+	IMU_Callback();
   /* USER CODE END DMA2_Stream0_IRQn 1 */
 }
 

@@ -22,7 +22,7 @@
 	#define CF					(1000000.0F)	// コーナリングフォース [g/rad]
 	#define START_OFFSET		(42.f - 35.f)	// スタートラインまでの距離 [mm]
 
-//	#define PI					(3.1415926f)		// 円周率
+	#define PI					(3.1415926f)		// 円周率
 	#define SQRT2				(1.41421356237f)	// ルート2
 	#define SQRT3				(1.73205080757f)	// ルート3
 	#define SQRT5				(2.2360679775f)		// ルート5

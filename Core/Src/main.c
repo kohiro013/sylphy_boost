@@ -117,6 +117,7 @@ int main(void)
   	Communicate_Initialize();
   	Interrupt_Initialize();
   	Motor_Initialize();
+  	IMU_Initialize();
  	Sensor_Initialize();
 
 	Battery_LimiterVoltage();
@@ -142,6 +143,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  IMU_DebugPrintf();
 
   }
   /* USER CODE END 3 */
