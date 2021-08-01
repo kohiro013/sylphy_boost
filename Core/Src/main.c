@@ -107,18 +107,32 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_USART1_UART_Init();
-  MX_TIM1_Init();
   MX_SPI1_Init();
   MX_SPI2_Init();
+  MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM4_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   	Communicate_Initialize();
+  	Interrupt_Initialize();
   	Motor_Initialize();
+ 	Sensor_Initialize();
+
+	Battery_LimiterVoltage();
+  	LED_LightBinary( 0x01 ); 	LL_mDelay( 100 );
+	LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
+	LED_LightBinary( 0x04 );  	LL_mDelay( 100 );
+	LED_LightBinary( 0x08 );  	LL_mDelay( 100 );
+	LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
+	LED_LightBinary( 0x01 );  	LL_mDelay( 100 );
+	LED_LightBinary( 0x02 );	LL_mDelay( 100 );
+	LED_LightBinary( 0x04 );	LL_mDelay( 100 );
+	LED_LightBinary( 0x08 );  	LL_mDelay( 100 );
+	LED_LightBinary( 0x02 );	LL_mDelay( 100 );
+	LED_LightBinary( 0x01 );	LL_mDelay( 100 );
+	LED_LightBinary( 0x00 );
   	printf("Hello World!\r\n");
-  	Motor_SetDuty_Left(60);
-  	Motor_SetDuty_Right(60);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -128,11 +142,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  LED_YELLOW_TOGGLE();
-	  LED_RED_TOGGLE();
-	  LED_GREEN_TOGGLE();
-	  LED_BLUE_TOGGLE();
-	  LL_mDelay(1000);
+
   }
   /* USER CODE END 3 */
 }

@@ -48,6 +48,11 @@
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
 
+// 割り込み処理を記述した関数群
+extern void Interrupt_Main( void );
+extern void Interrupt_PreProcess( void );
+extern void Interrupt_PostProcess( void );
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -236,7 +241,13 @@ void TIM5_IRQHandler(void)
 
   /* USER CODE END TIM5_IRQn 0 */
   /* USER CODE BEGIN TIM5_IRQn 1 */
-
+	if( LL_TIM_IsActiveFlag_UPDATE(TIM5) ){
+		LL_TIM_ClearFlag_UPDATE(TIM5);
+		// 割り込み内の処理
+		Interrupt_PreProcess();
+		Interrupt_Main();
+		Interrupt_PostProcess();
+	} else;
   /* USER CODE END TIM5_IRQn 1 */
 }
 
