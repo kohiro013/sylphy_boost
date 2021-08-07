@@ -146,7 +146,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  Encoder_DebugPrintf();
+	  module_test();
 
   }
   /* USER CODE END 3 */

@@ -80,6 +80,7 @@
 	void 		IMU_DebugPrintf( void );
 
 	// エンコーダ関数群(encoder.c)
+	void		Encoder_Update( void );						// エンコーダの値を更新する
 	void 		Encoder_ResetCount_Left( void );			// 左エンコーダのカウントを初期値にする
 	void 		Encoder_ResetCount_Right( void );			// 右エンコーダのカウントを初期値にする
 	float 		Encoder_GetAngle_Left( void );				// 左タイヤの角度を取得する[rad]
@@ -93,5 +94,8 @@
 	int32_t 	Interrupt_GetDuty( void );					// 割り込み処理内の計算割合を取得する
 	int32_t 	Interrupt_GetDuty_Max( void );				// 割り込み処理内の最大計算割合を取得する
 	float		Interrupt_GetBootTime( void );				// マイコンが起動してから経過した時間を取得する[s]
+
+	// モジュールテスト関数群(module_test.c)
+	void 		module_test( void );						// 全モジュールの動作確認用テスト関数
 
 #endif /* INC_GLOBAL_H_ */
