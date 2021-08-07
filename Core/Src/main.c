@@ -117,6 +117,7 @@ int main(void)
   	Communicate_Initialize();
   	Interrupt_Initialize();
   	Motor_Initialize();
+  	Encoder_Initialize();
   	IMU_Initialize();
  	Sensor_Initialize();
 
@@ -138,12 +139,14 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+// 	Motor_SetDuty_Left(100);
+// 	Motor_SetDuty_Right(100);
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  IMU_DebugPrintf();
+	  Encoder_DebugPrintf();
 
   }
   /* USER CODE END 3 */

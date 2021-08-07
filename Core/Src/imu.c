@@ -114,7 +114,7 @@ void IMU_Initialize( void )
 	// 加速度計の設定
 	IMU_Write1byte(LSM6DSRX_CTRL1_XL, 0xae);	// 加速度計のスケールを±8gに設定
 	LL_mDelay(1);								// 加速度計の出力データレートを416Hzに設定
-	IMU_Write1byte(LSM6DSRX_CTRL8_XL, 0xb0);	// 加速度計のLPFを200Hzに設定
+	IMU_Write1byte(LSM6DSRX_CTRL8_XL, 0xb0);	// 加速度計のLPFを100Hzに設定
 	LL_mDelay(1);
 
 	// ジャイロの設定

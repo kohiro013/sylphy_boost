@@ -79,6 +79,15 @@
 	void 		IMU_OffsetGyroAngle_Z( void );
 	void 		IMU_DebugPrintf( void );
 
+	// エンコーダ関数群(encoder.c)
+	void 		Encoder_ResetCount_Left( void );			// 左エンコーダのカウントを初期値にする
+	void 		Encoder_ResetCount_Right( void );			// 右エンコーダのカウントを初期値にする
+	float 		Encoder_GetAngle_Left( void );				// 左タイヤの角度を取得する[rad]
+	float 		Encoder_GetAngle_Right( void );				// 右タイヤの角度を取得する[rad]
+	float 		Encoder_GetAnglerVelocity_Left( void );		// 左タイヤの角速度を取得する[rad/s]
+	float 		Encoder_GetAnglerVelocity_Right( void );	// 右タイヤの角速度を取得する[rad/s]
+	void 		Encoder_DebugPrintf( void );
+
 	// 割り込み関数群(interrupt.c)
 	uint32_t 	Interrupt_GetGlobalTime( void );			// 絶対時間を取得する
 	int32_t 	Interrupt_GetDuty( void );					// 割り込み処理内の計算割合を取得する

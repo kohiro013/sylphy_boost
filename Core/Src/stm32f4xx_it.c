@@ -55,6 +55,7 @@ extern void Interrupt_PostProcess( void );
 
 // DMA完了後のコールバック関数
 extern void IMU_Callback( void );
+extern void Encoder_Callback( void );
 
 /* USER CODE END PFP */
 
@@ -217,7 +218,7 @@ void DMA1_Stream3_IRQHandler(void)
   /* USER CODE END DMA1_Stream3_IRQn 0 */
 
   /* USER CODE BEGIN DMA1_Stream3_IRQn 1 */
-
+	Encoder_Callback();
   /* USER CODE END DMA1_Stream3_IRQn 1 */
 }
 
