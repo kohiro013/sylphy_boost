@@ -99,4 +99,11 @@
 	// モジュールテスト関数群(module_test.c)
 	void 		module_test( void );						// 全モジュールの動作確認用テスト関数
 
+	// データフラッシュ関数群(flash.c)
+	void 		Flash_Lock(void);
+	void 		Flash_Unlock(void);
+	void 		Flash_EraseSector( uint32_t );
+	void 		Flash_WriteData( uint32_t, uint8_t*, uint32_t );
+	void 		Flash_ReadData( uint32_t, uint8_t*, uint32_t );
+
 #endif /* INC_GLOBAL_H_ */
