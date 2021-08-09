@@ -146,7 +146,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  IMU_DebugPrintf();
+	  printf("%f, %f\r\n", arm_sin_f32(PI/2.f), arm_cos_f32(PI/2.f));
+	  LL_mDelay(100);
 
   }
   /* USER CODE END 3 */
