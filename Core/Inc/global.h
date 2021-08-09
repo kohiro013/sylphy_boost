@@ -68,6 +68,7 @@
 	void 		Battery_LimiterVoltage( void );				// バッテリの電圧が3.2V以下になると起動しないように制限する
 
 	// 慣性センサ関数群(imu.c)
+	void 		IMU_StartDMA( void );						// 慣性センサの読取りを開始する
 	void		IMU_Update( void );							// 慣性センサの値を更新する
 	uint8_t		IMU_CheckWHOAMI( void );					// 慣性センサの動作確認関数
 	void 		IMU_ResetReference( void );					// 慣性センサのリファレンスを補正する

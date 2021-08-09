@@ -22,12 +22,12 @@ uint8_t IMU_Read1byte( uint8_t );
 static uint8_t  imu_address = LSM6DSRX_OUTX_L_G | 0x80;
 static uint8_t	imu_value[13];			// value[0]はダミーデータ
 
-static int16_t	accel_x_value;			// X軸加速度計の生データ
-static int16_t	accel_x_reference;		// X軸加速度計のリファレンス
+static uint16_t	accel_x_value;			// X軸加速度計の生データ
+static uint16_t	accel_x_reference;		// X軸加速度計のリファレンス
 static float	accel_x;
 
-static int16_t	gyro_z_value;			// Z軸ジャイロの生データ
-static int16_t	gyro_z_reference;		// Z軸ジャイロのリファレンス
+static uint16_t	gyro_z_value;			// Z軸ジャイロの生データ
+static uint16_t	gyro_z_reference;		// Z軸ジャイロのリファレンス
 static float	gyro_z;
 static float	angle_z;
 
@@ -96,6 +96,13 @@ uint8_t IMU_CheckWHOAMI( void )
 /* ---------------------------------------------------------------
 	初期設定用関数
 --------------------------------------------------------------- */
+void IMU_StartDMA( void )
+{
+	LL_GPIO_ResetOutputPin(SPI1_CS0_GPIO_Port, SPI1_CS0_Pin);
+	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_0);
+	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_3);
+}
+
 void IMU_Initialize( void )
 {
 	// 起動時にCSピンがLowになっていると初回の通信に失敗するためCSピンをHighにする
@@ -131,21 +138,19 @@ void IMU_Initialize( void )
 	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_0);
 	LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_0, (uint32_t)LL_SPI_DMA_GetRegAddr(SPI1),
 		(uint32_t)imu_value, LL_DMA_GetDataTransferDirection(DMA2, LL_DMA_STREAM_0));
-	LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_0, sizeof(imu_value)/sizeof(imu_value[0]));
+	LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_0, sizeof(imu_value)/sizeof(imu_value[0]) - 1);
 	LL_DMA_ClearFlag_TC0(DMA2);
 
 	// 送信DMA動作設定
 	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
 	LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)(&imu_address),
 		(uint32_t)LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_GetDataTransferDirection(DMA2, LL_DMA_STREAM_3));
-	LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, sizeof(imu_value)/sizeof(imu_value[0]));
+	LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, sizeof(imu_value)/sizeof(imu_value[0]) - 1);
 	LL_DMA_ClearFlag_TC3(DMA2);
 
 	// DMAの開始
 	LL_SPI_Enable(SPI1);
-	LL_GPIO_ResetOutputPin(SPI1_CS0_GPIO_Port, SPI1_CS0_Pin);
-	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_0);
-	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_3);
+	IMU_StartDMA();
 }
 
 /* ---------------------------------------------------------------
@@ -157,17 +162,24 @@ void IMU_Callback( void )
 		// 割り込みフラグのクリア
 		LL_DMA_ClearFlag_TC0(DMA2);
 		LL_DMA_ClearFlag_TC3(DMA2);
-		LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_0, sizeof(imu_value)/sizeof(imu_value[0]));
-		LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, sizeof(imu_value)/sizeof(imu_value[0]));
+		LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_0, sizeof(imu_value)/sizeof(imu_value[0]) - 1);
+		LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, sizeof(imu_value)/sizeof(imu_value[0]) - 1);
 
 		LL_GPIO_SetOutputPin(SPI1_CS0_GPIO_Port, SPI1_CS0_Pin);
-		accel_x_value = (int16_t)( (((uint16_t)(imu_value[8])<<8)&0xff00) | ((uint16_t)imu_value[7]&0x00ff) );
-		gyro_z_value =  (int16_t)( (((uint16_t)(imu_value[6])<<8)&0xff00) | ((uint16_t)imu_value[5]&0x00ff) );
-		LL_GPIO_ResetOutputPin(SPI1_CS0_GPIO_Port, SPI1_CS0_Pin);
+		if( imu_value[8] == 0xff && imu_value[7] == 0x00 ) {
+			accel_x_value = 0x0000;
+		} else if( imu_value[8] != 0x00 || imu_value[7] != 0xff ) {
+			accel_x_value = ( ((uint16_t)imu_value[8]<<8 ) | ( (uint16_t)imu_value[7]&0x00ff ) );
+		}
+
+		if( imu_value[6] == 0xff && imu_value[5] == 0x00 ) {
+			gyro_z_value = 0x0000;
+		} else if( imu_value[6] != 0x00 || imu_value[5] != 0xff ) {
+			gyro_z_value =  ( ((uint16_t)imu_value[6]<<8 ) | ( (uint16_t)imu_value[5]&0x00ff ) );
+		}
 
 		// 通信再開
-		LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_0);
-		LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_3);
+		IMU_StartDMA();
 	} else;
 }
 
@@ -176,8 +188,8 @@ void IMU_Callback( void )
 --------------------------------------------------------------- */
 void IMU_Update( void )
 {
-	accel_x	= ACCEL_X_SIGN * G * (accel_x_value - accel_x_reference) / ACCEL_X_SENSITIVITY;
-	gyro_z	= GYRO_Z_SIGN * DEG2RAD((gyro_z_value - gyro_z_reference) / GYRO_Z_SENSITIVITY);
+	accel_x	= ACCEL_X_SIGN * G * (int16_t)(accel_x_value - accel_x_reference) / ACCEL_X_SENSITIVITY;
+	gyro_z	= GYRO_Z_SIGN * DEG2RAD((int16_t)(gyro_z_value - gyro_z_reference) / GYRO_Z_SENSITIVITY);
 	angle_z	+= gyro_z * SYSTEM_PERIOD;
 }
 
@@ -239,7 +251,7 @@ void IMU_ResetGyroAngle_Z( void )
 
 void IMU_OffsetGyroAngle_Z( void )
 {
-	angle_z -= Vehicle_GetAngle();
+//	angle_z -= Vehicle_GetAngle();
 }
 
 /* ---------------------------------------------------------------
@@ -249,7 +261,8 @@ void IMU_DebugPrintf( void )
 {
 	angle_z = 0.f;
 	while( Communicate_ReceiceDMA() != 0x1b ) {
-		printf("%5d, %5d\r\n", gyro_z_value, accel_x_value);
+		printf("%04x, %5d, %04x, %5d\r\n",
+				gyro_z_value, (int16_t)gyro_z_value, accel_x_value, (int16_t)accel_x_value);
 		LL_mDelay(1);
 	}
 }
