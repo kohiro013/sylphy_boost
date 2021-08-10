@@ -142,14 +142,12 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-// 	Motor_SetDuty_Left(100);
-// 	Motor_SetDuty_Right(100);
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  Myshell_Execute();
+	  Mode_SelectRunMode();
 
   }
   /* USER CODE END 3 */

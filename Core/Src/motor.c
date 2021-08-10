@@ -8,10 +8,10 @@ const uint16_t MOT_DUTY_MIN = 10;		// モータの最低Duty
 const uint16_t MOT_DUTY_MAX = 950;		// モータの最大Duty
 
 // モータの向き設定
-#define MOT_SET_COMPARE_R_FORWARD(x)	LL_TIM_OC_SetCompareCH4(TIM4, x)
-#define MOT_SET_COMPARE_R_REVERSE(x)	LL_TIM_OC_SetCompareCH3(TIM4, x)
-#define MOT_SET_COMPARE_L_FORWARD(x)	LL_TIM_OC_SetCompareCH2(TIM4, x)
-#define MOT_SET_COMPARE_L_REVERSE(x)	LL_TIM_OC_SetCompareCH1(TIM4, x)
+#define MOT_SET_COMPARE_L_FORWARD(x)	LL_TIM_OC_SetCompareCH4(TIM4, x)
+#define MOT_SET_COMPARE_L_REVERSE(x)	LL_TIM_OC_SetCompareCH3(TIM4, x)
+#define MOT_SET_COMPARE_R_FORWARD(x)	LL_TIM_OC_SetCompareCH2(TIM4, x)
+#define MOT_SET_COMPARE_R_REVERSE(x)	LL_TIM_OC_SetCompareCH1(TIM4, x)
 
 
 /* ---------------------------------------------------------------
