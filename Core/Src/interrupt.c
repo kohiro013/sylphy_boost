@@ -25,6 +25,9 @@ void Interrupt_Main( void )
 	// エンコーダの値の更新
 	Encoder_Update();
 
+	// 壁センサ情報の更新
+	Wall_Update();
+
 	// スイッチ反応中の時間の更新
 	Switch_UpdateTimer();
 

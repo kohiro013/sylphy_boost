@@ -107,7 +107,20 @@
 	void 		Flash_WriteData( uint32_t, uint8_t*, uint32_t );
 	void 		Flash_ReadData( uint32_t, uint8_t*, uint32_t );
 
-	// NT-Shell関数群
+	// NT-Shell関数群(myshell.c)
 	void 		Myshell_Execute( void );
+
+	// 壁関連関数群(wall.c)
+	void 		Wall_Update( void );
+	float 		Wall_GetDistance( uint8_t );
+	float 		Wall_GetDistanceDelta( uint8_t );
+	float	 	Wall_GetDeviation( uint8_t );
+	uint8_t 	Wall_GetIsMaze( uint8_t );
+	uint8_t 	Wall_GetEdge( uint8_t );
+	float 		Wall_GetEdgeDistance( int8_t );
+	float 		Wall_GetEdgeMinDistance( int8_t );
+	void 		Wall_ResetEdgeMinDistance( void );
+	void 		Wall_ResetEdgeDistance( void );
+	void 		Wall_DebugPrintf( void );
 
 #endif /* INC_GLOBAL_H_ */

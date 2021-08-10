@@ -121,6 +121,7 @@ int main(void)
   	Encoder_Initialize();
   	IMU_Initialize();
  	Sensor_Initialize();
+ 	Wall_Initialize();
  	Myshell_Initialize();
 
 	Battery_LimiterVoltage();

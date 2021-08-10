@@ -5,6 +5,7 @@
 #include "core/ntlibc.h"
 #include "util/ntopt.h"
 
+// シェルコマンド関数郡
 static int usrcmd_help(int argc, char **argv);
 static int usrcmd_info(int argc, char **argv);
 static int usrcmd_imu(int argc, char **argv);
@@ -46,8 +47,19 @@ static int usrcmd_imu(int argc, char **argv)
 
 static int usrcmd_sensor(int argc, char **argv)
 {
-	Sensor_DebugPrintf();
-	return 0;
+	if(argc != 2) {
+		printf("  ir_sensor raw\r\n");
+		printf("  ir_sensor wall\r\n");
+		return 0;
+	} else if(ntlibc_strcmp(argv[1], "raw") == 0) {
+		Sensor_DebugPrintf();
+		return 0;
+	} else if (ntlibc_strcmp(argv[1], "wall") == 0) {
+		Wall_DebugPrintf();
+		return 0;
+	} else;
+	printf("  Unknown sub command found\r\n");
+	return -1;
 }
 
 /* ---------------------------------------------------------------
@@ -76,12 +88,10 @@ static int usrcmd_info(int argc, char **argv)
 		printf("  info sys\r\n");
 		printf("  info ver\r\n");
 		return 0;
-	} else;
-	if(ntlibc_strcmp(argv[1], "sys") == 0) {
+	} else if(ntlibc_strcmp(argv[1], "sys") == 0) {
 		printf("  sylphy_force\r\n");
 		return 0;
-	} else;
-	if (ntlibc_strcmp(argv[1], "ver") == 0) {
+	} else if (ntlibc_strcmp(argv[1], "ver") == 0) {
 		printf("  Version 0.0.1\r\n");
 		return 0;
 	} else;
