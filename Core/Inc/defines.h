@@ -9,8 +9,8 @@
 	#define GOAL_X				(9)
 	#define GOAL_Y				(9)
 	#define GOAL_SIZE			(2)
-	#define MAZE_X				(16)
-	#define MAZE_Y				(16)
+	#define MAZE_X				(32)
+	#define MAZE_Y				(32)
 
 	#define SYSTEM_PERIOD		(0.001f)  		// 積分周期[s]
 

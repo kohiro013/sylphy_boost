@@ -123,4 +123,36 @@
 	void 		Wall_ResetEdgeDistance( void );
 	void 		Wall_DebugPrintf( void );
 
+	// 自己位置関数群(position.c)
+	t_position 	Position_GetMyPlace( void );
+	void 		Position_SetMyPlace( t_position );
+	void 		Position_Reset( void );
+	t_position	Position_RotateMyDirection( int8_t );
+	t_position	Position_MoveMyPlace( int8_t );
+	int8_t 		Position_GetIsGoal( int8_t, int8_t );
+
+	// 壁情報関数群(wall.c)
+	void 		Maze_LoadFlash( void );
+	void 		Maze_StoreFlash( void );
+	uint8_t 	Maze_RotateBit( uint8_t, int8_t, int8_t );
+	t_maze 		Maze_ConvertGlobalAndLocal( t_maze, int8_t );
+	t_maze 		Maze_GetGlobal( int8_t, int8_t );
+	t_maze 		Maze_GetLocal( t_position* );
+	int8_t 		Maze_IsLocal( int8_t, int8_t, int8_t, int8_t );
+	int8_t 		Maze_GetIsUnknown( t_position*, int8_t );
+	void 		Maze_SetFromSensor( t_position* );
+	void 		Maze_ResetBuffer( void );
+	void 		Maze_DeleteWhenClash( void );
+	void 		Maze_InsertDeadEnd( void );
+	void 		Maze_SetPillarAlone( t_position* );
+	void 		Maze_Reset( int8_t );
+	void 		Maze_Display( void );
+	void 		Maze_SetDebugData( void );
+	void 		Maze_SetDebugData_32x32( void );
+
+	// ポテンシャルマップ関数群(potential.c)
+	uint16_t 	Potential_GetAroundSection( t_position*, int8_t );
+	void 		Potential_MakeMap( int8_t, int8_t );
+	void 		Potential_MakeUnknownMap( int8_t, int8_t );
+
 #endif /* INC_GLOBAL_H_ */

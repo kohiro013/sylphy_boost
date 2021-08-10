@@ -10,6 +10,7 @@ static int usrcmd_help(int argc, char **argv);
 static int usrcmd_info(int argc, char **argv);
 static int usrcmd_imu(int argc, char **argv);
 static int usrcmd_sensor(int argc, char **argv);
+static int usrcmd_maze(int argc, char **argv);
 
 // NT-Shell用ローカル関数群
 static int func_read(char *buf, int cnt, void *extobj);
@@ -32,6 +33,7 @@ static const cmd_table_t cmdlist[] = {
 	{ "imu", 			"IMU debug.",			usrcmd_imu		},
 	{ "ir_sensor", 		"IR sensor debug.",		usrcmd_sensor	},
 	{ "module_test", 	"module test command.", module_test 	},
+	{ "maze",			"maze display.",		usrcmd_maze		},
 };
 static ntshell_t nts;
 
@@ -56,6 +58,29 @@ static int usrcmd_sensor(int argc, char **argv)
 		return 0;
 	} else if (ntlibc_strcmp(argv[1], "wall") == 0) {
 		Wall_DebugPrintf();
+		return 0;
+	} else;
+	printf("  Unknown sub command found\r\n");
+	return -1;
+}
+
+static int usrcmd_maze(int argc, char **argv)
+{
+	if(argc == 1) {
+		Maze_LoadFlash();
+		Potential_MakeMap(GOAL_X, GOAL_Y);
+		Maze_Display();
+		return 0;
+	} else if(ntlibc_strcmp(argv[1], "debug") == 0) {
+		if( MAZE_X >= 32 && MAZE_Y >= 32 ) {
+			Maze_SetDebugData_32x32();
+			Potential_MakeMap(1, 2);	// 32x32デバッグ迷路のゴールは(1, 2)
+		} else if( MAZE_X >= 16 && MAZE_Y >= 16 ) {
+			Maze_SetDebugData();
+			Potential_MakeMap(7, 7);	// 16x16デバッグ迷路のゴールは(7, 7)
+		} else;
+		Maze_StoreFlash();
+		Maze_Display();
 		return 0;
 	} else;
 	printf("  Unknown sub command found\r\n");
