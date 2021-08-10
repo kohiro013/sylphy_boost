@@ -61,6 +61,7 @@ extern void 	Encoder_Initialize( void );
 extern void 	Sensor_Initialize( void );
 extern void		IMU_Initialize( void );
 extern void 	Interrupt_Initialize( void );
+extern void 	Myshell_Initialize( void );
 extern void 	Wall_Initialize( void );
 extern void 	Mode_SelectRunMode( void );
 /* USER CODE END PFP */
@@ -120,6 +121,7 @@ int main(void)
   	Encoder_Initialize();
   	IMU_Initialize();
  	Sensor_Initialize();
+ 	Myshell_Initialize();
 
 	Battery_LimiterVoltage();
   	LED_LightBinary( 0x01 ); 	LL_mDelay( 100 );
@@ -146,8 +148,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  printf("%f, %f\r\n", arm_sin_f32(PI/2.f), arm_cos_f32(PI/2.f));
-	  LL_mDelay(100);
+	  Myshell_Execute();
 
   }
   /* USER CODE END 3 */

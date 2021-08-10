@@ -23,11 +23,11 @@ static uint8_t  imu_address = LSM6DSRX_OUTX_L_G | 0x80;
 static uint8_t	imu_value[13];			// value[0]はダミーデータ
 
 static uint16_t	accel_x_value;			// X軸加速度計の生データ
-static uint16_t	accel_x_reference;		// X軸加速度計のリファレンス
+static int16_t	accel_x_reference;		// X軸加速度計のリファレンス
 static float	accel_x;
 
 static uint16_t	gyro_z_value;			// Z軸ジャイロの生データ
-static uint16_t	gyro_z_reference;		// Z軸ジャイロのリファレンス
+static int16_t	gyro_z_reference;		// Z軸ジャイロのリファレンス
 static float	gyro_z;
 static float	angle_z;
 
@@ -188,8 +188,8 @@ void IMU_Callback( void )
 --------------------------------------------------------------- */
 void IMU_Update( void )
 {
-	accel_x	= ACCEL_X_SIGN * G * (int16_t)(accel_x_value - accel_x_reference) / ACCEL_X_SENSITIVITY;
-	gyro_z	= GYRO_Z_SIGN * DEG2RAD((int16_t)(gyro_z_value - gyro_z_reference) / GYRO_Z_SENSITIVITY);
+	accel_x	= ACCEL_X_SIGN * G * ((int16_t)accel_x_value - accel_x_reference) / ACCEL_X_SENSITIVITY;
+	gyro_z	= GYRO_Z_SIGN * DEG2RAD(((int16_t)gyro_z_value - gyro_z_reference) / GYRO_Z_SENSITIVITY);
 	angle_z	+= gyro_z * SYSTEM_PERIOD;
 }
 
@@ -202,8 +202,8 @@ void IMU_ResetReference( void )
 
 	for(i = 0; i < REFFERENCE_NUM; i++) {
 		LL_mDelay(1);
-		accel_x_reference += accel_x_value;
-		gyro_z_reference += gyro_z_value;
+		accel_x_reference += (int16_t)accel_x_value;
+		gyro_z_reference += (int16_t)gyro_z_value;
 	}
 	accel_x_reference /= REFFERENCE_NUM;
 	gyro_z_reference /= REFFERENCE_NUM;

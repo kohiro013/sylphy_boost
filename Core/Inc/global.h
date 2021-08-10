@@ -44,6 +44,7 @@
 	int8_t 		Switch_WaitFrontSensor( void );				// 前センサが反応するまで待機する
 
 	// UART通信関数群
+	void 		Communicate_TransmitDMA( uint8_t );
 	uint8_t		Communicate_Receive1byte( void );
 	uint8_t 	Communicate_ReceiceDMA( void );
 	void 		Communicate_ClearReceiveBuffer( void );
@@ -97,7 +98,7 @@
 	float		Interrupt_GetBootTime( void );				// マイコンが起動してから経過した時間を取得する[s]
 
 	// モジュールテスト関数群(module_test.c)
-	void 		module_test( void );						// 全モジュールの動作確認用テスト関数
+	int 		module_test( int, char** );					// 全モジュールの動作確認用テスト関数
 
 	// データフラッシュ関数群(flash.c)
 	void 		Flash_Lock(void);
@@ -105,5 +106,8 @@
 	void 		Flash_EraseSector( uint32_t );
 	void 		Flash_WriteData( uint32_t, uint8_t*, uint32_t );
 	void 		Flash_ReadData( uint32_t, uint8_t*, uint32_t );
+
+	// NT-Shell関数群
+	void 		Myshell_Execute( void );
 
 #endif /* INC_GLOBAL_H_ */

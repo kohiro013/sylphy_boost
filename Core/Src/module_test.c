@@ -5,7 +5,7 @@
 /* ---------------------------------------------------------------
 	各機能の動作確認用関数
 --------------------------------------------------------------- */
-void module_test( void )
+int module_test( int argc, char **argv )
 {
 	uint16_t	line 	  = 0;
 	uint8_t		key;
@@ -86,11 +86,14 @@ void module_test( void )
 		printf("%c[%dA", 0x1b, line);
 	}
 	END:;
+	printf("\r\n");
 
 	// モータの停止
 	Motor_StopPWM();
 
 	// 壁センサ用LEDの点灯開始
 	Sensor_StopLED();
+
+	return 0;
 }
 
