@@ -11,7 +11,7 @@
 
 // 加速度計関連マクロ
 #define ACCEL_X_SIGN		(1.f)		// 加速度計の出力の符号（自分の座標系に合った方向に、1.0fか－1.0fを掛けて修正する）
-#define ACCEL_X_SENSITIVITY	(0.244f/1000)
+#define ACCEL_X_SENSITIVITY	(0.244f/1000.f)
 
 // ローカル関数宣言
 void 	IMU_Communication( uint8_t*, uint8_t*, uint8_t );
@@ -188,8 +188,8 @@ void IMU_Callback( void )
 --------------------------------------------------------------- */
 void IMU_Update( void )
 {
-	accel_x	= ACCEL_X_SIGN * G * ((int16_t)accel_x_value - accel_x_reference) / ACCEL_X_SENSITIVITY;
-	gyro_z	= GYRO_Z_SIGN * DEG2RAD(((int16_t)gyro_z_value - gyro_z_reference) / GYRO_Z_SENSITIVITY);
+	accel_x	= ACCEL_X_SIGN * G * ((int16_t)accel_x_value - accel_x_reference) * ACCEL_X_SENSITIVITY;
+	gyro_z	= GYRO_Z_SIGN * DEG2RAD(((int16_t)gyro_z_value - gyro_z_reference) * GYRO_Z_SENSITIVITY);
 	angle_z	+= gyro_z * SYSTEM_PERIOD;
 }
 
@@ -261,8 +261,9 @@ void IMU_DebugPrintf( void )
 {
 	angle_z = 0.f;
 	while( Communicate_ReceiceDMA() != 0x1b ) {
-		printf("%04x, %5d, %04x, %5d\r\n",
-				gyro_z_value, (int16_t)gyro_z_value, accel_x_value, (int16_t)accel_x_value);
+		printf("%04x, %5d, %5d, %f | %04x, %5d, %5d, %f\r\n",
+				accel_x_value, (int16_t)accel_x_value, accel_x_reference, accel_x,
+				gyro_z_value,  (int16_t)gyro_z_value,  gyro_z_reference,  gyro_z);
 		LL_mDelay(1);
 	}
 }
