@@ -75,14 +75,63 @@ void mode_fastest( int8_t param ) {
 	調整モード
 --------------------------------------------------------------- */
 void mode_adjust( int8_t param ) {
+	int8_t 	sw_side;
 	switch( param ) {
 		case 1:
 		case 2:
 		case 3:
+			sw_side = resetStartPreparation();
+//			Fastest_RunCircuit( 9, 9, param-1 );
+		break;
+
 		case 4:
+			sw_side = resetStartPreparation();
+			if( sw_side == FRONT ) {
+				LL_mDelay( 500 );
+				IMU_ResetReference();
+				resetAllParams();
+				Adjust_RunTireDiameter( 8 );
+			} else {
+				Adjust_RunGyroSensitivity(20, sw_side);
+			}
+		break;
+
 		case 5:
+			sw_side = resetStartPreparation();
+			if( sw_side == FRONT ) {
+				LL_mDelay( 500 );
+				IMU_ResetReference();
+				resetAllParams();
+				Adjust_RunGapWallEdge();
+			} else if( sw_side == LEFT ){
+				Adjust_RunSearchWallEdge();
+			} else {
+				Adjust_RunFastestWallEdge();
+			}
+		break;
+
 		case 6:
+			sw_side = resetStartPreparation();
+			if( sw_side == FRONT ) {
+
+			} else if( sw_side == LEFT ){
+				Adjust_RunComb( 8 );
+			} else {
+				Adjust_RunDiagonal( 15 );
+			}
+		break;
+
 		case 7:
+			sw_side = resetStartPreparation();
+			if( sw_side == FRONT ) {
+				LL_mDelay( 500 );			//
+				IMU_ResetReference();		//
+				resetAllParams();			//
+				LED_LightBinary( 0x00 );
+				Adjust_RunSlalomSequence( turn_90, RIGHT, 0, true );
+			} else {
+				Adjust_RunSlalomSequence( turn_90, sw_side, 0, false );
+			}
 		break;
 	}
 }
@@ -111,7 +160,7 @@ void Mode_SelectRunMode( void )
 	static int8_t	run_mode		= 0;
 	static int8_t	param			= 0;
 	int8_t			select_mode		= false;
-	int8_t			is_switch		= -1;
+	int8_t			is_switch		= false;
 
 	volatile uint32_t tmp_timer;
 
@@ -120,12 +169,12 @@ void Mode_SelectRunMode( void )
 	};
 
 	// スイッチが押下されるまでモード選択
-//	Control_SetMode( NONE );
+	Control_SetMode( NONE );
 	resetAllParams();
 	while( 1 ) {
 		is_switch = Switch_GetIsPush();
 		tmp_timer = Interrupt_GetGlobalTime();
-		while( is_switch == -1 && Interrupt_GetGlobalTime() <= tmp_timer ) {
+		while( is_switch == false && Interrupt_GetGlobalTime() <= tmp_timer ) {
 			is_switch = Switch_GetIsPush();
 		}
 
@@ -156,7 +205,7 @@ void Mode_SelectRunMode( void )
 		} else {
 			selectWheelCrickMode( &param, 7, LEFT );
 			LED_LightBinary( 0x00 );
-			LED_TimerLightBinary( param << 1, 50 );
+			LED_TimerLightBinary( param + 1, 50 );
 		}
 		Myshell_Execute();
 	}
@@ -167,9 +216,9 @@ void Mode_SelectRunMode( void )
 	resetAllParams();
 
 	LL_mDelay(100);
-//	while( Control_GetMode() == FAULT ) {
-//		if( Switch_GetIsPush() != -1 ) break;
-//	}
+	while( Control_GetMode() == FAULT ) {
+		if( Switch_GetIsPush() != -1 ) break;
+	}
 }
 
 /* ---------------------------------------------------------------
@@ -205,8 +254,7 @@ static void selectWheelCrickMode( int8_t* mode, int8_t num_mode, int8_t directio
 	if( direction == RIGHT )		Motor_SetDuty_Right(duty_click);
 	else if( direction == LEFT )	Motor_SetDuty_Left(duty_click);
 
-	//printf("%6.2f %5d, %6.2f %5d\r\n", RAD2DEG(enc_angle_left), duty_click_left, RAD2DEG(enc_angle_right), duty_click_right);
-	//printf("%2d %6.2f %5d\r\n", param, RAD2DEG(enc_angle_right), duty_click_right);
+//	printf("%2d %6.2f %5d\r\n", *mode, RAD2DEG(enc_angle), duty_click);
 }
 
 /* ---------------------------------------------------------------
@@ -219,7 +267,7 @@ static void resetAllParams( void )
 	Encoder_ResetCount_Right();
 	Encoder_ResetCount_Left();
 	IMU_ResetGyroAngle_Z();
-/*	Vehicle_ResetTimer();
+	Vehicle_ResetTimer();
 	Vehicle_ResetStraight();
 	Vehicle_ResetTurning();
 	Vehicle_ResetIntegral();
@@ -230,7 +278,7 @@ static void resetAllParams( void )
 	Control_ResetAngleDeviation();
 	Control_ResetSensorDeviation();
 	Control_ResetFrontSensorDeviation();
-*/	Wall_ResetEdgeDistance();
+	Wall_ResetEdgeDistance();
 }
 
 /* ---------------------------------------------------------------
@@ -240,10 +288,10 @@ static int8_t resetStartPreparation( void )
 {
 	int8_t sw_side = Switch_WaitFrontSensor();	//
 	if( sw_side == FRONT ) {
-		LED_LightBinary( 0x05 << 1 );
+		LED_LightBinary( 0x08 + 0x01 );
 	} else {
-		if( sw_side == RIGHT )	LED_LightBinary( 0x01 << 1 );
-		else					LED_LightBinary( 0x04 << 1 );
+		if( sw_side == RIGHT )	LED_LightBinary( 0x01 );
+		else					LED_LightBinary( 0x08 );
 		LL_mDelay( 500 );
 		IMU_ResetReference();
 		resetAllParams();

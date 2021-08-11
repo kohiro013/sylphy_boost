@@ -251,7 +251,7 @@ void IMU_ResetGyroAngle_Z( void )
 
 void IMU_OffsetGyroAngle_Z( void )
 {
-//	angle_z -= Vehicle_GetAngle();
+	angle_z -= Vehicle_GetAngle();
 }
 
 /* ---------------------------------------------------------------

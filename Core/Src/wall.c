@@ -186,7 +186,7 @@ void Wall_UpdateEdge( void )
 		sen_sl.is_edge = sen_sr.is_edge = false;
 	} else {
 */		// 右センサの壁切れ判定
-/*		if( sen_sr.distance - distance_min_r / TH_EDGE_RATE > ZONE_HYSTERESIS && Vehicle_GetTotalDistance() - distance_edge_sr > 45.f ) {
+		if( sen_sr.distance - distance_min_r / TH_EDGE_RATE > ZONE_HYSTERESIS && Vehicle_GetTotalDistance() - distance_edge_sr > 45.f ) {
 			sen_sr.is_edge = true;
 			distance_edge_sr = Vehicle_GetTotalDistance();
 			distance_min_r = CORRECT_DISTANCE_MAX;
@@ -204,7 +204,7 @@ void Wall_UpdateEdge( void )
 			sen_sl.is_edge = false;
 			distance_min_l = MIN(distance_min_l, sen_sl.distance);
 		}
-*///	}
+//	}
 }
 
 float Wall_GetEdgeMinDistance( int8_t dir )

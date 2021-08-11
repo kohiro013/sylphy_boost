@@ -28,6 +28,14 @@ void Interrupt_Main( void )
 	// 壁センサ情報の更新
 	Wall_Update();
 
+	if( Control_GetMode() > NONE ) {
+		// 車両運動計算
+		Vehicle_UpdateDynamics();
+
+		// ログ
+//		Log_WriteRecodeData();
+	} else;
+
 	// スイッチ反応中の時間の更新
 	Switch_UpdateTimer();
 

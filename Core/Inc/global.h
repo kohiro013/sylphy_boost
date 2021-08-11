@@ -110,6 +110,86 @@
 	// NT-Shell関数群(myshell.c)
 	void 		Myshell_Execute( void );
 
+	// 車両運動計算関数群(vehicle.c)
+	void	 	Vehicle_UpdateDynamics( void );
+	void 		Vehicle_AdjustLossTorque( void );
+	void 		Vehicle_SetTimer( float );
+	void 		Vehicle_SetAcceleration( float );
+	void 		Vehicle_SetVelocity( float );
+	void 		Vehicle_SetDistance( float );
+	void 		Vehicle_SetAngularAcceleration( float );
+	void 		Vehicle_SetGap( float );
+	float 		Vehicle_GetTimer( void );
+	float 		Vehicle_GetAcceleration( void );
+	float 		Vehicle_GetVelocity( void );
+	float 		Vehicle_GetDistance( void );
+	float		Vehicle_GetTotalDistance( void );
+	float 		Vehicle_GetAngularAcceleration( void );
+	float 		Vehicle_GetAngularVelocity( void );
+	float 		Vehicle_GetAngle( void );
+	float 		Vehicle_GetGap( void );
+	int16_t		Vehicle_GetDuty_Right( void );
+	int16_t		Vehicle_GetDuty_Left( void );
+	void	 	Vehicle_ResetTimer( void );
+	void 		Vehicle_ResetDistance( void );
+	void		Vehicle_ResetTotalDistance( void );
+	void 		Vehicle_ResetAngle( void );
+	void 		Vehicle_ResetStraight( void );
+	void 		Vehicle_ResetTurning( void );
+	void 		Vehicle_ResetIntegral( void );
+
+	// 車両制御関数群(control.c)
+	int8_t 		Control_GetMode( void );
+	void 		Control_SetMode( int8_t );
+	void 		Control_UpdateDeviation( void );
+	float 		Control_GetValue_Velocity( void );
+	float 		Control_GetValue_Angular( void );
+	float 		Control_GetFilterVelocity( void );
+	float 		Control_GetFilterDistance( void );
+	void 		Control_ResetFilterDistance( void );
+	void 		Control_ResetEncoderDeviation( void );
+	void 		Control_ResetGyroDeviation( void );
+	void 		Control_ResetAngleDeviation( void );
+	void 		Control_ResetSensorDeviation( void );
+	void 		Control_ResetFrontSensorDeviation( void );
+	float 		Control_GetEncoderDeviationValue( void );
+	float 		Control_GetGyroDeviationValue( void );
+	float 		Control_GetAngleDeviationValue( void );
+	float 		Control_GetSensorDeviationValue( void );
+	float 		Control_GetFrontWallVelocityDeviationValue( void );
+	float 		Control_GetFrontWallAngularDeviationValue( void );
+
+	// 動作関数群(motion.c)
+	float 		mynapier( float );
+	void 		Motion_StartStraight( float, float, float, float, float );
+	float		Motion_GetStraightTime( float, float, float, float, float );
+	float 		Motion_SetStraightAcceleration( float );
+	void 		Motion_WaitStraight( void );
+	void 		Motion_StartRotate( float, int8_t );
+
+	// スラローム関数群(motion_slalom.c)
+	void 		Motion_StartSlalom( int8_t, int8_t, int8_t );
+	float 		Motion_SetSlalomAngularAcceleration( float );
+	void 		Motion_WaitSlalom( int8_t, int8_t, int8_t );
+	void 		Motion_SetSlalomAcceleration( float );
+	float 		Motion_GetSlalomTime( int8_t, int8_t );
+	float 		Motion_GetSlalomVelocity( int8_t, int8_t );
+	float 		Motion_GetSlalomBeforeDistance( int8_t, int8_t, int8_t );
+	float 		Motion_GetSlalomAfterDistance( int8_t, int8_t, int8_t );
+
+	// 調整関連関数群(adjust.c)
+	void 		Adjust_RunTireDiameter( int8_t );
+	void 		Adjust_RunGyroSensitivity( uint8_t, int8_t );
+	void 		Adjust_RunSearchWallEdge( void );
+	void		Adjust_RunFastestWallEdge( void );
+	void 		Adjust_RunDiagonal( int8_t );
+	void 		Adjust_RunComb( int8_t );
+	void 		Adjust_RunGapWallEdge( void );
+	void 		Adjust_RunAlignment( void );
+	void 		Adjust_RunSlalom( int8_t, int8_t, int8_t );
+	void 		Adjust_RunSlalomSequence( int8_t, int8_t, int8_t, int8_t );
+	void 		Adjust_DisplayMazeAndPath( int8_t, int8_t );
+
 	// 壁関連関数群(wall.c)
 	void 		Wall_Update( void );
 	float 		Wall_GetDistance( uint8_t );
