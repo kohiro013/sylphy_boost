@@ -235,4 +235,9 @@
 	void 		Potential_MakeMap( int8_t, int8_t );
 	void 		Potential_MakeUnknownMap( int8_t, int8_t );
 
+	// 最短走行関連関数群(fastest.c)
+	void 		Fastest_RunCircuit( int8_t, int8_t, uint8_t );
+	void 		Fastest_StartPathSequence( int8_t, int8_t );
+	void 		Fastest_RunSimple( int8_t, int8_t );
+
 #endif /* INC_GLOBAL_H_ */

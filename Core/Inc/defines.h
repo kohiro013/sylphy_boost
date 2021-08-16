@@ -6,8 +6,8 @@
 	#include <string.h>
 	#include "arm_math.h"
 
-	#define GOAL_X				(9)
-	#define GOAL_Y				(9)
+	#define GOAL_X				(1)
+	#define GOAL_Y				(0)
 	#define GOAL_SIZE			(2)
 	#define MAZE_X				(32)
 	#define MAZE_Y				(32)

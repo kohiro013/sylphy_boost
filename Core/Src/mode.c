@@ -81,7 +81,7 @@ void mode_adjust( int8_t param ) {
 		case 2:
 		case 3:
 			sw_side = resetStartPreparation();
-//			Fastest_RunCircuit( 9, 9, param-1 );
+			Fastest_RunCircuit( 9, 9, param-1 );
 		break;
 
 		case 4:
