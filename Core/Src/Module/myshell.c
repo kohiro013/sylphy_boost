@@ -11,6 +11,7 @@ static int usrcmd_info(int argc, char **argv);
 static int usrcmd_imu(int argc, char **argv);
 static int usrcmd_sensor(int argc, char **argv);
 static int usrcmd_maze(int argc, char **argv);
+static int usrcmd_loss_torque(int argc, char **argv);
 
 // NT-Shell用ローカル関数群
 static int func_read(char *buf, int cnt, void *extobj);
@@ -28,12 +29,13 @@ typedef struct {
 
 // コマンドリスト
 static const cmd_table_t cmdlist[] = {
-    { "help", 			"help command.", 		usrcmd_help 	},
-    { "info", 			"system info.", 		usrcmd_info 	},
-	{ "imu", 			"IMU debug.",			usrcmd_imu		},
-	{ "ir_sensor", 		"IR sensor debug.",		usrcmd_sensor	},
-	{ "module_test", 	"module test command.", module_test 	},
-	{ "maze",			"maze display.",		usrcmd_maze		},
+    { "help", 			"help command.", 		usrcmd_help 		},
+    { "info", 			"system info.", 		usrcmd_info 		},
+	{ "imu", 			"IMU debug.",			usrcmd_imu			},
+	{ "ir_sensor", 		"IR sensor debug.",		usrcmd_sensor		},
+	{ "module_test", 	"module test command.", module_test 		},
+	{ "maze",			"maze display.",		usrcmd_maze			},
+	{ "torque_loss",	"adjust loss torque.",	usrcmd_loss_torque 	},
 };
 static ntshell_t nts;
 
@@ -85,6 +87,12 @@ static int usrcmd_maze(int argc, char **argv)
 	} else;
 	printf("  Unknown sub command found\r\n");
 	return -1;
+}
+
+static int usrcmd_loss_torque(int argc, char **argv)
+{
+	Vehicle_AdjustLossTorque();
+	return 0;
 }
 
 /* ---------------------------------------------------------------

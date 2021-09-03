@@ -7,9 +7,9 @@
 #define MOT_RESIST				(5.0f)		// 巻線抵抗[Ω]
 #define GEAR_RATIO				(37/9)		// ギア比
 
-#define TORQUE_R_LOSS			(10.f)		// 右タイヤの損失トルク補償
-#define TORQUE_L_LOSS			(8.f)		// 左タイヤの損失トルク補償
-#define MOT_DUTY_MIN			(36)		// モータドライバのデッドタイム補償(100kHz)
+#define TORQUE_R_LOSS			(16.f)		// 右タイヤの損失トルク補償
+#define TORQUE_L_LOSS			(16.f)		// 左タイヤの損失トルク補償
+#define MOT_DUTY_MIN			(36)		// モータドライバのデッドタイム補償(400kHz)
 											// 90ns * 400kHz = 0.036
 
 volatile static float			t;
@@ -239,14 +239,20 @@ void Vehicle_AdjustLossTorque( void )
 	volatile float		v_battery;
 
 	printf("Adjust Loss Torque Mode\r\n");
-	while( 1 ) {
+	while( Communicate_ReceiceDMA() != 0x1b ) {
 		// 損失トルクの入力
 		scanf("%f, %f", &torque_l, &torque_r);
-		printf("Left : %4.1f [mN/m], Right : %4.1f [mN/m]\r\n", torque_l, torque_r);
+		if(0.f < torque_l && torque_l < 100.f && 0.f < torque_r && torque_r < 100.f) {
+			// 入力したトルクの表示
+			printf("Left : %4.1f [mN/m], Right : %4.1f [mN/m]\r\n", torque_l, torque_r);
+			// 無負荷回転させる
+			v_battery = Battery_GetBoostVoltage();
+			Motor_SetDuty_Right( (int16_t)((MOT_RESIST * torque_r) / KT / v_battery) + MOT_DUTY_MIN );
+			Motor_SetDuty_Left(  (int16_t)((MOT_RESIST * torque_l) / KT / v_battery) + MOT_DUTY_MIN );
+		} else {
+			continue;
+		}
 
-		// 無負荷回転させる
-		v_battery = Battery_GetBoostVoltage();
-		Motor_SetDuty_Right( (int16_t)((MOT_RESIST * torque_r) / KT / v_battery) + MOT_DUTY_MIN );
-		Motor_SetDuty_Left(  (int16_t)((MOT_RESIST * torque_l) / KT / v_battery) + MOT_DUTY_MIN );
+
 	}
 }
