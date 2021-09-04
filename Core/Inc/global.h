@@ -91,6 +91,10 @@
 	float 		Encoder_GetAnglerVelocity_Right( void );	// 右タイヤの角速度を取得する[rad/s]
 	void 		Encoder_DebugPrintf( void );
 
+	// 吸引ファン関数群(suction_fan.c)
+	void 		SuctionFan_Start( void );
+	void 		SuctionFan_Stop( void );
+
 	// 割り込み関数群(interrupt.c)
 	uint32_t 	Interrupt_GetGlobalTime( void );			// 絶対時間を取得する
 	int32_t 	Interrupt_GetDuty( void );					// 割り込み処理内の計算割合を取得する

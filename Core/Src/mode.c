@@ -263,6 +263,7 @@ static void selectWheelCrickMode( int8_t* mode, int8_t num_mode, int8_t directio
 static void resetAllParams( void )
 {
 	Motor_StopPWM();
+	SuctionFan_Stop();
 	Sensor_StopLED();
 	Encoder_ResetCount_Right();
 	Encoder_ResetCount_Left();

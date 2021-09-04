@@ -10,6 +10,7 @@ static int usrcmd_help(int argc, char **argv);
 static int usrcmd_info(int argc, char **argv);
 static int usrcmd_imu(int argc, char **argv);
 static int usrcmd_sensor(int argc, char **argv);
+static int usrcmd_fan(int argc, char **argv);
 static int usrcmd_maze(int argc, char **argv);
 static int usrcmd_loss_torque(int argc, char **argv);
 
@@ -33,9 +34,10 @@ static const cmd_table_t cmdlist[] = {
     { "info", 			"system info.", 		usrcmd_info 		},
 	{ "imu", 			"IMU debug.",			usrcmd_imu			},
 	{ "ir_sensor", 		"IR sensor debug.",		usrcmd_sensor		},
+	{ "fan",			"suction fan test.",	usrcmd_fan			},
 	{ "module_test", 	"module test command.", module_test 		},
 	{ "maze",			"maze display.",		usrcmd_maze			},
-	{ "torque_loss",	"adjust loss torque.",	usrcmd_loss_torque 	},
+	{ "loss_torque",	"adjust loss torque.",	usrcmd_loss_torque 	},
 };
 static ntshell_t nts;
 
@@ -60,6 +62,23 @@ static int usrcmd_sensor(int argc, char **argv)
 		return 0;
 	} else if (ntlibc_strcmp(argv[1], "wall") == 0) {
 		Wall_DebugPrintf();
+		return 0;
+	} else;
+	printf("  Unknown sub command found\r\n");
+	return -1;
+}
+
+static int usrcmd_fan(int argc, char **argv)
+{
+	if(argc != 2) {
+		printf("  fan start\r\n");
+		printf("  fan stop\r\n");
+		return 0;
+	} else if(ntlibc_strcmp(argv[1], "start") == 0) {
+		SuctionFan_Start();
+		return 0;
+	} else if (ntlibc_strcmp(argv[1], "stop") == 0) {
+		SuctionFan_Stop();
 		return 0;
 	} else;
 	printf("  Unknown sub command found\r\n");

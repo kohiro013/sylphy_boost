@@ -60,6 +60,7 @@ extern void 	Motor_Initialize( void );
 extern void 	Encoder_Initialize( void );
 extern void 	Sensor_Initialize( void );
 extern void		IMU_Initialize( void );
+extern void 	SuctionFan_Initialize( void );
 extern void 	Interrupt_Initialize( void );
 extern void 	Myshell_Initialize( void );
 extern void 	Wall_Initialize( void );
@@ -122,6 +123,7 @@ int main(void)
   	IMU_Initialize();
  	Sensor_Initialize();
  	Wall_Initialize();
+ 	SuctionFan_Initialize();
  	Myshell_Initialize();
 
 	Battery_LimiterVoltage();
