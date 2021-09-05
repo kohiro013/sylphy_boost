@@ -12,6 +12,7 @@ static int usrcmd_imu(int argc, char **argv);
 static int usrcmd_sensor(int argc, char **argv);
 static int usrcmd_fan(int argc, char **argv);
 static int usrcmd_maze(int argc, char **argv);
+static int usrcmd_log(int argc, char **argv);
 static int usrcmd_loss_torque(int argc, char **argv);
 
 // NT-Shell用ローカル関数群
@@ -37,6 +38,7 @@ static const cmd_table_t cmdlist[] = {
 	{ "fan",			"suction fan test.",	usrcmd_fan			},
 	{ "module_test", 	"module test command.", module_test 		},
 	{ "maze",			"maze display.",		usrcmd_maze			},
+	{ "log", 			"log display.",			usrcmd_log			},
 	{ "loss_torque",	"adjust loss torque.",	usrcmd_loss_torque 	},
 };
 static ntshell_t nts;
@@ -106,6 +108,12 @@ static int usrcmd_maze(int argc, char **argv)
 	} else;
 	printf("  Unknown sub command found\r\n");
 	return -1;
+}
+
+static int usrcmd_log(int argc, char **argv)
+{
+	Log_ReadRecodeData();
+	return 0;
 }
 
 static int usrcmd_loss_torque(int argc, char **argv)

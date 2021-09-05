@@ -33,7 +33,7 @@ void Interrupt_Main( void )
 		Vehicle_UpdateDynamics();
 
 		// ログ
-//		Log_WriteRecodeData();
+		Log_WriteRecodeData();
 	} else;
 
 	// スイッチ反応中の時間の更新

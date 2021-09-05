@@ -114,6 +114,10 @@
 	// NT-Shell関数群(myshell.c)
 	void 		Myshell_Execute( void );
 
+	// ログ関数(log.c)
+	void 		Log_WriteRecodeData( void );
+	void 		Log_ReadRecodeData( void );
+
 	// 車両運動計算関数群(vehicle.c)
 	void	 	Vehicle_UpdateDynamics( void );
 	void 		Vehicle_AdjustLossTorque( void );
