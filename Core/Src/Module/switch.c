@@ -5,18 +5,18 @@
 #define SWTICH_IsPush()		LL_GPIO_IsInputPinSet(SWITCH_GPIO_Port, SWITCH_Pin)
 
 // プッシュスイッチの設定
-#define SW_SHORT_PUSH	(10)
-#define SW_LONG_PUSH	(500)
+#define SW_SHORT_PUSH		(10)
+#define SW_LONG_PUSH		(500)
 
 // センサースイッチの設定
-#define SW_THRESHOLD	(800)		// スイッチ判定の閾値
-#define SW_TIME			(300)		// スイッチ判定の時間閾値
+#define SW_THRESHOLD		(800)		// スイッチ判定の閾値
+#define SW_TIME				(300)		// スイッチ判定の時間閾値
 
 volatile static uint32_t	push_switch_timer 	= 0;		// スイッチが押されている時間
 volatile static int8_t		is_push_switch 		= false;	// スイッチの判定用フラグ
 
 volatile static uint32_t 	sensor_switch_timer = 0;
-volatile static int8_t 		is_sensor_switch 	= false;
+volatile static int8_t 		is_sensor_switch 	= -1;
 
 /* ---------------------------------------------------------------
 	割り込み内でスイッチが反応している時間をカウントする関数
@@ -32,14 +32,14 @@ void Switch_UpdateTimer( void )
 
 	// 両方の前センサが反応している時間をカウントする
 	if( ( Sensor_GetValue(FRONT + RIGHT) > SW_THRESHOLD ) || ( Sensor_GetValue(FRONT + LEFT) > SW_THRESHOLD ) ) {
-		if( is_sensor_switch == false ) {
+		if( is_sensor_switch == -1 ) {
 			sensor_switch_timer ++;
 		} else {
 			sensor_switch_timer = 0;
 		}
 	} else {
 		sensor_switch_timer = 0;
-		is_sensor_switch = false;
+		is_sensor_switch = -1;
 	}
 }
 
@@ -77,7 +77,7 @@ int8_t Switch_GetIsFrontSensor( void )
 			is_sensor_switch = LEFT;
 		} else;
 	} else {
-		is_sensor_switch = false;
+		is_sensor_switch = -1;
 	}
 	return is_sensor_switch;
 }
@@ -88,9 +88,9 @@ int8_t Switch_GetIsFrontSensor( void )
 int8_t Switch_WaitFrontSensor( void )
 {
 	Sensor_StartLED();
-	while( Switch_GetIsFrontSensor() != false );
+	while( Switch_GetIsFrontSensor() != -1 );
 	while( 1 ) {
-		if( Switch_GetIsFrontSensor() != false ) {
+		if( Switch_GetIsFrontSensor() != -1 ) {
 			return is_sensor_switch;
 		} else;
 	}

@@ -48,6 +48,7 @@ static ntshell_t nts;
 --------------------------------------------------------------- */
 static int usrcmd_imu(int argc, char **argv)
 {
+	LED_LightBinary( 0x00 );
 	IMU_ResetReference();
 	IMU_DebugPrintf();
 	return 0;
@@ -55,6 +56,7 @@ static int usrcmd_imu(int argc, char **argv)
 
 static int usrcmd_sensor(int argc, char **argv)
 {
+	LED_LightBinary( 0x00 );
 	if(argc != 2) {
 		printf("  ir_sensor raw\r\n");
 		printf("  ir_sensor wall\r\n");
@@ -72,6 +74,7 @@ static int usrcmd_sensor(int argc, char **argv)
 
 static int usrcmd_fan(int argc, char **argv)
 {
+	LED_LightBinary( 0x00 );
 	if(argc != 2) {
 		printf("  fan start\r\n");
 		printf("  fan stop\r\n");
@@ -89,6 +92,7 @@ static int usrcmd_fan(int argc, char **argv)
 
 static int usrcmd_maze(int argc, char **argv)
 {
+	LED_LightBinary( 0x00 );
 	if(argc == 1) {
 		Maze_LoadFlash();
 		Potential_MakeMap(GOAL_X, GOAL_Y);
@@ -112,12 +116,14 @@ static int usrcmd_maze(int argc, char **argv)
 
 static int usrcmd_log(int argc, char **argv)
 {
+	LED_LightBinary( 0x00 );
 	Log_ReadRecodeData();
 	return 0;
 }
 
 static int usrcmd_loss_torque(int argc, char **argv)
 {
+	LED_LightBinary( 0x00 );
 	Vehicle_AdjustLossTorque();
 	return 0;
 }
