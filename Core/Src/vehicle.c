@@ -26,9 +26,9 @@ volatile static float			total_distance;
 --------------------------------------------------------------- */
 void Vehicle_UpdateDynamics( void )
 {
-	volatile float		v_battery;
-	volatile float		motor_rpm_l, motor_rpm_r;
-	volatile float		torque_l, torque_r;
+	volatile static float	v_battery;
+	volatile float			motor_rpm_l, motor_rpm_r;
+	volatile float			torque_l, torque_r;
 
 	t += SYSTEM_PERIOD;
 
@@ -69,7 +69,7 @@ void Vehicle_UpdateDynamics( void )
 	// 制御量の計算
 	Control_UpdateDeviation();
 
-	v_battery = Battery_GetBoostVoltage();
+	v_battery = 0.9f * v_battery + 0.1f * Battery_GetBoostVoltage();
 
 	torque_l = TIRE/2.0f * ( MASS * (a + Control_GetValue_Velocity()) - INERTIA * (alpha + Control_GetValue_Angular()) / TREAD ) / 2.0f / GEAR_RATIO / 1000.0f;
 	torque_r = TIRE/2.0f * ( MASS * (a + Control_GetValue_Velocity()) + INERTIA * (alpha + Control_GetValue_Angular()) / TREAD ) / 2.0f / GEAR_RATIO / 1000.0f;

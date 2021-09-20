@@ -243,6 +243,31 @@
 	void 		Potential_MakeMap( int8_t, int8_t );
 	void 		Potential_MakeUnknownMap( int8_t, int8_t );
 
+	// パス関数群(path.c)
+	void 		Path_Reset( void );
+	void 		Path_SetStraightSection( int8_t );
+	void 		Path_SetTurnSection( int8_t, int8_t );
+	t_path 		Path_GetSequence( uint8_t );
+	t_path 		Path_GetReturnSequence( uint8_t );
+	uint8_t 	Path_GetSequenceNumber( void );
+	void 		Path_ConvertTurnLarge( void );
+	void 		Path_ConvertTurn180( void );
+	void 		Path_ConvertDiagonal( void );
+	void 		Path_Display( void );
+
+	// 経路生成関連関数群(route.c)
+	int8_t 		Route_GetNextDirection_Adachi( t_position );
+	int8_t 		Route_GetNextDirection_PrioritizeUnknown( t_position );
+
+	// 探索走行関連関数群(search.c)
+	void 		Search_Run( int8_t, int8_t, uint8_t );
+	void 		Search_RunStart( uint8_t, int8_t );
+	void 		Search_AlignmentFrontWall( void );
+
+	// 最速経路導出関数群
+	t_position 	Dijkstra_ConvertPath( int8_t, int8_t );
+	void		Dijkstra_DebugPrintf( int8_t, int8_t );
+
 	// 最短走行関連関数群(fastest.c)
 	void 		Fastest_RunCircuit( int8_t, int8_t, uint8_t );
 	void 		Fastest_StartPathSequence( int8_t, int8_t );

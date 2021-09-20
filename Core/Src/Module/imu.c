@@ -7,7 +7,7 @@
 
 // ジャイロ関連マクロ
 #define GYRO_Z_SIGN			(1.f)		// ジャイロの出力の符号（自分の座標系に合った方向に、1.0fか－1.0fを掛けて修正する）
-#define GYRO_Z_SENSITIVITY	(0.135f)
+#define GYRO_Z_SENSITIVITY	(0.137f)
 
 // 加速度計関連マクロ
 #define ACCEL_X_SIGN		(1.f)		// 加速度計の出力の符号（自分の座標系に合った方向に、1.0fか－1.0fを掛けて修正する）

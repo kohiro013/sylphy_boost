@@ -79,4 +79,5 @@ void Log_ReadRecodeData( void )
 		printf("\r\n");
 	}
 	printf("%c\r\n", 0x1b);
+	Communicate_ClearReceiveBuffer();
 }

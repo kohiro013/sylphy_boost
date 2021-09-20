@@ -18,8 +18,8 @@
 #define K_ANGLE						(136.f)
 
 // 各制御のPIDゲイン											P	  I		D
-volatile const t_control_gain	gain_enc		 = {  70.f,  1.5f, -0.001f	};	// エンコーダの速度ゲイン
-volatile const t_control_gain	gain_gyro		 = { 400.f,  4.f,  -0.00f	};	// ジャイロの角速度ゲイン
+volatile const t_control_gain	gain_enc		 = {  60.f,  3.f, -0.001f	};	// エンコーダの速度ゲイン
+volatile const t_control_gain	gain_gyro		 = { 200.f,  6.f,  -0.00f	};	// ジャイロの角速度ゲイン
 volatile const t_control_gain	gain_angle		 = {   0.f,  5.f,   0.f  	};	// ジャイロの角度ゲイン
 volatile const t_control_gain	gain_straight	 = {2000.f,  0.f,  15.f  	};	// 壁制御の角速度ゲイン
 volatile const t_control_gain	gain_diagonal	 = { 800.f,  0.f,  15.f  	};	// 斜め壁制御の角速度ゲイン

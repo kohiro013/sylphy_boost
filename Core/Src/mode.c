@@ -18,15 +18,15 @@ void mode_search( int8_t param ) {
 	int8_t 	sw_side = resetStartPreparation();
 	switch( param ) {
 		case 1:
-//			Search_RunStart( ADACHI, sw_side == RIGHT );
+			Search_RunStart( ADACHI, sw_side == RIGHT );
 		break;
 
 		case 2:
-//			Search_RunStart( UNKNOWN, sw_side == RIGHT );
+			Search_RunStart( UNKNOWN, sw_side == RIGHT );
 		break;
 
 		case 3:
-//			Search_RunStart( ALL, sw_side == RIGHT );
+			Search_RunStart( ALL, sw_side == RIGHT );
 		break;
 
 		case 4:
@@ -38,8 +38,8 @@ void mode_search( int8_t param ) {
 		break;
 
 		case 6:
-//			Control_SetMode(TURN);
-//			while(Control_GetMode() != FAULT && Switch_GetIsPush() == -1);
+			Control_SetMode(TURN);
+			while(Control_GetMode() != FAULT && Switch_GetIsPush() == -1);
 		break;
 
 		case 7:
@@ -90,7 +90,7 @@ void mode_adjust( int8_t param ) {
 				LL_mDelay( 500 );
 				IMU_ResetReference();
 				resetAllParams();
-				Adjust_RunTireDiameter( 8 );
+				Adjust_RunTireDiameter( 31 );
 			} else {
 				Adjust_RunGyroSensitivity(20, sw_side);
 			}
