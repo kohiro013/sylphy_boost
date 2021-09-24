@@ -66,7 +66,7 @@ void mode_fastest( int8_t param ) {
 		case 5:
 		case 6:
 		case 7:
-//			Fastest_RunSimple( param-1, sw_side == RIGHT );
+			Fastest_RunSimple( param-1, sw_side == RIGHT );
 		break;
 	}
 }
@@ -142,7 +142,7 @@ void mode_adjust( int8_t param ) {
 void mode_turn_adjust( int8_t param ) {
 	int8_t 	sw_side = resetStartPreparation();
 	if( sw_side == FRONT ) return;
-//	Adjust_RunSlalom( param+1, sw_side, 0 );
+	Adjust_RunSlalom( param+1, sw_side, 0 );
 }
 
 /* ---------------------------------------------------------------
@@ -150,6 +150,23 @@ void mode_turn_adjust( int8_t param ) {
 --------------------------------------------------------------- */
 void mode_debug( int8_t param ) {
 	resetStartPreparation();
+	// 探索
+	Search_RunStart( UNKNOWN, true );
+
+	for( int i = 0; i < 4; i++ ) {
+		if( Control_GetMode() == FAULT ) break;
+		// 前壁補正
+		Control_SetMode( FWALL );
+		LL_mDelay( 500 );
+		Motion_StartRotate( 90.f, RIGHT );
+		Control_SetMode( FWALL );
+		LL_mDelay( 500 );
+		Motion_StartRotate( 90.f, RIGHT );
+		// 最短
+		resetAllParams();
+		Fastest_RunSimple( i, true );
+	}
+	Motion_StartRotate( 180.f, RIGHT );
 }
 
 /* ---------------------------------------------------------------
