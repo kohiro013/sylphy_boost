@@ -91,8 +91,8 @@ void Vehicle_UpdateDynamics( void )
 	if( Control_GetMode() == FAULT ) {
 		Motor_StopPWM();
 	} else {
-		Motor_SetDuty_Left(  duty_l + SIGN(duty_l) * MOT_DUTY_MIN );
-		Motor_SetDuty_Right( duty_r + SIGN(duty_r) * MOT_DUTY_MIN );
+		Motor_SetDuty_Left(  duty_l + SIGN(duty_l) * MOT_DUTY_MIN * 120.f/(LL_TIM_GetAutoReload(TIM4)+1) );
+		Motor_SetDuty_Right( duty_r + SIGN(duty_r) * MOT_DUTY_MIN * 120.f/(LL_TIM_GetAutoReload(TIM4)+1) );
 	}
 }
 

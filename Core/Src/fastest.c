@@ -199,6 +199,8 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 //	int8_t			next_direction = -1;
 	t_position		my;
 
+	Motor_SetFrequency( 100 );
+
 	Maze_LoadFlash();
 	Maze_Reset( FASTEST );
 	Maze_InsertDeadEnd();
@@ -208,10 +210,17 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 	Path_Reset();
 	my = Dijkstra_ConvertPath( GOAL_X, GOAL_Y );
 
+	// 吸引ファンの起動
+//	if( param > 1 ) {
+//		SuctionFan_Start();
+		LL_mDelay( 200 );
+//	} else;
+
 	// パスに沿って走行開始
 	Fastest_StartPathSequence( param, false );
 
 	// 制御のリセット
+	SuctionFan_Stop();
 	if( Control_GetMode() != FAULT ) {
 		LL_mDelay( 500 );
 		Motor_StopPWM();
@@ -259,11 +268,18 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 		Control_ResetGyroDeviation();
 		Control_ResetAngleDeviation();
 
+		// 吸引ファンの起動
+		if( param > 1 ) {
+//			SuctionFan_Start();
+			LL_mDelay( 200 );
+		} else;
+
 		// パスに沿って走行開始
 		//Fastest_StartPathSequence( param, true );
 		Fastest_StartPathSequence( 0, true );
 
 		// 制御のリセット
+		SuctionFan_Stop();
 		if( Control_GetMode() != FAULT ) {
 			LL_mDelay( 500 );
 			Motor_StopPWM();

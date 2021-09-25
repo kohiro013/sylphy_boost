@@ -2,6 +2,7 @@
 #include "defines.h"
 #include "global.h"
 
+#define PCLK				(48000000)
 #define AUTORELOAD 		 	(LL_TIM_GetAutoReload(TIM4) + 1)
 
 const uint16_t MOT_DUTY_MIN = 10;		// モータの最低Duty
@@ -24,6 +25,15 @@ void Motor_Initialize( void )
 	LL_TIM_CC_EnableChannel(TIM4, LL_TIM_CHANNEL_CH3);
 	LL_TIM_CC_EnableChannel(TIM4, LL_TIM_CHANNEL_CH4);
 	LL_TIM_EnableCounter(TIM4);
+}
+
+/* ---------------------------------------------------------------
+	モータの動作周波数を設定する関数
+--------------------------------------------------------------- */
+void Motor_SetFrequency( uint16_t khz )
+{
+	Motor_StopPWM();
+	LL_TIM_SetAutoReload(TIM4, (PCLK / (khz * 1000)) - 1);
 }
 
 /* ---------------------------------------------------------------

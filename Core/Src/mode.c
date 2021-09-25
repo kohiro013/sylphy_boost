@@ -234,7 +234,7 @@ void Mode_SelectRunMode( void )
 
 	LL_mDelay(100);
 	while( Control_GetMode() == FAULT ) {
-		if( Switch_GetIsPush() != -1 ) break;
+		if( Switch_GetIsPush() != false ) break;
 	}
 }
 
@@ -280,6 +280,7 @@ static void selectWheelCrickMode( int8_t* mode, int8_t num_mode, int8_t directio
 static void resetAllParams( void )
 {
 	Motor_StopPWM();
+	Motor_SetFrequency( 400 );
 	SuctionFan_Stop();
 	Sensor_StopLED();
 	Encoder_ResetCount_Right();

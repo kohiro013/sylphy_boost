@@ -50,6 +50,7 @@
 	void 		Communicate_ClearReceiveBuffer( void );
 
 	// モータ関数群
+	void 		Motor_SetFrequency(uint16_t);				// モータの動作周波数を設定する
 	void 		Motor_StopPWM( void );						// モータを停止
 	void 		Motor_SetDuty_Right( int16_t );				// 右モータを指定したDutyで回転させる[0-1000]
 	void 		Motor_SetDuty_Left( int16_t );				// 左モータを指定したDutyで回転させる[0-1000]

@@ -31,8 +31,8 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_FRONT_R	(150.f)		// 前右センサの制御閾値
 
 // 前壁制御関連定義
-#define REF_FWALL_L			(42.f)		// 前左センサのリファレンス
-#define REF_FWALL_R			(42.f)		// 前右センサのリファレンス
+#define REF_FWALL_L			(31.f)		// 前左センサのリファレンス
+#define REF_FWALL_R			(31.f)		// 前右センサのリファレンス
 
 #define TH_CONTROL_FWALL_L	(60.f)		// 前壁制御の前左センサの閾値
 #define TH_CONTROL_FWALL_R	(60.f)		// 前壁制御の前右センサの閾値
