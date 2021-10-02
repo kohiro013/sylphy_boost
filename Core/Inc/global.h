@@ -259,6 +259,8 @@
 	// 経路生成関連関数群(route.c)
 	int8_t 		Route_GetNextDirection_Adachi( t_position );
 	int8_t 		Route_GetNextDirection_PrioritizeUnknown( t_position );
+	t_path 		Route_StartPathSequence( int8_t, int8_t );
+	t_init_straight Route_GetParameters( uint8_t, uint8_t );
 
 	// 探索走行関連関数群(search.c)
 	void 		Search_Run( int8_t, int8_t, uint8_t );

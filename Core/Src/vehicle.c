@@ -15,7 +15,7 @@
 volatile static float			t;
 volatile static float			a, v, d;
 volatile static float			alpha, omega, theta;
-volatile static float			y;
+volatile static float			gap;
 volatile static int16_t			duty_l, duty_r;
 
 volatile static float			total_distance;
@@ -49,22 +49,22 @@ void Vehicle_UpdateDynamics( void )
 		if( (Wall_GetDistance(FRONT+LEFT) > 45.f) || (Wall_GetDistance(FRONT+RIGHT) > 45.f) ) {
 			if( Wall_GetEdge(LEFT) == true || Wall_GetEdge(RIGHT) == true ) {
 				if( ABS(Wall_GetEdgeDistance(0xff)) < 20.f ) {
-					y = (0.82f * Wall_GetEdgeDistance(0xff) + 1.18f) / 2.f;
+					gap = (0.82f * Wall_GetEdgeDistance(0xff) + 1.18f) / 2.f;
 					theta = 0.f;
 					IMU_SetGyroAngle_Z(-atan2f(Wall_GetEdgeDistance(0xff) + 2.6f, 84.f));
 				} else;
 			} else if( (Wall_GetDeviation(LEFT) != 0) && (Wall_GetDeviation(RIGHT) != 0) ) {
-				y = (-Wall_GetDeviation(LEFT) + Wall_GetDeviation(RIGHT)) / 2;
+				gap = (-Wall_GetDeviation(LEFT) + Wall_GetDeviation(RIGHT)) / 2;
 			} else if( Wall_GetDeviation(LEFT) != 0 ) {
-				y = -Wall_GetDeviation(LEFT);
+				gap = -Wall_GetDeviation(LEFT);
 			} else if( Wall_GetDeviation(RIGHT) != 0 ) {
-				y = Wall_GetDeviation(RIGHT);
+				gap = Wall_GetDeviation(RIGHT);
 			} else {
 
 			}
 		} else;
 	} else {
-		y = 0.f;
+		gap = 0.f;
 	}
 	// 制御量の計算
 	Control_UpdateDeviation();
@@ -99,34 +99,34 @@ void Vehicle_UpdateDynamics( void )
 /* ---------------------------------------------------------------
 	各車両状態変数の入力関数
 --------------------------------------------------------------- */
-void Vehicle_SetTimer( float time )
+void Vehicle_SetTimer( float value )
 {
-	t = time;
+	t = value;
 }
 
-void Vehicle_SetAcceleration( float acceleration )
+void Vehicle_SetAcceleration( float value )
 {
-	a = acceleration;
+	a = value;
 }
 
-void Vehicle_SetVelocity( float velocity )
+void Vehicle_SetVelocity( float value )
 {
-	v = velocity;
+	v = value;
 }
 
-void Vehicle_SetDistance( float distance )
+void Vehicle_SetDistance( float value )
 {
-	d = distance;
+	d = value;
 }
 
-void Vehicle_SetAngularAcceleration( float anglular_acceleration )
+void Vehicle_SetAngularAcceleration( float value )
 {
-	alpha = anglular_acceleration;
+	alpha = value;
 }
 
-void Vehicle_SetGap( float gap )
+void Vehicle_SetGap( float value )
 {
-	y = gap;
+	gap = value;
 }
 
 /* ---------------------------------------------------------------
@@ -174,7 +174,7 @@ float Vehicle_GetAngle( void )
 
 float Vehicle_GetGap( void )
 {
-	return y;
+	return gap;
 }
 
 int16_t Vehicle_GetDuty_Right( void )
@@ -213,20 +213,20 @@ void Vehicle_ResetAngle( void )
 void Vehicle_ResetStraight( void )
 {
 	a = v = d = 0.0f;
-	y = 0.f;
+	gap = 0.f;
 }
 
 void Vehicle_ResetTurning( void )
 {
 	//alpha = omega = theta = 0.0f;
 	alpha = omega = 0.0f;
-	y = 0.f;
+	gap = 0.f;
 }
 
 void Vehicle_ResetIntegral( void )
 {
 	d = theta = 0.0f;
-	y = 0.f;
+	gap = 0.f;
 }
 
 /* ---------------------------------------------------------------

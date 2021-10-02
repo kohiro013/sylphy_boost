@@ -2,12 +2,8 @@
 #include "defines.h"
 #include "global.h"
 
-const float SEARCH_ACCEL 		= 4000.f;
-const float SEARCH_DECEL 		= 4000.f;
-const float SEARCH_VELOCITY		= 350.f;
-const float SEARCH_MAX_VELOCITY	= 700.f;
-
-#define SECTION_WALL_EDGE	(15.f)			// 壁切れ検出区間
+static t_init_straight param_search;
+static float			turn_velocity;
 
 /* ----------------------------------------------------------------------------------
 	進む方向の決定（超信地旋回）
@@ -99,108 +95,6 @@ void Search_SetPath( int8_t next_direction )
 }
 
 /* ----------------------------------------------------------------------------------
-	探索走行モーション
------------------------------------------------------------------------------------*/
-t_path Search_StartPathSequence( void )
-{
-	uint8_t		num;
-	t_path		path;
-	float		turn_velocity;
-	float		after_distance 	= 0.0f;
-
-	// エラーかゴールパスに辿り着くまでパスにしたがって走行
-	for( num = 0; num < 255; num++ ) {
-		if( Control_GetMode() == FAULT ) { break; }
-		// パスの読み込み
-		path = Path_GetSequence( num );
-
-		// スラローム速度の読み込み
-		turn_velocity = Motion_GetSlalomVelocity( path.type, 0 );
-
-		// 未探索区間
-		if( path.straight == 2 && path.type == goal ) {
-			Control_SetMode( SEARCH );
-			Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, SEARCH_VELOCITY, 90.f );
-		// 探索済み区間から未探索区間
-		} else if( path.type == turn_90 ) {
-			if( path.straight != 0 ) {
-				 if( path.straight <= 2 ) {
-					 Control_SetMode( FASTEST );
-					Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, SEARCH_VELOCITY, after_distance );
-					Motion_WaitStraight();
-					Control_SetMode( SEARCH );
-					Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, SEARCH_VELOCITY, 45.f*path.straight );
-				} else {
-					Control_SetMode( FASTEST );
-					Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_MAX_VELOCITY, SEARCH_VELOCITY, 45.f*(path.straight - 2) + after_distance );
-					Motion_WaitStraight();
-					Control_SetMode( SEARCH );
-					Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, SEARCH_VELOCITY, 90.f );
-				}
-				Motion_WaitStraight();
-			} else;
-		// ゴールまでの直線区間
-		} else if( path.type == goal ) {
-			Control_SetMode( FASTEST );
-			Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_MAX_VELOCITY, SEARCH_VELOCITY, 45.f*path.straight + after_distance );
-			Motion_WaitStraight();
-		// 既知区間での直線走行
-		} else {
-			Control_SetMode( FASTEST );
-			// 連続ターン間の直線部分
-			if( path.straight == 0 ) {
-				Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_MAX_VELOCITY, SEARCH_VELOCITY, after_distance - SECTION_WALL_EDGE );
-			// 斜め区間
-			} else if( path.type >= turn_90v && path.type <= turn_135out ) {
-				Control_SetMode( DIAGONAL );
-				Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_MAX_VELOCITY, turn_velocity, 45.f*SQRT2*path.straight + after_distance - SECTION_WALL_EDGE );
-			// 直線区間
-			} else {
-				Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_MAX_VELOCITY, turn_velocity, 45.f*path.straight + after_distance - SECTION_WALL_EDGE );
-			}
-			Motion_WaitStraight();
-			// 各パラメータのリセット
-			if( path.straight > 1 ) {
-				Vehicle_ResetTurning();
-				Vehicle_ResetIntegral();
-				Control_ResetFilterDistance();
-				IMU_ResetGyroAngle_Z();
-				Control_ResetAngleDeviation();
-				Control_ResetSensorDeviation();
-			} else;
-		}
-
-		// ターン区間
-		if( (path.type == turn_0) || (path.type == goal) ) {
-			return path;
-		} else {
-			// スラローム
-			Motion_StartSlalom( path.type, path.direction, 0 );
-
-			// スラロームの後距離
-			if( path.type == turn_90 ) {
-				after_distance = 0.f;
-				// 未探索区間
-				t_path next_path = Path_GetSequence( num + 1 );
-				if( num == 0 && path.straight == 0 && next_path.straight == 0 && next_path.type == goal ) {
-					path.direction = -1;
-					return path;
-				// 既知区間
-				} else {
-					Motion_WaitSlalom( path.type, path.direction, 0 );
-				}
-			} else {
-				Motion_WaitSlalom( path.type, path.direction, 0 );
-				after_distance = Motion_GetSlalomAfterDistance( path.type, path.direction, 0 );
-			}
-
-		}
-	}
-	path.type = turn_0;
-	return path;
-}
-
-/* ----------------------------------------------------------------------------------
 	探索走行
 -----------------------------------------------------------------------------------*/
 void Search_Run( int8_t gx, int8_t gy, uint8_t type )
@@ -211,7 +105,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 	t_maze			local_maze;
 
 	Control_SetMode( FASTEST );
-	Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, SEARCH_VELOCITY, 45.f );
+	Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, 45.f );
 	if( type == ALL ) {
 		Potential_MakeUnknownMap( gx, gy );
 	} else {
@@ -228,7 +122,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 
 		if( Position_GetIsGoal(gx, gy) != false ) {
 			Control_SetMode( SEARCH );
-			Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, 0.f, 45.f );
+			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 45.f );
 			Motion_WaitStraight();
 			LL_mDelay( 500 );
 			Motor_StopPWM();
@@ -265,7 +159,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 //		Path_ConvertDiagonal();
 
 		// パスに沿って走行開始
-		path = Search_StartPathSequence();
+		path = Route_StartPathSequence(0, false);
 
 		if( (path.straight == 2 && path.type == goal) || (path.type == turn_90 && path.direction == -1) ) {
 
@@ -287,7 +181,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 		if( next_direction == REAR ) {
 			local_maze.byte = Wall_GetIsMaze( -1 );
 			Control_SetMode( ADJUST );
-			Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, 0.f, 45.f );
+			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 45.f );
 			// ポテンシャルマップ生成
 			if( type == ALL ) {
 				Potential_MakeUnknownMap( gx, gy );
@@ -299,7 +193,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 			// 前壁補正と反転
 			Search_Rotate( local_maze );
 			Control_SetMode( ADJUST );
-			Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, SEARCH_VELOCITY, 45.f );
+			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, 45.f );
 			Motion_WaitStraight();
 			my = Position_MoveMyPlace( FRONT );
 		} else;
@@ -315,8 +209,11 @@ void Search_RunStart( uint8_t type, int8_t is_return )
 	Maze_Reset( SEARCH );
 	Maze_ResetBuffer();
 
+	param_search = Route_GetParameters( SEARCH, 0 );
+	turn_velocity = Motion_GetSlalomVelocity(turn_90, 0);
+
 	Control_SetMode( FASTEST );
-	Motion_StartStraight( SEARCH_ACCEL, SEARCH_DECEL, SEARCH_VELOCITY, SEARCH_VELOCITY, START_OFFSET );
+	Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, START_OFFSET );
 	Motion_WaitStraight();
 	Search_Run( GOAL_X, GOAL_Y, type );
 
