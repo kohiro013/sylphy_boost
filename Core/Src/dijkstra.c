@@ -691,7 +691,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 		for( i = 0; i < GOAL_SIZE - 1; i++ ) {
 			my = Position_MoveMyPlace( FRONT );
 		}
-		Path_SetTurnSection( goal, -1 );
+		Path_SetTurnSection( goal, 0 );
 		Path_ConvertTurnLarge();
 		Path_ConvertTurn180();
 		Path_ConvertDiagonal();

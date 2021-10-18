@@ -102,7 +102,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 		turn_velocity = Motion_GetSlalomVelocity( path.type, turn_param );
 
 		// 未探索区間
-		if( path.straight == 2 && path.type == goal ) {
+		if( path.straight == 2 && path.type == goal && path.direction == -1 ) {
 			Control_SetMode(SEARCH);
 			turn_velocity = Motion_GetSlalomVelocity(turn_90, 0);
 			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, 90.f );
@@ -139,7 +139,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 			Motion_WaitStraight();
 		// ゴールまでの直線走行
 		} else if( path.type == goal ) {
-			if( Position_GetIsGoal(0, 0) != false && Position_GetIsGoal(GOAL_X, GOAL_Y) != false ) {
+			if( (Position_GetIsGoal(0, 0) == false) && (Position_GetIsGoal(GOAL_X, GOAL_Y) == false) ) {
 				Control_SetMode(FASTEST);
 				turn_velocity = Motion_GetSlalomVelocity(turn_90, 0);
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, param_search.max_velocity, turn_velocity, 45.f*path.straight + after_distance );
@@ -148,7 +148,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 				turn_velocity = Motion_GetSlalomVelocity(turn_90, 0);
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, param_search.max_velocity, turn_velocity, 45.f*path.straight + after_distance );
 			} else {
-				Motion_StartStraight( acc_straight, dec_straight, max_straight, 0.f, 45.f*path.straight + after_distance - SECTION_COOLDOWN );
+				Motion_StartStraight( acc_straight, dec_straight, max_straight, 0.f, 45.f*path.straight + 11.f + after_distance - SECTION_COOLDOWN );
 			}
 			Motion_WaitStraight();
 		// 連続ターン間の直線走行
@@ -204,19 +204,23 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 			// スラローム
 			Motion_StartSlalom( path.type, path.direction, turn_param );
 
-			// スラロームの後距離
+			// 探索の場合
 			if( path.type == turn_90 ) {
 				after_distance = 0.f;
+				// 未探索区間
+				if( num == 0 && path.straight == 0 && path_next.straight == 0 && path_next.type == goal ) {
+					path.direction = -1;
+					return path;
+				// 既知区間
+				} else {
+					// スラロームの待機時間
+					Motion_WaitSlalom( path.type, path.direction, 0 );
+				}
+			// 最短の場合
 			} else {
+				// スラロームの後距離
 				after_distance = Motion_GetSlalomAfterDistance( path.type, path.direction, turn_param );
-			}
 
-			// 未探索区間
-			if( num == 0 && path.straight == 0 && path_next.straight == 0 && path_next.type == goal ) {
-				path.direction = -1;
-				return path;
-			// 既知区間
-			} else {
 				// スラロームの待機時間
 				Motion_WaitSlalom( path.type, path.direction, turn_param );
 

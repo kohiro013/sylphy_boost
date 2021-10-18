@@ -3,8 +3,8 @@
 #include "global.h"
 
 // 探索時における壁切れ距離
-#define OFFSET_EDGE_LEFT	(4.0f)		// 小さくするほど前に進む
-#define OFFSET_EDGE_RIGHT	(3.0f)
+#define OFFSET_EDGE_LEFT	(0.0f)		// 小さくするほど前に進む
+#define OFFSET_EDGE_RIGHT	(0.0f)
 
 #define SLIP_RATE			(0.95f)		// タイヤのスリップ率
 

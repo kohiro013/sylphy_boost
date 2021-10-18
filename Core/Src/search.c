@@ -2,13 +2,13 @@
 #include "defines.h"
 #include "global.h"
 
-static t_init_straight param_search;
+static t_init_straight 	param_search;
 static float			turn_velocity;
 
 /* ----------------------------------------------------------------------------------
 	進む方向の決定（超信地旋回）
 -----------------------------------------------------------------------------------*/
-void Search_Rotate( t_maze local_maze )
+int8_t Search_Rotate( t_maze local_maze )
 {
 	t_position	my				= Position_GetMyPlace();
 	int8_t 		next_direction 	= Route_GetNextDirection_Adachi( my );
@@ -18,12 +18,6 @@ void Search_Rotate( t_maze local_maze )
 	Control_ResetAngleDeviation();
 	Control_ResetSensorDeviation();
 	Control_ResetFrontSensorDeviation();
-
-	// 前壁補正(前壁があるとき)
-	if( local_maze.bit.north == true ) {
-		Control_SetMode( FWALL );
-		LL_mDelay( 500 );
-	} else;
 
 	switch( next_direction ) {
 		case FRONT:
@@ -79,6 +73,8 @@ void Search_Rotate( t_maze local_maze )
 			break;
 	}
 	Position_RotateMyDirection( next_direction );
+
+	return next_direction;
 }
 
 /* ----------------------------------------------------------------------------------
@@ -122,7 +118,14 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 
 		if( Position_GetIsGoal(gx, gy) != false ) {
 			Control_SetMode( SEARCH );
-			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 45.f );
+			// 前壁補正(前壁があるとき)
+			local_maze.byte = Wall_GetIsMaze( -1 );
+			if( local_maze.bit.north == true ) {
+				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f,
+						(Wall_GetDistance(FRONT + LEFT) + Wall_GetDistance(FRONT + RIGHT))/2.f - 31.f );
+			} else {
+				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 56.f );
+			}
 			Motion_WaitStraight();
 			LL_mDelay( 500 );
 			Motor_StopPWM();
@@ -151,7 +154,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 				my = Position_MoveMyPlace( next_direction );
 			}
 		} while( (Control_GetMode() != FAULT) && (Maze_GetIsUnknown(&my, -1) == true) && (Position_GetIsGoal(gx, gy) == false) );
-		Path_SetTurnSection( goal, 0 );
+		Path_SetTurnSection( goal, -1 );
 
 		// パスの変換
 //		Path_ConvertTurnLarge();
@@ -161,7 +164,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 		// パスに沿って走行開始
 		path = Route_StartPathSequence(0, false);
 
-		if( (path.straight == 2 && path.type == goal) || (path.type == turn_90 && path.direction == -1) ) {
+		if( ((path.straight == 2 && path.type == goal) || path.type == turn_90) && path.direction == -1 ) {
 
 			// ポテンシャルマップ生成
 			if( type == ALL ) {
@@ -171,7 +174,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 			}
 
 			// パス実行中の待機時間
-			if( path.straight == 2 && path.type == goal ) {
+			if( path.straight == 2 && path.type == goal && path.direction == -1 ) {
 				Motion_WaitStraight();
 			} else if( path.straight == 0 && path.type == turn_90 && path.direction == -1 ) {
 				Motion_WaitSlalom( path.type, path.direction, 0 );
@@ -179,9 +182,15 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 		} else;
 
 		if( next_direction == REAR ) {
-			local_maze.byte = Wall_GetIsMaze( -1 );
 			Control_SetMode( ADJUST );
-			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 45.f );
+			// 前壁補正(前壁があるとき)
+			local_maze.byte = Wall_GetIsMaze( -1 );
+			if( local_maze.bit.north == true ) {
+				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f,
+						(Wall_GetDistance(FRONT + LEFT) + Wall_GetDistance(FRONT + RIGHT))/2.f - 31.f );
+			} else {
+				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 56.f );
+			}
 			// ポテンシャルマップ生成
 			if( type == ALL ) {
 				Potential_MakeUnknownMap( gx, gy );
@@ -191,9 +200,9 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 			Motion_WaitStraight();
 			LL_mDelay( 200 );
 			// 前壁補正と反転
-			Search_Rotate( local_maze );
+			next_direction = Search_Rotate( local_maze );
 			Control_SetMode( ADJUST );
-			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, 45.f );
+			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, 34.f );
 			Motion_WaitStraight();
 			my = Position_MoveMyPlace( FRONT );
 		} else;

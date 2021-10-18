@@ -12,6 +12,7 @@ static int usrcmd_imu(int argc, char **argv);
 static int usrcmd_sensor(int argc, char **argv);
 static int usrcmd_fan(int argc, char **argv);
 static int usrcmd_maze(int argc, char **argv);
+static int usrcmd_path(int argc, char **argv);
 static int usrcmd_log(int argc, char **argv);
 static int usrcmd_loss_torque(int argc, char **argv);
 
@@ -38,6 +39,7 @@ static const cmd_table_t cmdlist[] = {
 	{ "fan",			"suction fan test.",	usrcmd_fan			},
 	{ "module_test", 	"module test command.", module_test 		},
 	{ "maze",			"maze display.",		usrcmd_maze			},
+	{ "path",			"path display.",		usrcmd_path			},
 	{ "log", 			"log display.",			usrcmd_log			},
 	{ "loss_torque",	"adjust loss torque.",	usrcmd_loss_torque 	},
 };
@@ -112,6 +114,30 @@ static int usrcmd_maze(int argc, char **argv)
 	} else;
 	printf("  Unknown sub command found\r\n");
 	return -1;
+}
+
+static int usrcmd_path(int argc, char **argv)
+{
+	t_maze 		start_maze = Maze_GetGlobal( 0, 0 );
+
+	// Flash上の壁情報を読み込み
+	if( start_maze.byte != 0xfd ) {
+		Maze_LoadFlash();
+	} else;
+
+	// 最短パスの計算
+	if( Path_GetSequenceNumber() == 0 ) {
+		Maze_Reset( FASTEST );
+		Potential_MakeMap( GOAL_X, GOAL_Y );
+		Position_Reset();
+		Path_Reset();
+		Dijkstra_ConvertPath( GOAL_X, GOAL_Y );
+	} else;
+
+	//　最短パスの表示
+	Path_Display();
+
+	return 0;
 }
 
 static int usrcmd_log(int argc, char **argv)
