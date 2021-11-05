@@ -4,10 +4,10 @@
 
 // キャリブレーション関連定義
 #define CORRECT_DISTANCE_MAX			(135.f)
-const float	CORRECT_VALUE_MAX[4]		= { 3500, 3488, 3498, 3628 };
-const float	CORRECT_VALUE_MIN[4]		= {  258,  288,  356,  348 };
+const float	CORRECT_VALUE_MAX[4]		= { 2658, 3333, 3475, 3388 };
+const float	CORRECT_VALUE_MIN[4]		= {  285,  263,  438,  448 };
 
-const float	CORRECT_DISTANCE_FRONT[2] 	= { 87.0f, 26.0f };	// 前後の壁に押し当てたときの位置
+const float	CORRECT_DISTANCE_FRONT[2] 	= { 87.0f, 35.0f };	// 前後の壁に押し当てたときの位置
 const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押し当てたときの位置
 
 // 直進制御関連定義
@@ -31,8 +31,8 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_FRONT_R	(150.f)		// 前右センサの制御閾値
 
 // 前壁制御関連定義
-#define REF_FWALL_L			(31.f)		// 前左センサのリファレンス
-#define REF_FWALL_R			(31.f)		// 前右センサのリファレンス
+#define REF_FWALL_L			(36.f)		// 前左センサのリファレンス
+#define REF_FWALL_R			(36.f)		// 前右センサのリファレンス
 
 #define TH_CONTROL_FWALL_L	(60.f)		// 前壁制御の前左センサの閾値
 #define TH_CONTROL_FWALL_R	(60.f)		// 前壁制御の前右センサの閾値
@@ -186,7 +186,9 @@ void Wall_UpdateEdge( void )
 		sen_sl.is_edge = sen_sr.is_edge = false;
 	} else {
 */		// 右センサの壁切れ判定
-		if( sen_sr.distance - distance_min_r / TH_EDGE_RATE > ZONE_HYSTERESIS && Vehicle_GetTotalDistance() - distance_edge_sr > 45.f ) {
+		if( sen_sr.distance - distance_min_r / TH_EDGE_RATE > ZONE_HYSTERESIS
+				&& sen_sr.distance - distance_min_r / TH_EDGE_RATE < 50.f
+				&& Vehicle_GetTotalDistance() - distance_edge_sr > 45.f ) {
 			sen_sr.is_edge = true;
 			distance_edge_sr = Vehicle_GetTotalDistance();
 			distance_min_r = CORRECT_DISTANCE_MAX;
@@ -196,7 +198,9 @@ void Wall_UpdateEdge( void )
 		}
 
 		// 左センサの壁切れ判定
-		if( sen_sl.distance - distance_min_l / TH_EDGE_RATE > ZONE_HYSTERESIS && Vehicle_GetTotalDistance() - distance_edge_sl > 45.f ) {
+		if( sen_sl.distance - distance_min_l / TH_EDGE_RATE > ZONE_HYSTERESIS
+				&& sen_sl.distance - distance_min_l / TH_EDGE_RATE < 50.f
+				&& Vehicle_GetTotalDistance() - distance_edge_sl > 45.f ) {
 			sen_sl.is_edge = true;
 			distance_edge_sl = Vehicle_GetTotalDistance();
 			distance_min_l = CORRECT_DISTANCE_MAX;

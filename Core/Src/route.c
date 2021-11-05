@@ -5,34 +5,31 @@
 #define SECTION_WALL_EDGE	(15.f)			// 壁切れ検出区間
 #define SECTION_COOLDOWN	(20.f)			// ターン直後の安定化区間
 
-// 探索パラメータ
-const static t_init_straight param_search = {
-	// 加速度		減速度	  最高速度
-	  4000.f,	4000.f,	  700.f
-};
 
 // 直線パラメータ
 const static t_init_straight param_straight[] = {
 	// 加速度		減速度	  最高速度
-	{ 6000.0f,  6000.0f,  1500.0f	},	// 0
-	{ 7000.0f,  6000.0f,  1500.0f	},	// 1
-	{ 7000.0f,  7000.0f,  2000.0f	},	// 2
-	{ 8000.0f,  7000.0f,  2000.0f	},	// 3
-	{ 8000.0f,  8000.0f,  2500.0f	},	// 4
-	{ 9000.0f,  8000.0f,  2500.0f	},	// 5
-	{ 9000.0f,  9000.0f,  3000.0f	},	// 6
+	{ 4000.0f,  4000.0f,   700.0f	},	// 0(探索時のみ)
+	{ 6000.0f,  6000.0f,  1500.0f	},	// 1
+	{ 7000.0f,  6000.0f,  1500.0f	},	// 2
+	{ 7000.0f,  7000.0f,  2000.0f	},	// 3
+	{ 8000.0f,  7000.0f,  2000.0f	},	// 4
+	{ 8000.0f,  8000.0f,  2500.0f	},	// 5
+	{ 9000.0f,  8000.0f,  2500.0f	},	// 6
+	{ 9000.0f,  9000.0f,  3000.0f	},	// 7
 };
 
 // 斜めパラメータ
 const static t_init_straight param_diagonal[] = {
 	// 加速度		減速度	  最高速度
-	{ 5000.0f,  5000.0f,  1200.0f	},	// 0
-	{ 6000.0f,  5000.0f,  1500.0f	},	// 1
-	{ 6000.0f,  6000.0f,  1500.0f	},	// 2
-	{ 7000.0f,  6000.0f,  2000.0f	},	// 3
-	{ 7000.0f,  6500.0f,  2000.0f	},	// 4
-	{ 8000.0f,  7000.0f,  2500.0f	},	// 5
-	{ 8000.0f,  8000.0f,  2500.0f	},	// 6
+	{ 4000.0f,  4000.0f,   700.0f	},	// 0(探索時のみ)
+	{ 5000.0f,  5000.0f,  1200.0f	},	// 1
+	{ 6000.0f,  5000.0f,  1500.0f	},	// 2
+	{ 6000.0f,  6000.0f,  1500.0f	},	// 3
+	{ 7000.0f,  6000.0f,  2000.0f	},	// 4
+	{ 7000.0f,  6500.0f,  2000.0f	},	// 5
+	{ 8000.0f,  7000.0f,  2500.0f	},	// 6
+	{ 8000.0f,  8000.0f,  2500.0f	},	// 7
 };
 
 /* ----------------------------------------------------------------------------------
@@ -41,14 +38,14 @@ const static t_init_straight param_diagonal[] = {
 t_init_straight Route_GetParameters( uint8_t mode, uint8_t param )
 {
 	if( mode == SEARCH ) {
-		return param_search;
-	} else if( FASTEST ) {
+		return param_straight[0];
+	} else if( mode == FASTEST ) {
 		if( sizeof(param_straight) / sizeof(param_straight[0]) < param ) {
 			return param_straight[sizeof(param_straight) / sizeof(param_straight[0]) - 1];
 		} else {
 			return param_straight[param];
 		}
-	} else if( DIAGONAL ) {
+	} else if( mode == DIAGONAL ) {
 		if( sizeof(param_diagonal) / sizeof(param_diagonal[0]) < param ) {
 			return param_diagonal[sizeof(param_diagonal) / sizeof(param_diagonal[0]) - 1];
 		} else {
@@ -56,7 +53,7 @@ t_init_straight Route_GetParameters( uint8_t mode, uint8_t param )
 		}
 	} else;
 
-	return param_search;
+	return param_straight[0];
 }
 
 /* ----------------------------------------------------------------------------------
@@ -105,22 +102,22 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 		if( path.straight == 2 && path.type == goal && path.direction == -1 ) {
 			Control_SetMode(SEARCH);
 			turn_velocity = Motion_GetSlalomVelocity(turn_90, 0);
-			Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, 90.f );
+			Motion_StartStraight( acc_straight, dec_straight, turn_velocity, turn_velocity, 90.f );
 		// 探索済み区間から未探索区間
 		} else if( path.type == turn_90 ) {
 			if( path.straight != 0 ) {
 				 if( path.straight <= 2 ) {
 					 Control_SetMode(FASTEST);
-					Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, after_distance );
+					Motion_StartStraight( acc_straight, dec_straight, turn_velocity, turn_velocity, after_distance );
 					Motion_WaitStraight();
 					Control_SetMode(SEARCH);
-					Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, 45.f*path.straight );
+					Motion_StartStraight( acc_straight, dec_straight, turn_velocity, turn_velocity, 45.f*path.straight );
 				} else {
 					Control_SetMode(FASTEST);
-					Motion_StartStraight( param_search.acceleration, param_search.deceleration, param_search.max_velocity, turn_velocity, 45.f*(path.straight - 2) + after_distance );
+					Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity, 45.f*(path.straight - 2) + after_distance );
 					Motion_WaitStraight();
 					Control_SetMode(SEARCH);
-					Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, turn_velocity, 90.f );
+					Motion_StartStraight( acc_straight, dec_straight, turn_velocity, turn_velocity, 90.f );
 				}
 				Motion_WaitStraight();
 			} else;
@@ -142,11 +139,11 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 			if( (Position_GetIsGoal(0, 0) == false) && (Position_GetIsGoal(GOAL_X, GOAL_Y) == false) ) {
 				Control_SetMode(FASTEST);
 				turn_velocity = Motion_GetSlalomVelocity(turn_90, 0);
-				Motion_StartStraight( param_search.acceleration, param_search.deceleration, param_search.max_velocity, turn_velocity, 45.f*path.straight + after_distance );
+				Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity, 45.f*path.straight + after_distance );
 			} else if( num == 0 || path_old.type == turn_90 ) {
 				Control_SetMode(FASTEST);
 				turn_velocity = Motion_GetSlalomVelocity(turn_90, 0);
-				Motion_StartStraight( param_search.acceleration, param_search.deceleration, param_search.max_velocity, turn_velocity, 45.f*path.straight + after_distance );
+				Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity, 45.f*path.straight + after_distance );
 			} else {
 				Motion_StartStraight( acc_straight, dec_straight, max_straight, 0.f, 45.f*path.straight + 11.f + after_distance - SECTION_COOLDOWN );
 			}

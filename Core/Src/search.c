@@ -29,7 +29,6 @@ int8_t Search_Rotate( t_maze local_maze )
 				LL_mDelay( 500 );
 				Control_SetMode( TURN );
 				Motion_StartRotate( 180.f, RIGHT );
-			//	Motion_StartRotate( 90.f, RIGHT );
 			} else {
 				Motion_StartRotate( 90.f, RIGHT );
 			}
@@ -43,7 +42,6 @@ int8_t Search_Rotate( t_maze local_maze )
 				LL_mDelay( 500 );
 				Control_SetMode( TURN );
 				Motion_StartRotate( 180.f, LEFT );
-			//	Motion_StartRotate( 90.f, RIGHT );
 			} else {
 				Motion_StartRotate( 90.f, LEFT );
 			}
@@ -67,7 +65,6 @@ int8_t Search_Rotate( t_maze local_maze )
 				Control_SetMode( TURN );
 				Motion_StartRotate( 180.f, LEFT );
 			}
-		//	Motion_StartRotate( 180.f, LEFT );
 			Control_ResetGyroDeviation();
 			Control_ResetAngleDeviation();
 			break;

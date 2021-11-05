@@ -3,6 +3,28 @@
 #include "global.h"
 
 /* ---------------------------------------------------------------
+	PIDゲインの調整関数
+--------------------------------------------------------------- */
+void Adjust_RunPID( int8_t section )
+{
+	const float acceleration = 12000.f;
+	const float deceleration = 12000.f;
+	const float max_velocity = 3000.f;
+
+	Control_SetMode( FASTEST );
+	Motion_StartStraight( acceleration, deceleration, max_velocity, 0.f, 90.f*section + START_OFFSET );
+	Motion_WaitStraight();
+//	LL_mDelay( 500 );
+
+	Motion_StartRotate( 180.f, RIGHT );
+
+	Control_SetMode( FASTEST );
+	Motion_StartStraight( acceleration, deceleration, max_velocity, 0.f, 90.f*section + START_OFFSET );
+	Motion_WaitStraight();
+	LL_mDelay( 200 );
+}
+
+/* ---------------------------------------------------------------
 	タイヤ直径の調整関数
 --------------------------------------------------------------- */
 void Adjust_RunTireDiameter( int8_t section )
@@ -71,7 +93,7 @@ void Adjust_RunFastestWallEdge( void )
 	while( 1 ) {
 		if(Wall_GetEdge(RIGHT) == true || Wall_GetEdge(LEFT) == true) {
 			break;
-		}
+		} else;
 	}
 	Motion_StartStraight( 6000.f, 6000.f, 1000.f,    0.f, 90.f );
 	Motion_WaitStraight();
@@ -193,52 +215,3 @@ void Adjust_RunSlalomSequence( int8_t type, int8_t direction, int8_t param, int8
 	Motion_WaitStraight();
 	LL_mDelay( 500 );
 }
-
-/* ---------------------------------------------------------------
-	壁情報と最短走行パスの関数
---------------------------------------------------------------- */
-void Adjust_DisplayMazeAndPath( int8_t gx, int8_t gy )
-{
-/*	int8_t		next_direction = -1;
-	t_position 	my;
-	t_maze 		start_maze = Maze_GetGlobal( 0, 0 );
-
-	if( start_maze.byte != 0xfd ) {
-		Maze_LoadFlash();
-		Potential_MakeMap( gx, gy );
-	} else;
-	// 壁情報の表示
-	Maze_Display();
-
-	// 最短パスの計算
-	if( Path_GetSequenceNumber() == 0 ) {
-		Maze_Reset( FASTEST );
-		Potential_MakeMap( gx, gy );
-		Position_Reset();
-		my = Position_GetMyPlace();
-		if( Potential_GetAroundSection(&my, -1) != 0xffff ) {
-			Path_Reset();
-			my = Position_MoveMyPlace( FRONT );
-			do {
-				next_direction = Route_GetNextDirection_Adachi( my );
-				my = Position_MoveMyPlace( next_direction );
-				switch( next_direction ) {
-					case FRONT:	Path_SetStraightSection( 2 );			break;
-					case RIGHT:	Path_SetTurnSection( turn_90, RIGHT );	break;
-					case LEFT:	Path_SetTurnSection( turn_90, LEFT );	break;
-					case REAR:											break;
-				}
-			} while( Position_GetIsGoal(gx, gy) == false );
-			Path_SetStraightSection( 2 );
-			Path_SetTurnSection( goal, 0 );
-			// パスの変換
-			Path_ConvertTurnLarge();
-			Path_ConvertTurn180();
-			Path_ConvertDiagonal();
-			//　最短パスの表示
-			Path_Display();
-		} else;
-	} else {
-		Path_Display();
-	}
-*/}

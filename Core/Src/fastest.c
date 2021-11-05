@@ -24,7 +24,7 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 
 	// 吸引ファンの起動
 //	if( param > 1 ) {
-//		SuctionFan_Start();
+		SuctionFan_Start();
 		LL_mDelay( 200 );
 //	} else;
 
@@ -87,7 +87,7 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 		} else;
 
 		// パスに沿って走行開始
-		Route_StartPathSequence( 0, true );
+		Route_StartPathSequence( 1, true );
 
 		// 制御のリセット
 		SuctionFan_Stop();

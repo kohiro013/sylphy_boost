@@ -139,7 +139,7 @@ int main(void)
 	LED_LightBinary( 0x02 );	LL_mDelay( 100 );
 	LED_LightBinary( 0x01 );	LL_mDelay( 100 );
 	LED_LightBinary( 0x00 );
-  	printf("Hello World!\r\n");
+//	printf("Hello World!\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */

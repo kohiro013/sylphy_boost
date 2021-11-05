@@ -187,6 +187,7 @@
 	float 		Motion_GetSlalomAfterDistance( int8_t, int8_t, int8_t );
 
 	// 調整関連関数群(adjust.c)
+	void 		Adjust_RunPID( int8_t );
 	void 		Adjust_RunTireDiameter( int8_t );
 	void 		Adjust_RunGyroSensitivity( uint8_t, int8_t );
 	void 		Adjust_RunSearchWallEdge( void );

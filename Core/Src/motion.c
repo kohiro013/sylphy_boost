@@ -3,8 +3,8 @@
 #include "global.h"
 
 // 探索時における壁切れ距離
-#define OFFSET_EDGE_LEFT	(0.0f)		// 小さくするほど前に進む
-#define OFFSET_EDGE_RIGHT	(0.0f)
+#define OFFSET_EDGE_LEFT	(3.0f)		// 小さくするほど前に進む
+#define OFFSET_EDGE_RIGHT	(3.0f)
 
 #define SLIP_RATE			(0.95f)		// タイヤのスリップ率
 
@@ -102,7 +102,7 @@ float Motion_SetStraightAcceleration( float t )
 		if( Wall_GetEdge( RIGHT ) == true ) {
 			cycle_slip -= (((45.f + OFFSET_EDGE_RIGHT) - Vehicle_GetDistance()) / v_adjust);
 			//Vehicle_SetTimer( (45.f + OFFSET_EDGE_RIGHT) / v_adjust );
-			LED_ToggleLightBinary(0x02);
+			LED_ToggleLightBinary(0x01);
 		} else if( Wall_GetEdge( LEFT ) == true ) {
 			cycle_slip -= (((45.f + OFFSET_EDGE_LEFT) - Vehicle_GetDistance()) / v_adjust);
 			//Vehicle_SetTimer( (45.f + OFFSET_EDGE_LEFT) / v_adjust );

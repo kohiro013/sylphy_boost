@@ -34,12 +34,13 @@ void mode_search( int8_t param ) {
 		break;
 
 		case 5:
-
+			Control_SetMode(FWALL);
+			while(Control_GetMode() != FAULT && !Switch_GetIsPush());
 		break;
 
 		case 6:
 			Control_SetMode(TURN);
-			while(Control_GetMode() != FAULT && Switch_GetIsPush() == -1);
+			while(Control_GetMode() != FAULT && !Switch_GetIsPush());
 		break;
 
 		case 7:
@@ -66,7 +67,7 @@ void mode_fastest( int8_t param ) {
 		case 5:
 		case 6:
 		case 7:
-			Fastest_RunSimple( param-1, sw_side == RIGHT );
+			Fastest_RunSimple( param, sw_side == RIGHT );
 		break;
 	}
 }
@@ -113,7 +114,10 @@ void mode_adjust( int8_t param ) {
 		case 6:
 			sw_side = resetStartPreparation();
 			if( sw_side == FRONT ) {
-
+				LL_mDelay( 500 );
+				IMU_ResetReference();
+				resetAllParams();
+				Adjust_RunPID( 20 );
 			} else if( sw_side == LEFT ){
 				Adjust_RunComb( 8 );
 			} else {
