@@ -187,7 +187,6 @@ void Wall_UpdateEdge( void )
 	} else {
 */		// 右センサの壁切れ判定
 		if( sen_sr.distance - distance_min_r / TH_EDGE_RATE > ZONE_HYSTERESIS
-				&& sen_sr.distance - distance_min_r / TH_EDGE_RATE < 50.f
 				&& Vehicle_GetTotalDistance() - distance_edge_sr > 45.f ) {
 			sen_sr.is_edge = true;
 			distance_edge_sr = Vehicle_GetTotalDistance();
@@ -199,7 +198,6 @@ void Wall_UpdateEdge( void )
 
 		// 左センサの壁切れ判定
 		if( sen_sl.distance - distance_min_l / TH_EDGE_RATE > ZONE_HYSTERESIS
-				&& sen_sl.distance - distance_min_l / TH_EDGE_RATE < 50.f
 				&& Vehicle_GetTotalDistance() - distance_edge_sl > 45.f ) {
 			sen_sl.is_edge = true;
 			distance_edge_sl = Vehicle_GetTotalDistance();

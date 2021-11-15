@@ -117,14 +117,14 @@ int main(void)
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   	Communicate_Initialize();
-  	Interrupt_Initialize();
-  	Motor_Initialize();
-  	Encoder_Initialize();
-  	IMU_Initialize();
- 	Sensor_Initialize();
- 	Wall_Initialize();
- 	SuctionFan_Initialize();
- 	Myshell_Initialize();
+	Interrupt_Initialize();
+	Motor_Initialize();
+	Encoder_Initialize();
+	IMU_Initialize();
+	Sensor_Initialize();
+	Wall_Initialize();
+	SuctionFan_Initialize();
+	Myshell_Initialize();
 
 	Battery_LimiterVoltage();
   	LED_LightBinary( 0x01 ); 	LL_mDelay( 100 );

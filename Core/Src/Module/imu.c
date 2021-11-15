@@ -128,7 +128,7 @@ void IMU_Initialize( void )
 	IMU_Write1byte(LSM6DSRX_CTRL2_G, 0xad);		// ジャイロのスケールを±4000deg/sに設定
 												// ジャイロの出力データレートを6.66Hzに設定
 	LL_mDelay(100);
-
+/*
 	// USARTによるDMAリクエストon
 	LL_SPI_EnableDMAReq_TX(SPI1);
 	LL_SPI_EnableDMAReq_RX(SPI1);
@@ -151,6 +151,7 @@ void IMU_Initialize( void )
 	// DMAの開始
 	LL_SPI_Enable(SPI1);
 	IMU_StartDMA();
+*/
 }
 
 /* ---------------------------------------------------------------
@@ -166,17 +167,8 @@ void IMU_Callback( void )
 		LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, sizeof(imu_value)/sizeof(imu_value[0]) - 1);
 
 		LL_GPIO_SetOutputPin(SPI1_CS0_GPIO_Port, SPI1_CS0_Pin);
-		if( imu_value[8] == 0xff && imu_value[7] == 0x00 ) {
-			accel_x_value = 0x0000;
-		} else if( imu_value[8] != 0x00 || imu_value[7] != 0xff ) {
-			accel_x_value = ( ((uint16_t)imu_value[8]<<8 ) | ( (uint16_t)imu_value[7]&0x00ff ) );
-		}
-
-		if( imu_value[6] == 0xff && imu_value[5] == 0x00 ) {
-			gyro_z_value = 0x0000;
-		} else if( imu_value[6] != 0x00 || imu_value[5] != 0xff ) {
-			gyro_z_value =  ( ((uint16_t)imu_value[6]<<8 ) | ( (uint16_t)imu_value[5]&0x00ff ) );
-		}
+		accel_x_value = ( ((uint16_t)imu_value[8]<<8 ) | ( (uint16_t)imu_value[7]&0x00ff ) );
+		gyro_z_value =  ( ((uint16_t)imu_value[6]<<8 ) | ( (uint16_t)imu_value[5]&0x00ff ) );
 
 		// 通信再開
 		IMU_StartDMA();
@@ -188,7 +180,14 @@ void IMU_Callback( void )
 --------------------------------------------------------------- */
 void IMU_Update( void )
 {
+	LL_GPIO_ResetOutputPin(SPI1_CS0_GPIO_Port, SPI1_CS0_Pin);
+	IMU_Communication(&imu_address, imu_value, sizeof(imu_value)/sizeof(imu_value[0]));
+	LL_GPIO_SetOutputPin(SPI1_CS0_GPIO_Port, SPI1_CS0_Pin);
+
+	accel_x_value = ( ((uint16_t)imu_value[8]<<8 ) | ( (uint16_t)imu_value[7]&0x00ff ) );
 	accel_x	= ACCEL_X_SIGN * G * ((int16_t)accel_x_value - accel_x_reference) * ACCEL_X_SENSITIVITY;
+
+	gyro_z_value =  ( ((uint16_t)imu_value[6]<<8 ) | ( (uint16_t)imu_value[5]&0x00ff ) );
 	gyro_z	= GYRO_Z_SIGN * DEG2RAD(((int16_t)gyro_z_value - gyro_z_reference) * GYRO_Z_SENSITIVITY);
 	angle_z	+= gyro_z * SYSTEM_PERIOD;
 }
@@ -261,7 +260,7 @@ void IMU_DebugPrintf( void )
 {
 	angle_z = 0.f;
 	while( Communicate_ReceiceDMA() != 0x1b ) {
-		printf("%04x, %5d, %5d, %f | %04x, %5d, %5d, %f\r\n",
+		printf("%04x, %5d, %5d, %f\t| %04x, %5d, %5d, %f\r\n",
 				accel_x_value, (int16_t)accel_x_value, accel_x_reference, accel_x,
 				gyro_z_value,  (int16_t)gyro_z_value,  gyro_z_reference,  gyro_z);
 		LL_mDelay(1);
