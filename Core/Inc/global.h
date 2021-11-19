@@ -151,6 +151,7 @@
 	int8_t 		Control_GetMode( void );
 	void 		Control_SetMode( int8_t );
 	void 		Control_UpdateDeviation( void );
+	void 		Control_WaitFrontWallCorrection( void );
 	float 		Control_GetValue_Velocity( void );
 	float 		Control_GetValue_Angular( void );
 	float 		Control_GetFilterVelocity( void );

@@ -389,6 +389,27 @@ void Control_UpdateFrontSensorDeviation( void )
 }
 
 /* ---------------------------------------------------------------
+	前壁制御が安定するまで待機する関数
+--------------------------------------------------------------- */
+void Control_WaitFrontWallCorrection( void )
+{
+	uint32_t tick = Interrupt_GetGlobalTime();
+	uint32_t timer = Interrupt_GetGlobalTime();
+
+	Control_SetMode(FWALL);
+	// 1秒経過または前壁制御が0.3秒安定するまで待機
+	while( Interrupt_GetGlobalTime() - tick < 1000 && Interrupt_GetGlobalTime() - timer < 300 ) {
+		if( control_mode == FAULT ) {
+			break;
+		} else;
+
+		if( fwall_v.control_value > 300.f || fwall_omega.control_value > 30.f ) {
+			timer = Interrupt_GetGlobalTime();
+		} else;
+	}
+}
+
+/* ---------------------------------------------------------------
 	前壁センサによる制御量の初期化関数
 --------------------------------------------------------------- */
 void Control_ResetFrontSensorDeviation( void )

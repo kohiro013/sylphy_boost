@@ -61,20 +61,17 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 
 		// 前壁補正(前壁があるとき)
 		if( Maze_IsLocal(my.x, my.y, my.dir, FRONT) == true ) {
-			Control_SetMode( FWALL );
-			LL_mDelay( 500 );
+			Control_WaitFrontWallCorrection();
 		} else;
 
 		// 反転して帰還走行開始
 		if( Maze_IsLocal(my.x, my.y, my.dir, RIGHT) == true ) {
 			Motion_StartRotate( 90.f, RIGHT );
-			Control_SetMode( FWALL );
-			LL_mDelay( 500 );
+			Control_WaitFrontWallCorrection();
 			Motion_StartRotate( 90.f, RIGHT );
 		} else if( Maze_IsLocal(my.x, my.y, my.dir, LEFT) == true ) {
 			Motion_StartRotate( 90.f, LEFT );
-			Control_SetMode( FWALL );
-			LL_mDelay( 500 );
+			Control_WaitFrontWallCorrection();
 			Motion_StartRotate( 90.f, LEFT );
 		} else {
 			Motion_StartRotate( 180.f, RIGHT );
@@ -98,6 +95,8 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 			Motor_StopPWM();
 			LED_LightBinary( 0x01 ); 	LL_mDelay( 100 );
 			LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
+			LED_LightBinary( 0x04 );  	LL_mDelay( 100 );
+			LED_LightBinary( 0x08 );  	LL_mDelay( 100 );
 			LED_LightBinary( 0x04 );  	LL_mDelay( 100 );
 			LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
 			LED_LightBinary( 0x01 );  	LL_mDelay( 100 );
