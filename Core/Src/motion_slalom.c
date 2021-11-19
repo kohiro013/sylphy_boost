@@ -15,7 +15,7 @@
 
 #define TH_PILLAR_STRAIGHT	(50.f)	// 壁切れ距離の柱判定
 #define TH_PILLAR_DIAGONAL	(35.f)	// 壁切れ距離の柱判定
-#define REF_WALL_FRONT		(87.f)	// 前左センサの距離リファレンス
+#define REF_WALL_FRONT		(87.f)	// 前センサの距離リファレンス
 
 volatile static float		fastest_a;
 volatile static float		turn_v;
@@ -165,7 +165,7 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 
 		// スラローム
 		Control_SetMode( TURN );
-		Vehicle_SetTimer( offset_distance/turn_v );
+		Vehicle_SetTimer( MIN(offset_distance, before_distance)/turn_v );
 		while( (Control_GetMode() != FAULT) && (t < (before_distance + after_distance)/turn_v + 1.f/cycle_slalom) ) {
 			t = Vehicle_GetTimer();
 			if( t < before_distance/turn_v ) {
