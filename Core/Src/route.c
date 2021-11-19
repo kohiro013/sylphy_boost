@@ -254,6 +254,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 		}
 		path_old = path;
 	}
+	path.type = turn_0;
 	return path;
 }
 

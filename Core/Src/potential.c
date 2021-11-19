@@ -116,7 +116,6 @@ void Potential_MakeUnknownMap( int8_t gx, int8_t gy )
 	head = 0;						// 先頭位置を初期化
 	tail = 1;						// 末尾位置は、最後の情報位置＋１
 
-	Potential_MakeMap( gx, gy );
 	for( y = 0; y < MAZE_Y; y++ ) {
 		for( x = 0; x < MAZE_X; x++ ) {
 			maze = Maze_GetGlobal(x, y);

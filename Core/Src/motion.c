@@ -101,11 +101,9 @@ float Motion_SetStraightAcceleration( float t )
 	if( Control_GetMode() == SEARCH ) {
 		if( Wall_GetEdge( RIGHT ) == true ) {
 			cycle_slip -= (((45.f + OFFSET_EDGE_RIGHT) - Vehicle_GetDistance()) / v_adjust);
-			//Vehicle_SetTimer( (45.f + OFFSET_EDGE_RIGHT) / v_adjust );
 			LED_ToggleLightBinary(0x01);
 		} else if( Wall_GetEdge( LEFT ) == true ) {
 			cycle_slip -= (((45.f + OFFSET_EDGE_LEFT) - Vehicle_GetDistance()) / v_adjust);
-			//Vehicle_SetTimer( (45.f + OFFSET_EDGE_LEFT) / v_adjust );
 			LED_ToggleLightBinary(0x08);
 		} else;
 	}

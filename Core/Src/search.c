@@ -129,6 +129,8 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 			LED_LightBinary( 0x01 ); 	LL_mDelay( 100 );
 			LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
 			LED_LightBinary( 0x04 );  	LL_mDelay( 100 );
+			LED_LightBinary( 0x08 );  	LL_mDelay( 100 );
+			LED_LightBinary( 0x04 );  	LL_mDelay( 100 );
 			LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
 			LED_LightBinary( 0x01 );  	LL_mDelay( 100 );
 			LED_LightBinary( 0x00 );
@@ -161,7 +163,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 		// パスに沿って走行開始
 		path = Route_StartPathSequence(0, false);
 
-		if( ((path.straight == 2 && path.type == goal) || path.type == turn_90) && path.direction == -1 ) {
+		if( path.direction == -1 ) {
 
 			// ポテンシャルマップ生成
 			if( type == ALL ) {

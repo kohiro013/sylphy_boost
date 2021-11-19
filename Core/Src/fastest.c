@@ -39,6 +39,8 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 		LED_LightBinary( 0x01 ); 	LL_mDelay( 100 );
 		LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
 		LED_LightBinary( 0x04 );  	LL_mDelay( 100 );
+		LED_LightBinary( 0x08 );  	LL_mDelay( 100 );
+		LED_LightBinary( 0x04 );  	LL_mDelay( 100 );
 		LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
 		LED_LightBinary( 0x01 );  	LL_mDelay( 100 );
 		LED_LightBinary( 0x00 );
