@@ -3,7 +3,7 @@
 #include "global.h"
 
 #define AUTORELOAD 	(LL_TIM_GetAutoReload(TIM2) + 1)
-#define FAN_DUTY	(0.5f)						// 吸引モータのDuty
+#define FAN_DUTY	(0.95f)						// 吸引モータのDuty
 
 /* ---------------------------------------------------------------
 	吸引ファン用の動作周波数とDuty比を設定する関数
