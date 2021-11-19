@@ -119,7 +119,8 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 			local_maze.byte = Wall_GetIsMaze( -1 );
 			if( local_maze.bit.north == true ) {
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f,
-						(Wall_GetDistance(FRONT + LEFT) + Wall_GetDistance(FRONT + RIGHT))/2.f - 31.f );
+						MAX(turn_velocity * turn_velocity / 2 / param_search.acceleration,
+							(Wall_GetDistance(FRONT + LEFT) + Wall_GetDistance(FRONT + RIGHT))/2.f - 31.f) );
 			} else {
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 56.f );
 			}
@@ -186,7 +187,8 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 			local_maze.byte = Wall_GetIsMaze( -1 );
 			if( local_maze.bit.north == true ) {
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f,
-						(Wall_GetDistance(FRONT + LEFT) + Wall_GetDistance(FRONT + RIGHT))/2.f - 31.f );
+						MAX(turn_velocity * turn_velocity / 2 / param_search.acceleration,
+							(Wall_GetDistance(FRONT + LEFT) + Wall_GetDistance(FRONT + RIGHT))/2.f - 31.f) );
 			} else {
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 56.f );
 			}
