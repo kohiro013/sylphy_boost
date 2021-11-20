@@ -111,7 +111,7 @@ void Potential_MakeUnknownMap( int8_t gx, int8_t gy )
 										// 左下0、右下15、左上240、右上255
 	static uint16_t 	step;
 	static int16_t 		head, tail;		// 先頭位置, 末尾位置
-	int8_t				flag = false;
+	int16_t				flag = 0;
 
 	head = 0;						// 先頭位置を初期化
 	tail = 1;						// 末尾位置は、最後の情報位置＋１
@@ -124,17 +124,12 @@ void Potential_MakeUnknownMap( int8_t gx, int8_t gy )
 				queue[head] = (y << 8) + x;		// 目標地点の座標を記憶
 				head++;
 				tail++;
-				flag = true;
 			} else {
 				potential[x][y] = 0xffff;
 			}
 		}
 	}
-
-	if( flag == false ) {
-		potential[gx][gy] = 0;
-		queue[0] = (gy << 8) + gx;
-	} else;
+	flag = tail;
 
 	head = 0;
 	while( head != tail ) {				// 配列の中身が空ならループを抜ける
@@ -180,6 +175,10 @@ void Potential_MakeUnknownMap( int8_t gx, int8_t gy )
 				tail++;
 			} else;
 		} else;
+	}
+
+	if( flag == tail ) {
+		Potential_MakeMap(gx, gy);
 	}
 }
 
