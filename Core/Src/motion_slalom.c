@@ -3,15 +3,15 @@
 #include "global.h"
 #include "slalom.h"
 
-#define EDGE_WALL_SL	(-5.0f)	// 直線時における左の壁切れ距離
+#define EDGE_WALL_SL	(-2.0f)	// 直線時における左の壁切れ距離
 #define EDGE_WALL_SR	(-4.0f)	// 直線時における右の壁切れ距離
-#define EDGE_PILLAR_SL	(-6.0f)	// 直線時における左の壁切れ距離
-#define EDGE_PILLAR_SR	(-5.0f)	// 直線時における右の壁切れ距離
+#define EDGE_PILLAR_SL	(-4.0f)	// 直線時における左の壁切れ距離
+#define EDGE_PILLAR_SR	(-6.0f)	// 直線時における右の壁切れ距離
 
-#define EDGE_WALL_DL	(1.0f)	// 斜め時における左の壁切れ距離
-#define EDGE_WALL_DR	(2.0f)	// 斜め時における右の壁切れ距離
-#define EDGE_PILLAR_DL	(-2.0f)	// 斜め時における左の壁切れ距離
-#define EDGE_PILLAR_DR	(1.0f)	// 斜め時における右の壁切れ距離
+#define EDGE_WALL_DL	(5.0f)	// 斜め時における左の壁切れ距離
+#define EDGE_WALL_DR	(4.0f)	// 斜め時における右の壁切れ距離
+#define EDGE_PILLAR_DL	(1.0f)	// 斜め時における左の壁切れ距離
+#define EDGE_PILLAR_DR	(2.0f)	// 斜め時における右の壁切れ距離
 
 #define TH_PILLAR_STRAIGHT	(50.f)	// 壁切れ距離の柱判定
 #define TH_PILLAR_DIAGONAL	(35.f)	// 壁切れ距離の柱判定
@@ -132,6 +132,7 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 	// 計算時間中に走行した分の距離を引く
 	volatile float 	offset_distance = ABS(Vehicle_GetDistance());
 	volatile float	acceleration = fastest_a;
+	volatile float	before_velocity;
 
 	// 調整用スラローム待機時間
 	if( type == turn_0 ) {
@@ -249,9 +250,7 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 				Motion_SlalomAcceleration( acceleration );
 			}
 
-			// スラローム
-			Vehicle_SetAcceleration( 0.f );
-			Vehicle_SetVelocity( turn_v );
+			// 各パラメータのリセット
 			Vehicle_ResetTurning();
 			Vehicle_ResetDistance();
 			Control_ResetFilterDistance();
@@ -259,20 +258,48 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 			Control_SetMode( TURN );
 
 			// 最短走行で設定した加速度で加速しきれない場合に加速度を増加させる
-			if( fastest_a > ABS(turn_v - Vehicle_GetVelocity()) / before_distance ) {
-				acceleration = fastest_a;
-			} else {
-				acceleration = (turn_v - Vehicle_GetVelocity()) / before_distance;
-			}
-
-			Vehicle_SetTimer( 0.f );
-			while( (Control_GetMode() != FAULT) && (t < before_distance/turn_v + 1.f/cycle_slalom) ) {
-				t = Vehicle_GetTimer();
-				// 加速
-				if( t < before_distance/turn_v ) {
-					Motion_SlalomAcceleration( acceleration );
+			before_velocity = Vehicle_GetVelocity();
+			if( ABS(turn_v - before_velocity) > 10.f ) {
+				if( fastest_a > (turn_v - before_velocity) * (turn_v - before_velocity) / (2*before_distance) ) {
+					acceleration = fastest_a;
 				} else {
-					Vehicle_SetAcceleration( 0.f );
+					acceleration = (turn_v - before_velocity) * (turn_v - before_velocity) / (2*before_distance);
+				}
+
+				// スラローム
+				Vehicle_SetTimer( 0.f );
+				while( t < (turn_v - before_velocity)/acceleration
+						+ (before_distance - (turn_v - before_velocity) * (turn_v - before_velocity) / ABS(2*acceleration)) / turn_v
+						+ 1.f/cycle_slalom ) {
+					if( Control_GetMode() == FAULT ) {
+						break;
+					} else;
+					t = Vehicle_GetTimer();
+					// 加速
+					if( t < (turn_v - before_velocity)/acceleration ) {
+						if( ROUND(Vehicle_GetVelocity()) < turn_v ) {
+							Vehicle_SetAcceleration( acceleration );
+						} else if( ROUND(Vehicle_GetVelocity()) > turn_v ) {
+							Vehicle_SetAcceleration( -acceleration );
+						} else {
+							Vehicle_SetAcceleration( 0.f );
+						}
+					} else {
+						Vehicle_SetAcceleration( 0.f );
+						Vehicle_SetVelocity( turn_v );
+					}
+				}
+			} else {
+				Vehicle_SetAcceleration( 0.f );
+				Vehicle_SetVelocity( turn_v );
+
+				// スラローム
+				Vehicle_SetTimer( 0.f );
+				while( t < before_distance/turn_v + 1.f/cycle_slalom ) {
+					if( Control_GetMode() == FAULT ) {
+						break;
+					} else;
+					t = Vehicle_GetTimer();
 				}
 			}
 		}
@@ -284,6 +311,8 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 	Control_ResetFilterDistance();
 	cycle_slalom = amplitude_slalom = 0.f;
 	before_distance = after_distance = 0.f;
+	Wall_ResetEdgeDistance();
+	Wall_ResetEdgeMinDistance();
 }
 
 /* ----------------------------------------------------------------------------------
