@@ -115,7 +115,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 			local_maze.byte = Wall_GetIsMaze( -1 );
 			if( local_maze.bit.north == true ) {
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f,
-						MAX(turn_velocity * turn_velocity / 2 / param_search.acceleration,
+						MAX(turn_velocity * turn_velocity / 2 / param_search.acceleration + 5.f,
 							(Wall_GetDistance(FRONT + LEFT) + Wall_GetDistance(FRONT + RIGHT))/2.f - 31.f) );
 			} else {
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 56.f );
@@ -160,7 +160,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 		// パスに沿って走行開始
 		path = Route_StartPathSequence(0, false);
 
-		if( path.direction == -1 ) {
+		if( ((path.straight == 2 && path.type == goal) || path.type == turn_90) && path.direction == -1 ) {
 
 			// ポテンシャルマップ生成
 			if( type == ALL ) {
@@ -183,7 +183,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 			local_maze.byte = Wall_GetIsMaze( -1 );
 			if( local_maze.bit.north == true ) {
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f,
-						MAX(turn_velocity * turn_velocity / 2 / param_search.acceleration,
+						MAX(turn_velocity * turn_velocity / 2 / param_search.acceleration + 5.f,
 							(Wall_GetDistance(FRONT + LEFT) + Wall_GetDistance(FRONT + RIGHT))/2.f - 31.f) );
 			} else {
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 56.f );
