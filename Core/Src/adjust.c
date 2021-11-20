@@ -88,14 +88,19 @@ void Adjust_RunSearchWallEdge( void )
 void Adjust_RunFastestWallEdge( void )
 {
 	Control_SetMode( FASTEST );
-	Motion_StartStraight( 6000.f, 6000.f, 1000.f, 1000.f, 90.f*2.f - 10.f + START_OFFSET );
+	Motion_StartStraight( 6000.f, 6000.f, 1000.f, 1000.f, 90.f*2.f - 20.f + START_OFFSET );
 	Motion_WaitStraight();
+	// 壁切れ待機
 	while( 1 ) {
 		if(Wall_GetEdge(RIGHT) == true || Wall_GetEdge(LEFT) == true) {
 			break;
 		} else;
 	}
-	Motion_StartStraight( 6000.f, 6000.f, 1000.f,    0.f, 90.f );
+	// 各種パラメータリセット
+	Vehicle_ResetDistance();
+	Control_ResetFilterDistance();
+	// 減速
+	Motion_StartStraight( 6000.f, 6000.f, 1000.f,    0.f, 90.f*2.f );
 	Motion_WaitStraight();
 	Control_SetMode( TURN );
 	LL_mDelay( 1000 );

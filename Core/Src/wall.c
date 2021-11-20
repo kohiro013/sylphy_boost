@@ -4,8 +4,8 @@
 
 // キャリブレーション関連定義
 #define CORRECT_DISTANCE_MAX			(135.f)
-const float	CORRECT_VALUE_MAX[4]		= { 2658, 3333, 3475, 3388 };
-const float	CORRECT_VALUE_MIN[4]		= {  285,  263,  438,  448 };
+const float	CORRECT_VALUE_MAX[4]		= { 2658, 3443, 3523, 3388 };
+const float	CORRECT_VALUE_MIN[4]		= {  285,  302,  514,  448 };
 
 const float	CORRECT_DISTANCE_FRONT[2] 	= { 87.0f, 35.0f };	// 前後の壁に押し当てたときの位置
 const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押し当てたときの位置
@@ -24,8 +24,8 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_BAND		(10)		// リファレンスのデッドバンド
 
 // 斜め制御関連定義
-#define REF_FRONT_L			(130.f)		// 前左センサのリファレンス
-#define REF_FRONT_R			(130.f)		// 前右センサのリファレンス
+#define REF_FRONT_L			(120.f)		// 前左センサのリファレンス
+#define REF_FRONT_R			(120.f)		// 前右センサのリファレンス
 
 #define TH_CONTROL_FRONT_L	(150.f)		// 前左センサの制御閾値
 #define TH_CONTROL_FRONT_R	(150.f)		// 前右センサの制御閾値
@@ -38,10 +38,10 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_FWALL_R	(60.f)		// 前壁制御の前右センサの閾値
 
 // 壁情報関連定義
-#define TH_WALL_SIDE_L		(70.f)		// 横左センサの壁閾値
-#define TH_WALL_SIDE_R		(70.f)		// 横右センサの壁閾値
-#define TH_WALL_FRONT_L		(130.f)		// 前左センサの壁閾値
-#define TH_WALL_FRONT_R		(130.f)		// 前右センサの壁閾値
+#define TH_WALL_SIDE_L		(60.f)		// 横左センサの壁閾値
+#define TH_WALL_SIDE_R		(60.f)		// 横右センサの壁閾値
+#define TH_WALL_FRONT_L		(120.f)		// 前左センサの壁閾値
+#define TH_WALL_FRONT_R		(120.f)		// 前右センサの壁閾値
 
 // 壁切れ関連定義
 #define TH_EDGE_RATE		(0.6f)		// 横センサの壁切れ閾値倍率

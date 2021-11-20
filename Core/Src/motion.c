@@ -3,8 +3,8 @@
 #include "global.h"
 
 // 探索時における壁切れ距離
-#define OFFSET_EDGE_LEFT	(3.0f)		// 小さくするほど前に進む
-#define OFFSET_EDGE_RIGHT	(3.0f)
+#define OFFSET_EDGE_LEFT	(2.0f)		// 小さくするほど前に進む
+#define OFFSET_EDGE_RIGHT	(2.0f)
 
 #define SLIP_RATE			(0.95f)		// タイヤのスリップ率
 
@@ -205,5 +205,7 @@ void Motion_StartRotate( float degree, int8_t direction )
 	Control_ResetEncoderDeviation();
 	Control_ResetSensorDeviation();
 	Control_ResetFrontSensorDeviation();
+	Wall_ResetEdgeDistance();
+	Wall_ResetEdgeMinDistance();
 }
 

@@ -302,6 +302,7 @@ static void resetAllParams( void )
 	Control_ResetSensorDeviation();
 	Control_ResetFrontSensorDeviation();
 	Wall_ResetEdgeDistance();
+	Wall_ResetEdgeMinDistance();
 }
 
 /* ---------------------------------------------------------------

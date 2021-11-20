@@ -19,7 +19,7 @@
 
 // 各制御のPIDゲイン										P	  I		 D
 volatile const t_control_gain	gain_enc		 = {  25.f,  0.6f, -0.002f	};	// エンコーダの速度ゲイン
-volatile const t_control_gain	gain_gyro		 = { 150.f, 30.f,  -0.00f	};	// ジャイロの角速度ゲイン
+volatile const t_control_gain	gain_gyro		 = { 200.f, 30.f,  -0.00f	};	// ジャイロの角速度ゲイン
 volatile const t_control_gain	gain_angle		 = {   0.f, 10.f,   0.f  	};	// ジャイロの角度ゲイン
 volatile const t_control_gain	gain_straight	 = {2000.f,  2.f,  15.f  	};	// 壁制御の角速度ゲイン
 volatile const t_control_gain	gain_diagonal	 = { 800.f,  0.f,  15.f  	};	// 斜め壁制御の角速度ゲイン
