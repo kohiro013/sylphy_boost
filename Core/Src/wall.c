@@ -4,8 +4,8 @@
 
 // キャリブレーション関連定義
 #define CORRECT_DISTANCE_MAX			(135.f)
-const float	CORRECT_VALUE_MAX[4]		= { 2658, 3443, 3523, 3388 };
-const float	CORRECT_VALUE_MIN[4]		= {  285,  302,  514,  448 };
+const float	CORRECT_VALUE_MAX[4]		= { 3423, 3443, 3523, 3370 };
+const float	CORRECT_VALUE_MIN[4]		= {  477,  302,  514,  447 };
 
 const float	CORRECT_DISTANCE_FRONT[2] 	= { 87.0f, 35.0f };	// 前後の壁に押し当てたときの位置
 const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押し当てたときの位置
@@ -20,15 +20,15 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_CLOSE_FL	(30.f)		// 前壁に近づき過ぎたときの閾値
 #define TH_CONTROL_CLOSE_FR	(30.f)		//
 
-#define TH_CONTROL_CUT		(3)			// 現在値と一個前の値との偏差閾値
+#define TH_CONTROL_CUT		(0.1)			// 現在値と一個前の値との偏差閾値
 #define TH_CONTROL_BAND		(10)		// リファレンスのデッドバンド
 
 // 斜め制御関連定義
 #define REF_FRONT_L			(120.f)		// 前左センサのリファレンス
 #define REF_FRONT_R			(120.f)		// 前右センサのリファレンス
 
-#define TH_CONTROL_FRONT_L	(150.f)		// 前左センサの制御閾値
-#define TH_CONTROL_FRONT_R	(150.f)		// 前右センサの制御閾値
+#define TH_CONTROL_FRONT_L	(130.f)		// 前左センサの制御閾値
+#define TH_CONTROL_FRONT_R	(130.f)		// 前右センサの制御閾値
 
 // 前壁制御関連定義
 #define REF_FWALL_L			(36.f)		// 前左センサのリファレンス
@@ -46,6 +46,7 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 // 壁切れ関連定義
 #define TH_EDGE_RATE		(0.6f)		// 横センサの壁切れ閾値倍率
 #define ZONE_HYSTERESIS		(5)			// 壁切れのヒステリシス区間
+#define TH_EDGE_MIN			(70.f)		// 壁切れ閾値の最小値
 
 // ローカル関数群
 void Wall_EstimateDistance( void );
@@ -187,7 +188,7 @@ void Wall_UpdateEdge( void )
 	} else {
 */		// 右センサの壁切れ判定
 		if( sen_sr.distance - distance_min_r / TH_EDGE_RATE > ZONE_HYSTERESIS
-				&& Vehicle_GetTotalDistance() - distance_edge_sr > 45.f ) {
+				&& distance_min_r < TH_EDGE_MIN ) {
 			sen_sr.is_edge = true;
 			distance_edge_sr = Vehicle_GetTotalDistance();
 			distance_min_r = CORRECT_DISTANCE_MAX;
@@ -198,7 +199,7 @@ void Wall_UpdateEdge( void )
 
 		// 左センサの壁切れ判定
 		if( sen_sl.distance - distance_min_l / TH_EDGE_RATE > ZONE_HYSTERESIS
-				&& Vehicle_GetTotalDistance() - distance_edge_sl > 45.f ) {
+				&& distance_min_l < TH_EDGE_MIN ) {
 			sen_sl.is_edge = true;
 			distance_edge_sl = Vehicle_GetTotalDistance();
 			distance_min_l = CORRECT_DISTANCE_MAX;
@@ -273,7 +274,7 @@ float Wall_GetDeviation( uint8_t dir )
 		break;
 
 		case RIGHT:
-			if( (sen_sr.distance < TH_CONTROL_SIDE_R) && (ABS(sen_sr.now - sen_sr.old) < TH_CONTROL_CUT)
+			if( (sen_sr.distance < TH_CONTROL_SIDE_R) && (ABS(sen_sr.distance - sen_sr.distance_old) < TH_CONTROL_CUT)
 					&& (sen_fr.distance > TH_CONTROL_CLOSE_FR) && (sen_fl.distance > TH_CONTROL_CLOSE_FL) ) {
 				deviation = sen_sr.distance - REF_SIDE_R;
 			} else {
@@ -282,7 +283,7 @@ float Wall_GetDeviation( uint8_t dir )
 		break;
 
 		case LEFT:
-			if( (sen_sl.distance < TH_CONTROL_SIDE_L) && (ABS(sen_sl.now - sen_sl.old) < TH_CONTROL_CUT)
+			if( (sen_sl.distance < TH_CONTROL_SIDE_L) && (ABS(sen_sl.distance - sen_sl.distance_old) < TH_CONTROL_CUT)
 					&& (sen_fr.distance > TH_CONTROL_CLOSE_FR) && (sen_fl.distance > TH_CONTROL_CLOSE_FL) ) {
 				deviation = sen_sl.distance - REF_SIDE_L;
 			} else {
