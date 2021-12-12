@@ -102,11 +102,11 @@ void MX_TIM1_Init(void)
   LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
   LL_TIM_OC_DisableFast(TIM1, LL_TIM_CHANNEL_CH1);
   LL_TIM_OC_EnablePreload(TIM1, LL_TIM_CHANNEL_CH2);
-  TIM_OC_InitStruct.CompareValue = 1202-1;
+  TIM_OC_InitStruct.CompareValue = 2162-1;
   LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH2, &TIM_OC_InitStruct);
   LL_TIM_OC_DisableFast(TIM1, LL_TIM_CHANNEL_CH2);
   LL_TIM_OC_EnablePreload(TIM1, LL_TIM_CHANNEL_CH3);
-  TIM_OC_InitStruct.CompareValue = 962-1;
+  TIM_OC_InitStruct.CompareValue = 1922-1;
   LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH3, &TIM_OC_InitStruct);
   LL_TIM_OC_DisableFast(TIM1, LL_TIM_CHANNEL_CH3);
   LL_TIM_SetTriggerOutput(TIM1, LL_TIM_TRGO_RESET);

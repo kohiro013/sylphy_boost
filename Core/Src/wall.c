@@ -4,8 +4,8 @@
 
 // キャリブレーション関連定義
 #define CORRECT_DISTANCE_MAX			(135.f)
-const float	CORRECT_VALUE_MAX[4]		= { 3423, 3443, 3523, 3370 };
-const float	CORRECT_VALUE_MIN[4]		= {  477,  302,  514,  447 };
+const float	CORRECT_VALUE_MAX[4]		= { 3457, 3528, 3542, 3395 };
+const float	CORRECT_VALUE_MIN[4]		= {  563,  302,  587,  490 };
 
 const float	CORRECT_DISTANCE_FRONT[2] 	= { 87.0f, 35.0f };	// 前後の壁に押し当てたときの位置
 const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押し当てたときの位置
