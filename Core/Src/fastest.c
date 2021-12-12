@@ -11,6 +11,7 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 //	int8_t			next_direction = -1;
 	t_position		my;
 
+	// モータの駆動周波数の変更
 	Motor_SetFrequency( 100 );
 
 	Maze_LoadFlash();
@@ -58,6 +59,9 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 		Control_ResetAngleDeviation();
 		Control_ResetSensorDeviation();
 		Control_ResetFrontSensorDeviation();
+
+		// モータの駆動周波数の変更
+		Motor_SetFrequency( 400 );
 
 		// 前壁補正(前壁があるとき)
 		if( Maze_IsLocal(my.x, my.y, my.dir, FRONT) == true ) {
