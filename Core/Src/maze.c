@@ -383,7 +383,7 @@ void Maze_Reset( int8_t mode )
 	maze[0][0].bit.unknown_north = maze[0][1].bit.unknown_south = true;
 
 	// ゴール区画（中心）
-	if( GOAL_SIZE != 1 ) {
+	if( GOAL_SIZE > 1 ) {
 		for( x = GOAL_X; x < GOAL_X + GOAL_SIZE; x++ ) {
 			for( y = GOAL_Y; y < GOAL_Y + GOAL_SIZE - 1; y++ ) {
 				maze[x][y].bit.north = false;
@@ -400,7 +400,7 @@ void Maze_Reset( int8_t mode )
 				maze[x+1][y].bit.unknown_west = true;
 			}
 		}
-	}
+	} else;
 
 	// 未探索区画
 	for( y = 0; y < MAZE_Y; y++ ) {
@@ -456,19 +456,31 @@ void Maze_InsertDeadEnd( void )
 					// 袋小路の穴埋め
 					if( (maze[x][y].byte & 0x7f) == 0x77 ) {
 						maze[x][y].byte |= 0xff;
-						if( y != 0 ) { maze[x][y-1].bit.north = true; }
+						if( y != 0 ) {
+							maze[x][y-1].bit.north = true;
+							maze[x][y-1].bit.unknown_north = true;
+						} else;
 						is_deadend = true;
 					} else if( (maze[x][y].byte & 0xbf) == 0xbb ) {
 						maze[x][y].byte |= 0xff;
-						if( x != 0 ) { maze[x-1][y].bit.east = true; }
+						if( x != 0 ) {
+							maze[x-1][y].bit.east = true;
+							maze[x-1][y].bit.unknown_east = true;
+						} else;
 						is_deadend = true;
 					} else if( (maze[x][y].byte & 0xdf) == 0xdd ) {
 						maze[x][y].byte |= 0xff;
-						if( y != MAZE_Y-1 ){ maze[x][y+1].bit.south = true; }
+						if( y != MAZE_Y-1 ){
+							maze[x][y+1].bit.south = true;
+							maze[x][y+1].bit.unknown_south = true;
+						} else;
 						is_deadend = true;
 					} else if( (maze[x][y].byte & 0xef) == 0xee ) {
 						maze[x][y].byte |= 0xff;
-						if( x != MAZE_X-1 ){ maze[x+1][y].bit.west = true; }
+						if( x != MAZE_X-1 ){
+							maze[x+1][y].bit.west = true;
+							maze[x+1][y].bit.unknown_west = true;
+						} else;
 						is_deadend = true;
 					} else;
 				}
