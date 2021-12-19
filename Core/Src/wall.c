@@ -38,15 +38,15 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_FWALL_R	(60.f)		// 前壁制御の前右センサの閾値
 
 // 壁情報関連定義
-#define TH_WALL_SIDE_L		(60.f)		// 横左センサの壁閾値
-#define TH_WALL_SIDE_R		(60.f)		// 横右センサの壁閾値
+#define TH_WALL_SIDE_L		(70.f)		// 横左センサの壁閾値
+#define TH_WALL_SIDE_R		(70.f)		// 横右センサの壁閾値
 #define TH_WALL_FRONT_L		(120.f)		// 前左センサの壁閾値
 #define TH_WALL_FRONT_R		(120.f)		// 前右センサの壁閾値
 
 // 壁切れ関連定義
-#define TH_EDGE_RATE		(0.6f)		// 横センサの壁切れ閾値倍率
+#define TH_EDGE_RATE		(0.7f)		// 横センサの壁切れ閾値倍率
 #define ZONE_HYSTERESIS		(5)			// 壁切れのヒステリシス区間
-#define TH_EDGE_MIN			(70.f)		// 壁切れ閾値の最小値
+#define TH_EDGE_MIN			(75.f)		// 壁切れ閾値の最小値
 
 // ローカル関数群
 void Wall_EstimateDistance( void );

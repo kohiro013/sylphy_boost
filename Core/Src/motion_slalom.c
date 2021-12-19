@@ -3,15 +3,15 @@
 #include "global.h"
 #include "slalom.h"
 
-#define EDGE_WALL_SL	(-2.0f)	// 直線時における左の壁切れ距離
+#define EDGE_WALL_SL	(-3.0f)	// 直線時における左の壁切れ距離
 #define EDGE_WALL_SR	(-4.0f)	// 直線時における右の壁切れ距離
-#define EDGE_PILLAR_SL	(-4.0f)	// 直線時における左の壁切れ距離
+#define EDGE_PILLAR_SL	(-5.0f)	// 直線時における左の壁切れ距離
 #define EDGE_PILLAR_SR	(-6.0f)	// 直線時における右の壁切れ距離
 
-#define EDGE_WALL_DL	(5.0f)	// 斜め時における左の壁切れ距離
-#define EDGE_WALL_DR	(4.0f)	// 斜め時における右の壁切れ距離
+#define EDGE_WALL_DL	(3.0f)	// 斜め時における左の壁切れ距離
+#define EDGE_WALL_DR	(2.0f)	// 斜め時における右の壁切れ距離
 #define EDGE_PILLAR_DL	(1.0f)	// 斜め時における左の壁切れ距離
-#define EDGE_PILLAR_DR	(2.0f)	// 斜め時における右の壁切れ距離
+#define EDGE_PILLAR_DR	(0.0f)	// 斜め時における右の壁切れ距離
 
 #define TH_PILLAR_STRAIGHT	(50.f)	// 壁切れ距離の柱判定
 #define TH_PILLAR_DIAGONAL	(35.f)	// 壁切れ距離の柱判定
