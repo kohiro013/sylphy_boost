@@ -383,7 +383,7 @@ void Maze_Reset( int8_t mode )
 	maze[0][0].bit.unknown_north = maze[0][1].bit.unknown_south = true;
 
 	// ゴール区画（中心）
-	if( GOAL_SIZE > 1 ) {
+/*	if( GOAL_SIZE > 1 ) {
 		for( x = GOAL_X; x < GOAL_X + GOAL_SIZE; x++ ) {
 			for( y = GOAL_Y; y < GOAL_Y + GOAL_SIZE - 1; y++ ) {
 				maze[x][y].bit.north = false;
@@ -401,7 +401,7 @@ void Maze_Reset( int8_t mode )
 			}
 		}
 	} else;
-
+*/
 	// 未探索区画
 	for( y = 0; y < MAZE_Y; y++ ) {
 		for(x = 0; x < MAZE_X; x++ ) {
@@ -498,13 +498,11 @@ void Maze_SetPillarAlone( t_position *my )
 	int8_t	y = (my -> y);
 	int8_t	dir = (my -> dir);
 
-	if( x == GOAL_X && y == GOAL_Y ) {
+	// スタート・ゴール座標をスキップ
+	if( x == 0 && y == 0 ) {
 		return;
-	} else if( x == GOAL_X + 1 && y == GOAL_Y ) {
-		return;
-	} else if( x == GOAL_X + 1 && y == GOAL_Y + 1 ) {
-		return;
-	} else if( x == GOAL_X && y == GOAL_Y + 1 ) {
+	} else if( GOAL_X <= x && x <= GOAL_X + GOAL_SIZE - 1 &&
+			   GOAL_Y <= y && y <= GOAL_Y + GOAL_SIZE - 1) {
 		return;
 	} else;
 
