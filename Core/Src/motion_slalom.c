@@ -220,7 +220,7 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 		// 通常時のターン
 		} else {
 			// 斜め脱出時に壁制御で姿勢が崩れないように斜めの壁制御を切る
-			if( type == turn_45out || type == turn_135out || type == turn_90v ) {
+			if( type >= turn_90v && type <= turn_135out ) {
 				Control_SetMode(TURN);
 			} else;
 

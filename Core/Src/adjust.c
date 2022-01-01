@@ -142,13 +142,18 @@ void Adjust_RunAlignment( void )
 --------------------------------------------------------------- */
 void Adjust_RunSlalom( int8_t type, int8_t direction, int8_t param )
 {
-	float 	turn_velocity;
-	float	after_distance;
+	const float	acceleration = 6000.f;
+	float 		turn_velocity;
+	float		after_distance;
 
 	turn_velocity = Motion_GetSlalomVelocity( type, param );
 	after_distance = Motion_GetSlalomAfterDistance( type, direction, param );
 
 	Control_SetMode( ADJUST );
+	if( type != turn_90 ) {
+		SuctionFan_Start();
+		LL_mDelay( 200 );
+	} else;
 
 	// 探索スラローム
 	if( type == turn_90 ) {
@@ -161,42 +166,45 @@ void Adjust_RunSlalom( int8_t type, int8_t direction, int8_t param )
 
 	// 大回り90度スラローム＆180度スラローム
 	} else if( type == turn_large || type == turn_180  ) {
-		Motion_StartStraight( 8000.f, 8000.f, turn_velocity, turn_velocity, 90.f + START_OFFSET - 20.f );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, turn_velocity, 90.f + START_OFFSET - 20.f );
 		Motion_WaitStraight();
 		Motion_StartSlalom( type, direction, param );
 		Motion_WaitSlalom( type, direction, param );
 		Control_SetMode( ADJUST );
-		Motion_StartStraight( 8000.f, 8000.f, turn_velocity, 0.f, 90.f + after_distance );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 90.f + after_distance );
 
 	// 斜め侵入スラローム
 	} else if( type == turn_45in || type == turn_135in ) {
-		Motion_StartStraight( 8000.f, 8000.f, turn_velocity, turn_velocity, 90.f + START_OFFSET - 20.f );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, turn_velocity, 90.f + START_OFFSET - 20.f );
 		Motion_WaitStraight();
 		Motion_StartSlalom( type, direction, param );
 		Motion_WaitSlalom( type, direction, param );
 		Control_SetMode( ADJUST );
-		Motion_StartStraight( 8000.f, 8000.f, turn_velocity, 0.f, 45.f*SQRT2 + after_distance );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 45.f*SQRT2 + after_distance );
 
 	// 斜め脱出スラローム
 	} else if( type == turn_45out || type == turn_135out ) {
-		Motion_StartStraight( 8000.f, 8000.f, turn_velocity, turn_velocity, 45.f*SQRT2 - 20.f );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, turn_velocity, 45.f*SQRT2 - 20.f );
 		Motion_WaitStraight();
 		Motion_StartSlalom( type, direction, param );
 		Motion_WaitSlalom( type, direction, param );
 		Control_SetMode( ADJUST );
-		Motion_StartStraight( 8000.f, 8000.f, turn_velocity, 0.f, 45.f + after_distance );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 45.f + after_distance );
 
 	// 斜め90度スラローム
-	} else if( type == turn_90v ) {
-		Motion_StartStraight( 8000.f, 8000.f, turn_velocity, turn_velocity, 45.f*SQRT2 - 20.f );
+	} else if( type == turn_90v || type == turn_kojima ) {
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, turn_velocity, 45.f*SQRT2 - 20.f );
 		Motion_WaitStraight();
 		Motion_StartSlalom( type, direction, param );
 		Motion_WaitSlalom( type, direction, param );
 		Control_SetMode( ADJUST );
-		Motion_StartStraight( 8000.f, 8000.f, turn_velocity, 0.f, 45.f*SQRT2 + after_distance );
-	}
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 45.f*SQRT2 + after_distance );
+
+	} else;
+
 	Motion_WaitStraight();
-	LL_mDelay( 500 );
+	LL_mDelay( 200 );
+	SuctionFan_Stop();
 }
 
 void Adjust_RunSlalomSequence( int8_t type, int8_t direction, int8_t param, int8_t mode )

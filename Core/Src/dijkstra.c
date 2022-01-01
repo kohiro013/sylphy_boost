@@ -388,7 +388,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 				Path_SetStraightSection( 1 );
 				Path_SetTurnSection( turn_90, LEFT );
 				Path_SetStraightSection( 1 );
-				printf("%2d : Turn_Large_Left\r\n", i);
+				//printf("%2d : Turn_Large_Left\r\n", i);
 				i++;
 				continue;
 			} else if( route[i] == DIA_TO_CLOTHOIDR && route[i+1] == DIA_FROM_CLOTHOIDR ) {
@@ -398,7 +398,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 				Path_SetStraightSection( 1 );
 				Path_SetTurnSection( turn_90, RIGHT );
 				Path_SetStraightSection( 1 );
-				printf("%2d : Turn_Large_Right\r\n", i);
+				//printf("%2d : Turn_Large_Right\r\n", i);
 				i++;
 				continue;
 			} else;
@@ -413,7 +413,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 				Path_SetTurnSection( turn_90, LEFT );
 				Path_SetTurnSection( turn_90, LEFT );
 				Path_SetStraightSection( 1 );
-				printf("%2d : Turn_180_Left\r\n", i);
+				//printf("%2d : Turn_180_Left\r\n", i);
 				i += 2;
 				continue;
 			} else if( route[i] == DIA_TO_CLOTHOIDR && route[i+1] == DIA_TURNR && route[i+2] == DIA_FROM_CLOTHOIDR ) {
@@ -425,7 +425,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 				Path_SetTurnSection( turn_90, RIGHT );
 				Path_SetTurnSection( turn_90, RIGHT );
 				Path_SetStraightSection( 1 );
-				printf("%2d : Turn_180_Right\r\n", i);
+				//printf("%2d : Turn_180_Right\r\n", i);
 				i += 2;
 				continue;
 			} else;
@@ -447,7 +447,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 					break;
 				} else;
 				//Path_SetTurnSection( turn_135in, LEFT );
-				printf("%2d : Turn_135in_Left\r\n", i);
+				//printf("%2d : Turn_135in_Left\r\n", i);
 				if( route[i+2] <= DIA_GO1 ) {
 					i++;
 				} else {
@@ -471,7 +471,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 					break;
 				} else;
 				//Path_SetTurnSection( turn_135in, RIGHT );
-				printf("%2d : Turn_135in_Right\r\n", i);
+				//printf("%2d : Turn_135in_Right\r\n", i);
 				if( route[i+2] <= DIA_GO1 ) {
 					i++;
 				} else {
@@ -494,7 +494,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 					Path_SetTurnSection( turn_90, LEFT );
 					Path_SetStraightSection( 1 );
 				}
-				printf("%2d : Turn_135out_Left\r\n", i);
+				//printf("%2d : Turn_135out_Left\r\n", i);
 				i++;
 				continue;
 			} else if( route[i] == DIA_TURNR && route[i+1] == DIA_FROM_CLOTHOIDR ) {
@@ -509,7 +509,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 					Path_SetTurnSection( turn_90, RIGHT );
 					Path_SetStraightSection( 1 );
 				}
-				printf("%2d : Turn_135out_Right\r\n", i);
+				//printf("%2d : Turn_135out_Right\r\n", i);
 				i++;
 				continue;
 			} else;
@@ -527,7 +527,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 				} else {
 					//Path_SetTurnSection( turn_90, LEFT );
 				}
-				printf("%2d : Turn_90V_Left\r\n", i);
+				//printf("%2d : Turn_90V_Left\r\n", i);
 				if( route[i+1] <= DIA_GO1 ) {
 					i++;
 				} else {
@@ -546,7 +546,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 				} else {
 					//Path_SetTurnSection( turn_90, RIGHT );
 				}
-				printf("%2d : Turn_90V_Right\r\n", i);
+				//printf("%2d : Turn_90V_Right\r\n", i);
 				if( route[i+1] <= DIA_GO1 ) {
 					i++;
 				} else {
@@ -566,7 +566,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 					Path_SetStraightSection( 1 );
 					break;
 				} else;
-				printf("%2d : Turn_45in_Left\r\n", i);
+				//printf("%2d : Turn_45in_Left\r\n", i);
 				if( route[i+1] <= DIA_GO1 ) {
 					i++;
 				} else {
@@ -583,7 +583,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 					Path_SetStraightSection( 1 );
 					break;
 				} else;
-				printf("%2d : Turn_45in_Right\r\n", i);
+				//printf("%2d : Turn_45in_Right\r\n", i);
 				if( route[i+1] <= DIA_GO1 ) {
 					i++;
 				} else {
@@ -598,14 +598,14 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 				//Path_SetTurnSection( turn_45out, LEFT );
 				Path_SetTurnSection( turn_90, LEFT );
 				Path_SetStraightSection( 1 );
-				printf("%2d : Turn_45out_Left\r\n", i);
+				//printf("%2d : Turn_45out_Left\r\n", i);
 				continue;
 			} else if( route[i] == DIA_FROM_CLOTHOIDR ) {
 				my = Position_MoveMyPlace( RIGHT );
 				//Path_SetTurnSection( turn_45out, RIGHT );
 				Path_SetTurnSection( turn_90, RIGHT );
 				Path_SetStraightSection( 1 );
-				printf("%2d : Turn_45out_Right\r\n", i);
+				//printf("%2d : Turn_45out_Right\r\n", i);
 				continue;
 			} else;
 
@@ -619,7 +619,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 					} else;
 				}
 				//Path_SetStraightSection( route[i]*2 );
-				printf("%2d : %dマス直進\r\n", i, route[i]*2);
+				//printf("%2d : %dマス直進\r\n", i, route[i]*2);
 				continue;
 			} else if( DIA_GO1 <= route[i] && route[i] <= DIA_GO63 ) {
 				for( int16_t j = 0; j < route[i]-DIA_GO1+1; j++ ) {
@@ -658,7 +658,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 					}
 				}
 				//Path_SetStraightSection( route[i]-DIA_GO1+1 );
-				printf("%2d : %dマス斜め直進\r\n", i, route[i]-DIA_GO1+1);
+				//printf("%2d : %dマス斜め直進\r\n", i, route[i]-DIA_GO1+1);
 				continue;
 			} else;
 
@@ -695,7 +695,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 		Path_ConvertTurnLarge();
 		Path_ConvertTurn180();
 		Path_ConvertDiagonal();
-//		Path_ConvertKojima();
+		Path_ConvertAdvancedTurn();
 	} else {
 		printf("軌道が見つからなかった\r\n");
 	}

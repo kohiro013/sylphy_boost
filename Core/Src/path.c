@@ -369,6 +369,33 @@ void Path_ConvertDiagonal( void )
 }
 
 /* ----------------------------------------------------------------------------------
+	拡張ターンのパス変換
+-----------------------------------------------------------------------------------*/
+void Path_ConvertAdvancedTurn( void )
+{
+	for( int16_t i = 0; i < NUM_PATH-1; i++ ) {
+		if( path[i].type == goal ) {
+			break;
+		} else;
+
+		if( path[i].type == turn_45out && path[i+1].straight == 0 && path[i+1].type == turn_45in ) {
+			if( path[i].direction == path[i+1].direction ) {
+				path[i].type = turn_kojima;
+				for( int16_t j = i + 1; j < NUM_PATH-1; j++ ) {
+					if( path[j].type == goal ) {
+						break;
+					} else;
+
+					path[j].straight = path[j+1].straight;
+					path[j].direction = path[j+1].direction;
+					path[j].type = path[j+1].type;
+				}
+			} else;
+		} else;
+	}
+}
+
+/* ----------------------------------------------------------------------------------
 	パスの表示
 -----------------------------------------------------------------------------------*/
 void Path_Display( void )
@@ -398,6 +425,7 @@ void Path_Display( void )
 			case turn_135in:	printf("Turn_135in");	break;
 			case turn_45out:	printf("Turn_45out");	break;
 			case turn_135out:	printf("Turn_135out");	break;
+			case turn_kojima:	printf("Turn_Kojima");	break;
 			case goal:			printf("Goal!");		break;
 			default:			printf("ERROR!\n\r");	break;
 		}

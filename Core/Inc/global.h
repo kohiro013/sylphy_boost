@@ -256,6 +256,7 @@
 	void 		Path_ConvertTurnLarge( void );
 	void 		Path_ConvertTurn180( void );
 	void 		Path_ConvertDiagonal( void );
+	void 		Path_ConvertAdvancedTurn( void );
 	void 		Path_Display( void );
 
 	// 経路生成関連関数群(route.c)

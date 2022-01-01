@@ -225,7 +225,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 
 				// ターン後の直線時における制御方法の切り替え
 				if( path_next.straight == 0 ) {
-					if( path_next.type == turn_45out || path_next.type == turn_135out || path_next.type == turn_90v ) {
+					if( path_next.type >= turn_90v && path_next.type <= turn_135out ) {
 						Control_SetMode(ADJUST);
 					} else {
 						Control_SetMode(FASTEST);
@@ -248,7 +248,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 						Control_SetMode( DIAGONAL );
 					} else if( path.type == turn_45out || path.type == turn_135out ) {
 						Control_SetMode( FASTEST );
-					} else if( path.type == turn_90v ) {
+					} else if( path.type == turn_90v || path.type == turn_kojima ) {
 						Control_SetMode( DIAGONAL );
 					} else;
 				}
