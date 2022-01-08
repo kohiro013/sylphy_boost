@@ -5,6 +5,7 @@
 #define SECTION_WALL_EDGE	(15.f)			// 壁切れ検出区間
 #define SECTION_COOLDOWN	(20.f)			// ターン直後の安定化区間
 
+static volatile int8_t turn_param[256];
 
 // 直線パラメータ
 const static t_init_straight param_straight[] = {
@@ -59,6 +60,72 @@ t_init_straight Route_GetParameters( uint8_t mode, uint8_t param )
 }
 
 /* ----------------------------------------------------------------------------------
+	ターンの速度パラメータ計算
+-----------------------------------------------------------------------------------*/
+void Route_AdjustTurnParameter( int8_t param )
+{
+	t_path		path;
+	float		turn_v;
+	float		before_v = 0;
+	float		acceleration;
+	float		before_distance;
+	float		after_distance = 0;
+	float		distance;
+	int8_t		is_adjust = false;
+
+	// ターンパラメータの初期化
+	for( uint16_t i = 0; i < 255; i++ ) {
+		turn_param[i] = param;
+	}
+
+	// ターンパラメータの調整が終わるまでループ
+	do {
+		is_adjust = false;	// ループフラグのリセット
+		for( uint16_t num = 0; num < 255; num++ ) {
+			// パスの取得
+			path = Path_GetSequence(num);
+
+			// ターンパラメータの取得
+			turn_v = Motion_GetSlalomVelocity(path.type, turn_param[num]);
+			before_distance = Motion_GetSlalomBeforeDistance(path.type, path.direction, turn_param[num]);
+			if( path.type >= turn_90v && path.type <= turn_135out ) {
+				if( turn_v > before_v ) acceleration = param_diagonal[param].acceleration;
+				else					acceleration = param_diagonal[param].deceleration;
+				distance = 45.f*SQRT2 * path.straight + before_distance + after_distance - SECTION_WALL_EDGE;
+			} else {
+				if( turn_v > before_v ) acceleration = param_straight[param].acceleration;
+				else					acceleration = param_straight[param].deceleration;
+				distance = 45.f * path.straight + before_distance + after_distance - SECTION_WALL_EDGE;
+			}
+
+			// ターン速度の調整
+			if( (turn_v - before_v) * (turn_v - before_v) / (2*acceleration) > distance ) {
+				if( turn_v < before_v ) {	// 減速距離が足りない場合一つ前のターンを遅くする
+					if( turn_param[num-1] > 0 ) {
+						turn_param[num-1] --;
+						is_adjust = true;
+					} else;
+				} else {					// 加速距離が足りない場合このターンを遅くする
+					if( turn_param[num] > 0 ) {
+						turn_param[num] --;
+						is_adjust = true;
+					} else;
+				}
+			} else;
+
+			// デバッグ用
+//			printf("\t%4.0f, %5.0f, %5.1f, %4.1f, %1d\r\n", turn_v, acceleration, distance,
+//					(turn_v - before_v) * (turn_v - before_v) / (2*acceleration), turn_param[num]);
+
+			// 一つ前のターンパラメータを取得
+			before_v = turn_v;
+			after_distance = Motion_GetSlalomAfterDistance(path.type, path.direction, turn_param[num]);
+		}
+//		printf("\r\n\n");
+	} while( is_adjust );
+}
+
+/* ----------------------------------------------------------------------------------
 	最短走行モーション
 -----------------------------------------------------------------------------------*/
 t_path Route_StartPathSequence( int8_t param, int8_t is_return )
@@ -67,7 +134,6 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 	t_path		path;
 	t_path		path_next, path_old;
 
-	uint8_t		turn_param = param;
 	float		turn_velocity;
 	float		after_distance 	= 0.0f;
 
@@ -85,6 +151,9 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 	const float	acc_diagonal = param_diagonal[param].acceleration;
 	const float	dec_diagonal = param_diagonal[param].deceleration;
 
+	// ターンパラメータの取得
+	Route_AdjustTurnParameter(param);
+
 	// エラーかゴールパスに辿り着くまでパスにしたがって走行
 	for( num = 0; num < 255; num++ ) {
 		if( Control_GetMode() == FAULT ) { break; }
@@ -98,7 +167,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 		}
 
 		// スラローム速度の読み込み
-		turn_velocity = Motion_GetSlalomVelocity( path.type, turn_param );
+		turn_velocity = Motion_GetSlalomVelocity( path.type, turn_param[num] );
 
 		// 未探索区間
 		if( path.straight == 2 && path.type == goal && path.direction == -1 ) {
@@ -201,7 +270,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 			}
 
 			// スラローム
-			Motion_StartSlalom( path.type, path.direction, turn_param );
+			Motion_StartSlalom( path.type, path.direction, turn_param[num] );
 
 			// 探索の場合
 			if( path.type == turn_90 ) {
@@ -218,10 +287,10 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 			// 最短の場合
 			} else {
 				// スラロームの後距離
-				after_distance = Motion_GetSlalomAfterDistance( path.type, path.direction, turn_param );
+				after_distance = Motion_GetSlalomAfterDistance( path.type, path.direction, turn_param[num] );
 
 				// スラロームの待機時間
-				Motion_WaitSlalom( path.type, path.direction, turn_param );
+				Motion_WaitSlalom( path.type, path.direction, turn_param[num] );
 
 				// ターン後の直線時における制御方法の切り替え
 				if( path_next.straight == 0 ) {

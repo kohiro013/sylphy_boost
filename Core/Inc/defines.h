@@ -8,7 +8,7 @@
 
 	#define GOAL_X				(1)
 	#define GOAL_Y				(0)
-	#define GOAL_SIZE			(1)
+	#define GOAL_SIZE			(2)
 	#define MAZE_X				(32)
 	#define MAZE_Y				(32)
 
@@ -87,9 +87,9 @@
 		turn_45in	= 4,
 		turn_135in	= 5,
 		turn_90v	= 6,
-		turn_45out	= 7,
-		turn_135out	= 8,
-		turn_kojima	= 9,
+		turn_kojima	= 7,
+		turn_45out	= 8,
+		turn_135out	= 9,
 		goal		= 10,
 	} t_path_turn;
 
