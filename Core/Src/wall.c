@@ -45,8 +45,8 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 
 // 壁切れ関連定義
 #define TH_EDGE_RATE		(0.7f)		// 横センサの壁切れ閾値倍率
-#define ZONE_HYSTERESIS		(5)			// 壁切れのヒステリシス区間
-#define TH_EDGE_MIN			(75.f)		// 壁切れ閾値の最小値
+#define ZONE_DISABLE_EDGE	(60.f)		// 壁切れ無効区間
+#define TH_EDGE_MIN			(50.f)		// 壁切れ閾値の最小値
 
 // ローカル関数群
 void Wall_EstimateDistance( void );
@@ -182,32 +182,29 @@ void Wall_Update( void )
 --------------------------------------------------------------- */
 void Wall_UpdateEdge( void )
 {
-/*	if( Control_GetMode() == TURN || Control_GetMode() == ROTATE ) {
-		distance_min_l = distance_min_r = CORRECT_DISTANCE_MAX;
-		sen_sl.is_edge = sen_sr.is_edge = false;
+	// 右センサの壁切れ判定
+	if( sen_sr.distance > distance_min_r / TH_EDGE_RATE && sen_sr.distance > TH_EDGE_MIN ) {
+		sen_sr.is_edge = true;
+		distance_min_r = CORRECT_DISTANCE_MAX;
+		distance_edge_sr = Vehicle_GetTotalDistance();
 	} else {
-*/		// 右センサの壁切れ判定
-		if( sen_sr.distance - distance_min_r / TH_EDGE_RATE > ZONE_HYSTERESIS
-				&& distance_min_r < TH_EDGE_MIN ) {
-			sen_sr.is_edge = true;
-			distance_edge_sr = Vehicle_GetTotalDistance();
-			distance_min_r = CORRECT_DISTANCE_MAX;
-		} else {
-			sen_sr.is_edge = false;
+		sen_sr.is_edge = false;
+		if( Vehicle_GetTotalDistance() - distance_edge_sr > ZONE_DISABLE_EDGE ) {
 			distance_min_r = MIN(distance_min_r, sen_sr.distance);
-		}
+		} else;
+	}
 
-		// 左センサの壁切れ判定
-		if( sen_sl.distance - distance_min_l / TH_EDGE_RATE > ZONE_HYSTERESIS
-				&& distance_min_l < TH_EDGE_MIN ) {
-			sen_sl.is_edge = true;
-			distance_edge_sl = Vehicle_GetTotalDistance();
-			distance_min_l = CORRECT_DISTANCE_MAX;
-		} else {
-			sen_sl.is_edge = false;
+	// 左センサの壁切れ判定
+	if( sen_sl.distance > distance_min_l / TH_EDGE_RATE && sen_sl.distance > TH_EDGE_MIN ) {
+		sen_sl.is_edge = true;
+		distance_min_l = CORRECT_DISTANCE_MAX;
+		distance_edge_sl = Vehicle_GetTotalDistance();
+	} else {
+		sen_sl.is_edge = false;
+		if( Vehicle_GetTotalDistance() - distance_edge_sl > ZONE_DISABLE_EDGE ) {
 			distance_min_l = MIN(distance_min_l, sen_sl.distance);
-		}
-//	}
+		} else;
+	}
 }
 
 float Wall_GetEdgeMinDistance( int8_t dir )
