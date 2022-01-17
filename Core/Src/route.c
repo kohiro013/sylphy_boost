@@ -63,7 +63,7 @@ t_init_straight Route_GetParameters( uint8_t mode, uint8_t param )
 /* ----------------------------------------------------------------------------------
 	ターンの速度パラメータ計算
 -----------------------------------------------------------------------------------*/
-void Route_AdjustTurnParameter( int8_t param )
+void Route_AdjustTurnParameter( int8_t param, int8_t is_return )
 {
 	t_path		path;
 	float		turn_v;
@@ -84,7 +84,11 @@ void Route_AdjustTurnParameter( int8_t param )
 		is_adjust = false;	// ループフラグのリセット
 		for( uint16_t num = 0; num < 255; num++ ) {
 			// パスの取得
-			path = Path_GetSequence(num);
+			if( is_return == false ) {
+				path = Path_GetSequence(num);
+			} else {
+				path = Path_GetReturnSequence(num);
+			}
 
 			// ターンパラメータの取得
 			turn_v = Motion_GetSlalomVelocity(path.type, turn_param[num]);
@@ -156,7 +160,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 	const float	dec_diagonal = param_diagonal[param].deceleration;
 
 	// ターンパラメータの取得
-	Route_AdjustTurnParameter(param);
+	Route_AdjustTurnParameter(param, is_return);
 
 	// エラーかゴールパスに辿り着くまでパスにしたがって走行
 	for( num = 0; num < 255; num++ ) {

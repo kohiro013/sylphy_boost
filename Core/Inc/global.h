@@ -264,7 +264,7 @@
 	int8_t 		Route_GetNextDirection_PrioritizeUnknown( t_position );
 	t_path 		Route_StartPathSequence( int8_t, int8_t );
 	t_init_straight Route_GetParameters( uint8_t, uint8_t );
-	void 		Route_AdjustTurnParameter( int8_t );
+	void 		Route_AdjustTurnParameter( int8_t, int8_t );
 
 	// 探索走行関連関数群(search.c)
 	void 		Search_Run( int8_t, int8_t, uint8_t );
