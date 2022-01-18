@@ -375,6 +375,7 @@ void Path_ConvertAdvancedTurn( void )
 {
 	for( int16_t i = 0; i < NUM_PATH-1; i++ ) {
 		if( path[i].type == goal ) {
+			num = i + 1;
 			break;
 		} else;
 
@@ -400,22 +401,24 @@ void Path_ConvertAdvancedTurn( void )
 -----------------------------------------------------------------------------------*/
 void Path_Display( void )
 {
-	uint8_t i;
+	t_path temp_path;
 
 	printf("\n\rStart!\n\r");
-	for( i = 0; i < NUM_PATH-1; i++ ) {
+	for( uint8_t i = 0; i < NUM_PATH-1; i++ ) {
+		temp_path = Path_GetSequence(i);
+		//temp_path = Path_GetReturnSequence(i);
 
 		// 直線区間の表示
-		if( path[i].straight != 0 ) {
-			if( path[i].type >= turn_90v && path[i].type <= turn_135out ) {
-				printf("Diagonal : %2d\n\r", path[i].straight);
+		if( temp_path.straight != 0 ) {
+			if( temp_path.type >= turn_90v && temp_path.type <= turn_135out ) {
+				printf("Diagonal : %2d\n\r", temp_path.straight);
 			} else {
-				printf("Straight : %2d\n\r", path[i].straight);
+				printf("Straight : %2d\n\r", temp_path.straight);
 			}
 		}
 
 		// ターンの表示
-		switch (path[i].type) {
+		switch (temp_path.type) {
 			case turn_0:		printf("Turn_0");		break;
 			case turn_90:		printf("Turn_90");		break;
 			case turn_large:	printf("Turn_Large");	break;
@@ -430,11 +433,11 @@ void Path_Display( void )
 			default:			printf("ERROR!\n\r");	break;
 		}
 
-		if( (path[i].type == turn_0) || (path[i].type == goal) ) {
+		if( (temp_path.type == turn_0) || (temp_path.type == goal) ) {
 			break;
 		} else {
-			if( path[i].direction == RIGHT ) 	 	printf("_RIGHT\r\n");
-			else if( path[i].direction == LEFT )	printf("_LEFT\r\n");
+			if( temp_path.direction == RIGHT ) 	 	printf("_RIGHT\r\n");
+			else if( temp_path.direction == LEFT )	printf("_LEFT\r\n");
 			else								 	printf("_ERROR\r\n");
 		}
 	}
