@@ -14,8 +14,8 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define REF_SIDE_L			(42.f)		// 横左センサのリファレンス
 #define REF_SIDE_R			(42.f)		// 横右センサのリファレンス
 
-#define TH_CONTROL_SIDE_L	(65.f)		// 左センサの制御閾値
-#define TH_CONTROL_SIDE_R	(65.f)		// 右センサの制御閾値
+#define TH_CONTROL_SIDE_L	(60.f)		// 左センサの制御閾値
+#define TH_CONTROL_SIDE_R	(60.f)		// 右センサの制御閾値
 
 #define TH_CONTROL_CLOSE_FL	(30.f)		// 前壁に近づき過ぎたときの閾値
 #define TH_CONTROL_CLOSE_FR	(30.f)		//
@@ -38,8 +38,8 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_FWALL_R	(60.f)		// 前壁制御の前右センサの閾値
 
 // 壁情報関連定義
-#define TH_WALL_SIDE_L		(70.f)		// 横左センサの壁閾値
-#define TH_WALL_SIDE_R		(70.f)		// 横右センサの壁閾値
+#define TH_WALL_SIDE_L		(60.f)		// 横左センサの壁閾値
+#define TH_WALL_SIDE_R		(60.f)		// 横右センサの壁閾値
 #define TH_WALL_FRONT_L		(120.f)		// 前左センサの壁閾値
 #define TH_WALL_FRONT_R		(120.f)		// 前右センサの壁閾値
 
