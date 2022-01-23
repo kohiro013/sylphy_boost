@@ -8,7 +8,7 @@
 #define GEAR_RATIO				(37/9)		// ギア比
 
 #define TORQUE_R_LOSS			(16.f)		// 右タイヤの損失トルク補償
-#define TORQUE_L_LOSS			(16.f)		// 左タイヤの損失トルク補償
+#define TORQUE_L_LOSS			(32.f)		// 左タイヤの損失トルク補償
 #define MOT_DUTY_MIN			(36)		// モータドライバのデッドタイム補償(400kHz)
 											// 90ns * 400kHz = 0.036
 
@@ -249,10 +249,6 @@ void Vehicle_AdjustLossTorque( void )
 			v_battery = Battery_GetBoostVoltage();
 			Motor_SetDuty_Right( (int16_t)((MOT_RESIST * torque_r) / KT / v_battery) + MOT_DUTY_MIN );
 			Motor_SetDuty_Left(  (int16_t)((MOT_RESIST * torque_l) / KT / v_battery) + MOT_DUTY_MIN );
-		} else {
-			continue;
-		}
-
-
+		} else;
 	}
 }
