@@ -24,10 +24,8 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 	my = Dijkstra_ConvertPath( GOAL_X, GOAL_Y );
 
 	// 吸引ファンの起動
-//	if( param > 1 ) {
-		SuctionFan_Start();
-		LL_mDelay( 200 );
-//	} else;
+	SuctionFan_Start();
+	LL_mDelay( 200 );
 
 	// パスに沿って走行開始
 	Route_StartPathSequence( param, false );
@@ -35,7 +33,8 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 	// 制御のリセット
 	SuctionFan_Stop();
 	if( Control_GetMode() != FAULT ) {
-		LL_mDelay( 500 );
+		LL_mDelay( 200 );
+		Control_SetMode( NONE );
 		Motor_StopPWM();
 		LED_LightBinary( 0x01 ); 	LL_mDelay( 100 );
 		LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
@@ -83,19 +82,24 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 		Control_ResetGyroDeviation();
 		Control_ResetAngleDeviation();
 
+		// モータの駆動周波数の変更
+		Control_SetMode( NONE );
+		Motor_StopPWM();
+		Motor_SetFrequency( 100 );
+
 		// 吸引ファンの起動
-		if( param > 1 ) {
-//			SuctionFan_Start();
-			LL_mDelay( 200 );
-		} else;
+		SuctionFan_Start();
+		LL_mDelay( 200 );
 
 		// パスに沿って走行開始
-		Route_StartPathSequence( 1, true );
+//		Route_StartPathSequence( 1, true );
+		Route_StartPathSequence( param, true );
 
 		// 制御のリセット
 		SuctionFan_Stop();
 		if( Control_GetMode() != FAULT ) {
-			LL_mDelay( 500 );
+			LL_mDelay( 200 );
+			Control_SetMode( NONE );
 			Motor_StopPWM();
 			LED_LightBinary( 0x01 ); 	LL_mDelay( 100 );
 			LED_LightBinary( 0x02 );  	LL_mDelay( 100 );
