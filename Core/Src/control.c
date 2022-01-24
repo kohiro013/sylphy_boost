@@ -6,7 +6,7 @@
 #define FAILSAFE_GYRO				(2500.0f)	// フェイルセーフの角速度閾値
 
 #define LIMIT_V_CONTROL				(8000.0F)	// エンコーダの速度制限値
-#define LIMIT_GYRO_CONTROL			(700.0F)	// ジャイロの角速度制限値
+#define LIMIT_GYRO_CONTROL			(800.0F)	// ジャイロの角速度制限値
 #define LIMIT_ANGLE_CONTROL			(200.0F)	// ジャイロの角度制限値
 #define LIMIT_SENSOR_CONTROL		(500.0F)	// 壁センサの角速度制限値
 #define LIMIT_DIAGONAL_CONTROL		(600.0F)	// 壁センサの角速度制限値（斜め）
@@ -111,10 +111,12 @@ float Control_GetValue_Angular( void )
 {
 	if( control_mode == FWALL ) {
 		return fwall_omega.control_value;
-	} else if ( control_mode == SEARCH || control_mode == FASTEST || control_mode == DIAGONAL ) {
+	} else if( control_mode == SEARCH || control_mode == FASTEST || control_mode == DIAGONAL ) {
 		return (gyro.control_value + angle.control_value + sensor.control_value);
-	} else {
+	} else if( control_mode == ROTATE ){
 		return (gyro.control_value + angle.control_value);
+	} else {
+		return (gyro.control_value);
 	}
 }
 
