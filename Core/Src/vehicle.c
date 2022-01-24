@@ -7,8 +7,8 @@
 #define MOT_RESIST				(5.0f)		// 巻線抵抗[Ω]
 #define GEAR_RATIO				(37/9)		// ギア比
 
-#define TORQUE_R_LOSS			(16.f)		// 右タイヤの損失トルク補償
-#define TORQUE_L_LOSS			(32.f)		// 左タイヤの損失トルク補償
+#define TORQUE_R_LOSS			(20.f)		// 右タイヤの損失トルク補償
+#define TORQUE_L_LOSS			(31.f)		// 左タイヤの損失トルク補償
 #define MOT_DUTY_MIN			(36)		// モータドライバのデッドタイム補償(400kHz)
 											// 90ns * 400kHz = 0.036
 
