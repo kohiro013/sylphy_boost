@@ -135,7 +135,10 @@ static int usrcmd_path(int argc, char **argv)
 	} else;
 
 	//　最短パスの表示
-	Path_Display();
+	Path_DisplayAll();
+
+	// ターン速度デバッグ
+	//Route_AdjustTurnParameter(4, false);
 
 	return 0;
 }

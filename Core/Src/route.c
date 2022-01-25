@@ -4,7 +4,7 @@
 
 #define SLIP_RATE			(0.05f)			// タイヤのスリップ率
 #define SECTION_WALL_EDGE	(15.f)			// 壁切れ検出区間
-#define SECTION_COOLDOWN	(20.f)			// ターン直後の安定化区間
+#define SECTION_COOLDOWN	(0.f)			// ターン直後の安定化区間
 
 static volatile int8_t turn_param[256];
 
@@ -90,6 +90,11 @@ void Route_AdjustTurnParameter( int8_t param, int8_t is_return )
 				path = Path_GetReturnSequence(num);
 			}
 
+			// ゴールまたは異常時にループ終了
+			if( path.type == goal || path.type == turn_0 ) {
+				break;
+			} else;
+
 			// ターンパラメータの取得
 			turn_v = Motion_GetSlalomVelocity(path.type, turn_param[num]);
 			before_distance = Motion_GetSlalomBeforeDistance(path.type, path.direction, turn_param[num]);
@@ -122,14 +127,19 @@ void Route_AdjustTurnParameter( int8_t param, int8_t is_return )
 			} else;
 
 			// デバッグ用
-//			printf("\t%4.0f, %5.0f, %5.1f, %4.1f, %1d\r\n", turn_v, acceleration, distance,
-//					(turn_v - before_v) * (turn_v - before_v) / (2*acceleration), turn_param[num]);
-
+/*			Path_Display(path);
+			if( path.type == turn_180 || path.type == turn_45in || path.type == turn_90v
+					|| ((path.type == turn_large || path.type == turn_45out) && path.direction == LEFT) ) {
+				printf("\t");
+			} else;
+			printf("\t%4.0f, %5.0f, %5.1f, %4.1f, %1d\r\n", turn_v, acceleration, distance,
+					(turn_v - before_v) * (turn_v - before_v) / (2*acceleration), turn_param[num]);
+*/
 			// 一つ前のターンパラメータを取得
 			before_v = turn_v;
 			after_distance = Motion_GetSlalomAfterDistance(path.type, path.direction, turn_param[num]);
 		}
-//		printf("\r\n\n");
+		printf("\r\n\n");
 	} while( is_adjust );
 }
 

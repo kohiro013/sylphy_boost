@@ -399,7 +399,44 @@ void Path_ConvertAdvancedTurn( void )
 /* ----------------------------------------------------------------------------------
 	パスの表示
 -----------------------------------------------------------------------------------*/
-void Path_Display( void )
+void Path_Display( t_path temp_path )
+{
+	// 直線区間の表示
+	if( temp_path.straight != 0 ) {
+		if( temp_path.type >= turn_90v && temp_path.type <= turn_135out ) {
+			printf("Diagonal : %2d\n\r", temp_path.straight);
+		} else {
+			printf("Straight : %2d\n\r", temp_path.straight);
+		}
+	}
+
+	// ターンの表示
+	switch (temp_path.type) {
+		case turn_0:		printf("Turn_0");		break;
+		case turn_90:		printf("Turn_90");		break;
+		case turn_large:	printf("Turn_Large");	break;
+		case turn_180:		printf("Turn_180");		break;
+		case turn_90v:		printf("Turn_90v");		break;
+		case turn_45in:		printf("Turn_45in");	break;
+		case turn_135in:	printf("Turn_135in");	break;
+		case turn_45out:	printf("Turn_45out");	break;
+		case turn_135out:	printf("Turn_135out");	break;
+		case turn_kojima:	printf("Turn_Kojima");	break;
+		case goal:			printf("Goal!");		break;
+		default:			printf("ERROR!\n\r");	break;
+	}
+
+	if( (temp_path.type == turn_0) || (temp_path.type == goal) ) {
+		// 何もしない
+	} else {
+		if( temp_path.direction == RIGHT ) 	 	printf("_RIGHT");
+		else if( temp_path.direction == LEFT )	printf("_LEFT");
+		else								 	printf("_ERROR\r\n");
+	}
+}
+
+
+void Path_DisplayAll( void )
 {
 	t_path temp_path;
 
@@ -408,38 +445,11 @@ void Path_Display( void )
 		temp_path = Path_GetSequence(i);
 		//temp_path = Path_GetReturnSequence(i);
 
-		// 直線区間の表示
-		if( temp_path.straight != 0 ) {
-			if( temp_path.type >= turn_90v && temp_path.type <= turn_135out ) {
-				printf("Diagonal : %2d\n\r", temp_path.straight);
-			} else {
-				printf("Straight : %2d\n\r", temp_path.straight);
-			}
-		}
-
-		// ターンの表示
-		switch (temp_path.type) {
-			case turn_0:		printf("Turn_0");		break;
-			case turn_90:		printf("Turn_90");		break;
-			case turn_large:	printf("Turn_Large");	break;
-			case turn_180:		printf("Turn_180");		break;
-			case turn_90v:		printf("Turn_90v");		break;
-			case turn_45in:		printf("Turn_45in");	break;
-			case turn_135in:	printf("Turn_135in");	break;
-			case turn_45out:	printf("Turn_45out");	break;
-			case turn_135out:	printf("Turn_135out");	break;
-			case turn_kojima:	printf("Turn_Kojima");	break;
-			case goal:			printf("Goal!");		break;
-			default:			printf("ERROR!\n\r");	break;
-		}
-
+		Path_Display(temp_path);
+		printf("\n\r");
 		if( (temp_path.type == turn_0) || (temp_path.type == goal) ) {
 			break;
-		} else {
-			if( temp_path.direction == RIGHT ) 	 	printf("_RIGHT\r\n");
-			else if( temp_path.direction == LEFT )	printf("_LEFT\r\n");
-			else								 	printf("_ERROR\r\n");
-		}
+		} else;
 	}
 	printf("\n\r");
 }

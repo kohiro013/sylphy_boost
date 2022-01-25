@@ -257,7 +257,8 @@
 	void 		Path_ConvertTurn180( void );
 	void 		Path_ConvertDiagonal( void );
 	void 		Path_ConvertAdvancedTurn( void );
-	void 		Path_Display( void );
+	void 		Path_Display( t_path );
+	void 		Path_DisplayAll( void );
 
 	// 経路生成関連関数群(route.c)
 	int8_t 		Route_GetNextDirection_Adachi( t_position );
