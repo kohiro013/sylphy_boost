@@ -276,6 +276,7 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 		} else;
 
 		// 壁切れまで直進
+		Wall_ResetEdgeMinDistance();
 		Motion_CorrectWallEdge(type, direction);
 
 		// 最短走行で設定した加速度で加速しきれない場合に加速度を増加させる
@@ -297,6 +298,7 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 		while( Control_GetMode() != FAULT && Vehicle_GetDistance() < before_distance ) {
 			Vehicle_ResetTimer();
 			Motion_SlalomAcceleration(acceleration);
+			Wall_ResetEdgeMinDistance();
 		}
 		Vehicle_SetAcceleration( 0.f );
 		Vehicle_SetVelocity( turn_v );
@@ -307,6 +309,7 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 		Vehicle_SetTimer(before_distance/turn_v);
 		while( Control_GetMode() != FAULT && t < before_distance/turn_v + 1.f/cycle_slalom ) {
 			t = Vehicle_GetTimer();
+			Wall_ResetEdgeMinDistance();
 		}
 	}
 
