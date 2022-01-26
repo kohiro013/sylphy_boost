@@ -22,6 +22,9 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 	// 最短経路生成
 	Path_Reset();
 	my = Dijkstra_ConvertPath( GOAL_X, GOAL_Y );
+	if( my.x == -1 && my.y == -1 ) {
+		return;
+	} else;
 
 	// 吸引ファンの起動
 	SuctionFan_Start();

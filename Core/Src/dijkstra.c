@@ -697,6 +697,7 @@ t_position Dijkstra_ConvertPath( int8_t gx, int8_t gy )
 		Path_ConvertDiagonal();
 		Path_ConvertAdvancedTurn();
 	} else {
+		my.x = my.y = my.dir = -1;
 		printf("軌道が見つからなかった\r\n");
 	}
 	return my;
