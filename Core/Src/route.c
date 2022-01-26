@@ -4,7 +4,6 @@
 
 #define SLIP_RATE			(0.05f)			// タイヤのスリップ率
 #define SECTION_WALL_EDGE	(15.f)			// 壁切れ検出区間
-#define SECTION_COOLDOWN	(0.f)			// ターン直後の安定化区間
 
 static volatile int8_t turn_param[256];
 
@@ -236,7 +235,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 				turn_velocity = Motion_GetSlalomVelocity(turn_90, 0);
 				Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity, 45.f*path.straight + after_distance );
 			} else {
-				Motion_StartStraight( acc_straight, dec_straight, max_straight, 0.f, 45.f*path.straight + 11.f + after_distance - SECTION_COOLDOWN );
+				Motion_StartStraight( acc_straight, dec_straight, max_straight, 0.f, 45.f*path.straight + 11.f + after_distance );
 			}
 			Motion_WaitStraight();
 		// 連続ターン間の直線走行
@@ -250,10 +249,10 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 			if( path.straight <= 1 ) {
 				Control_SetMode(TURN);
 				Motion_StartStraight( acc_diagonal, dec_diagonal, turn_velocity, turn_velocity,
-						45.f*SQRT2*path.straight + after_distance - MAX((45.f*SQRT2*path.straight + after_distance) * SLIP_RATE, SECTION_WALL_EDGE) - SECTION_COOLDOWN );
+						45.f*SQRT2*path.straight + after_distance - MAX((45.f*SQRT2*path.straight + after_distance) * SLIP_RATE, SECTION_WALL_EDGE) );
 			} else {
 				Motion_StartStraight( acc_diagonal, dec_diagonal, max_diagonal, turn_velocity,
-						45.f*SQRT2*path.straight + after_distance - MAX((45.f*SQRT2*path.straight + after_distance) * SLIP_RATE, SECTION_WALL_EDGE) - SECTION_COOLDOWN );
+						45.f*SQRT2*path.straight + after_distance - MAX((45.f*SQRT2*path.straight + after_distance) * SLIP_RATE, SECTION_WALL_EDGE) );
 				Motion_WaitStraight();
 				// 最後の1区画で斜め制御をなくすため
 				Control_SetMode(TURN);
@@ -262,7 +261,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 		// 直線走行
 		} else {
 			Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity,
-					45.f*path.straight + after_distance - MAX((45.f*path.straight + after_distance) * SLIP_RATE, SECTION_WALL_EDGE) - SECTION_COOLDOWN );
+					45.f*path.straight + after_distance - MAX((45.f*path.straight + after_distance) * SLIP_RATE, SECTION_WALL_EDGE) );
 			Motion_WaitStraight();
 		}
 
@@ -275,7 +274,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 				Vehicle_ResetIntegral();
 				Control_ResetFilterDistance();
 				IMU_ResetGyroAngle_Z();
-				Control_ResetAngleDeviation();
+				//Control_ResetAngleDeviation();
 				Control_ResetSensorDeviation();
 				Motion_SetSlalomAcceleration( 0.f );
 			} else {
@@ -329,10 +328,6 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 					Vehicle_ResetTurning();
 					Vehicle_ResetIntegral();
 					Control_ResetFilterDistance();
-
-					// ターン直後の安定化区間
-					Motion_StartStraight( acc_straight, dec_straight, turn_velocity, turn_velocity, SECTION_COOLDOWN );
-					Motion_WaitStraight();
 
 					// 制御モードの切替
 					if( path.type == turn_large || path.type == turn_180 ) {
