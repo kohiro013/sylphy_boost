@@ -113,10 +113,8 @@ float Control_GetValue_Angular( void )
 		return fwall_omega.control_value;
 	} else if( control_mode == SEARCH || control_mode == FASTEST || control_mode == DIAGONAL ) {
 		return (gyro.control_value + angle.control_value + sensor.control_value);
-	} else if( control_mode == ROTATE ){
-		return (gyro.control_value + angle.control_value);
 	} else {
-		return (gyro.control_value);
+		return (gyro.control_value + angle.control_value);
 	}
 }
 
@@ -195,7 +193,6 @@ void Control_UpdateGyroDeviation( void )
 		gyro.intg_deviation += (gyro.deviation - (val_control - gyro.control_value) / gain_gyro.kp);
 		gyro.error += gyro.deviation;
 		if( (Wall_GetIsMaze(LEFT) == true) && (Wall_GetIsMaze(RIGHT) == true) ) {
-			gyro.dif_deviation *= D_SIDEWALL;
 			gyro.intg_deviation *= D_SIDEWALL;
 		} else;
 	} else if( control_mode == DIAGONAL ) {
@@ -203,7 +200,6 @@ void Control_UpdateGyroDeviation( void )
 		gyro.intg_deviation += (gyro.deviation - (val_control - gyro.control_value) / gain_gyro.kp);
 		gyro.error += gyro.deviation;
 		if( (Wall_GetDeviation(FRONT+LEFT) != 0) || (Wall_GetDeviation(FRONT+RIGHT) != 0) ) {
-			gyro.dif_deviation *= D_SIDEWALL;
 			gyro.intg_deviation *= D_SIDEWALL;
 		} else;
 	} else {
@@ -233,25 +229,17 @@ void Control_UpdateAngleDeviation( void )
 	angle.deviation = Vehicle_GetAngle() - IMU_GetGyroAngle_Z();
 	if( control_mode == TURN || control_mode == ROTATE || control_mode == ADJUST ) {
 		angle.dif_deviation -= angle.deviation;
-		if( val_control < LIMIT_ANGLE_CONTROL ) {
-			angle.intg_deviation += angle.deviation;
-		} else;
+		angle.intg_deviation += (angle.deviation - (val_control - angle.control_value) / gain_gyro.ki);
 	} else if( control_mode == SEARCH || control_mode == FASTEST ) {
 		angle.dif_deviation -= angle.deviation;
-		if( val_control < LIMIT_ANGLE_CONTROL ) {
-			angle.intg_deviation += angle.deviation;
-		} else;
+		angle.intg_deviation += (angle.deviation - (val_control - angle.control_value) / gain_gyro.ki);
 		if( (Wall_GetIsMaze(LEFT) == true) && (Wall_GetIsMaze(RIGHT) == true) ) {
-			angle.dif_deviation *= D_SIDEWALL;
 			angle.intg_deviation *= D_SIDEWALL;
 		} else;
 	} else if( control_mode == DIAGONAL ) {
 		angle.dif_deviation -= angle.deviation;
-		if( val_control < LIMIT_ANGLE_CONTROL ) {
-			angle.intg_deviation += angle.deviation;
-		} else;
+		angle.intg_deviation += (angle.deviation - (val_control - angle.control_value) / gain_gyro.ki);
 		if( (Wall_GetDeviation(FRONT+LEFT) != 0) || (Wall_GetDeviation(FRONT+RIGHT) != 0) ) {
-			angle.dif_deviation *= D_SIDEWALL;
 			angle.intg_deviation *= D_SIDEWALL;
 		} else;
 	} else{
@@ -291,7 +279,7 @@ void Control_UpdateSensorDeviation( void )
 		} else if( Wall_GetDeviation(RIGHT) != 0 ) {
 			sensor.deviation = -2 * Wall_GetDeviation(RIGHT);
 		} else {
-			if( Wall_GetIsMaze(LEFT) == false && Wall_GetIsMaze(RIGHT) == false ) {
+			if( Wall_GetDeviation(LEFT) == false && Wall_GetDeviation(RIGHT) == false ) {
 				sensor.deviation = -2 * (K_DISTANCE * Vehicle_GetGap() + K_ANGLE * IMU_GetGyroAngle_Z());
 			} else {
 				sensor.deviation = 0.f;
