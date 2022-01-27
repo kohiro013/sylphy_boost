@@ -142,7 +142,7 @@ void Motion_StartRotate( float degree, int8_t direction )
 	volatile float cycle 		= ( amplitude * NAPEIR_INTGRAL ) / angle;
 
 	// フェールセーフ
-	if( Control_GetMode() > NONE ) {
+	if( Control_GetMode() != FAULT ) {
 		Control_SetMode( ROTATE );
 	} else {
 		return;
@@ -163,7 +163,7 @@ void Motion_StartRotate( float degree, int8_t direction )
 
 	// 超信地旋回
 	Vehicle_ResetTimer();
-	while( ( Control_GetMode() > NONE ) && ( t < 1.0f / cycle ) ) {
+	while( (Control_GetMode() != FAULT) && (t < 1.0f / cycle) ) {
 		// 現在時間の取得
 		t = Vehicle_GetTimer();
 
@@ -171,14 +171,14 @@ void Motion_StartRotate( float degree, int8_t direction )
 		if( t <= 0.0f )	{
 			alpha = 0.0f;
 		} else {
-			alpha = amplitude * ( mynapier( cycle * t ) - mynapier( cycle * ( t - SYSTEM_PERIOD ) ) ) / SYSTEM_PERIOD;
+			alpha = amplitude * (mynapier(cycle * t) - mynapier(cycle * (t - SYSTEM_PERIOD))) / SYSTEM_PERIOD;
 		}
 
 		// 回転方向の決定
 		if( direction == LEFT ) {
-			Vehicle_SetAngularAcceleration( alpha );
+			Vehicle_SetAngularAcceleration( alpha);
 		} else {
-			Vehicle_SetAngularAcceleration( -alpha );
+			Vehicle_SetAngularAcceleration(-alpha);
 		}
 	}
 
