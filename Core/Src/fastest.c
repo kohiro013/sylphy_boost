@@ -65,11 +65,6 @@ void Fastest_RunSimple( int8_t param, int8_t is_return )
 		// モータの駆動周波数の変更
 		Motor_SetFrequency( 400 );
 
-		// 前壁補正(前壁があるとき)
-		if( Maze_IsLocal(my.x, my.y, my.dir, FRONT) == true ) {
-			Control_WaitFrontWallCorrection();
-		} else;
-
 		// 反転して帰還走行開始
 		if( Maze_IsLocal(my.x, my.y, my.dir, RIGHT) == true ) {
 			Motion_StartRotate( 90.f, RIGHT );
