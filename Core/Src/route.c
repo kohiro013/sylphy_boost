@@ -2,7 +2,7 @@
 #include "defines.h"
 #include "global.h"
 
-#define SLIP_RATE			(0.05f)			// タイヤのスリップ率
+#define SLIP_RATE			(0.02f)			// タイヤのスリップ率
 #define SECTION_WALL_EDGE	(15.f)			// 壁切れ検出区間
 
 static volatile int8_t turn_param[256];
@@ -221,7 +221,7 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 						45.f*path.straight + START_OFFSET - MAX((45.f*path.straight + START_OFFSET) * SLIP_RATE, SECTION_WALL_EDGE) );
 			} else {
 				Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity,
-						45.f*path.straight - MAX(45.f*path.straight * SLIP_RATE, SECTION_WALL_EDGE) );
+						45.f*path.straight - MAX(45.f*path.straight * SLIP_RATE, SECTION_WALL_EDGE) - 11.f );
 			}
 			Motion_WaitStraight();
 		// ゴールまでの直線走行
@@ -241,15 +241,15 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 		// 連続ターン間の直線走行
 		} else if( path.straight == 0 ) {
 			Control_SetMode(TURN);
-			Motion_StartStraight( acc_straight, dec_straight, turn_velocity, turn_velocity,
-					after_distance - MAX(after_distance * SLIP_RATE, SECTION_WALL_EDGE) );
-			Motion_WaitStraight();
+//			Motion_StartStraight( acc_straight, dec_straight, turn_velocity, turn_velocity,
+//					after_distance - MAX(after_distance * SLIP_RATE, SECTION_WALL_EDGE) );
+//			Motion_WaitStraight();
 		// 斜め走行
 		} else if( path.type >= turn_90v && path.type <= turn_135out ) {
 			if( path.straight <= 1 ) {
-				Control_SetMode(TURN);
+				Control_SetMode(ADJUST);
 				Motion_StartStraight( acc_diagonal, dec_diagonal, turn_velocity, turn_velocity,
-						45.f*SQRT2*path.straight + after_distance - MAX((45.f*SQRT2*path.straight + after_distance) * SLIP_RATE, SECTION_WALL_EDGE) );
+						45.f*SQRT2*path.straight + after_distance - SECTION_WALL_EDGE - 5.f );
 			} else {
 				Motion_StartStraight( acc_diagonal, dec_diagonal, max_diagonal, turn_velocity,
 						45.f*SQRT2*path.straight + after_distance - MAX((45.f*SQRT2*path.straight + after_distance) * SLIP_RATE, SECTION_WALL_EDGE) );
