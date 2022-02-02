@@ -66,10 +66,10 @@ void Route_AdjustTurnParameter( int8_t param, int8_t is_return )
 {
 	t_path		path;
 	float		turn_v;
-	float		before_v = 0;
+	float		before_v;
 	float		acceleration;
 	float		before_distance;
-	float		after_distance = 0;
+	float		after_distance;
 	float		distance;
 	int8_t		is_adjust = false;
 
@@ -80,7 +80,8 @@ void Route_AdjustTurnParameter( int8_t param, int8_t is_return )
 
 	// ターンパラメータの調整が終わるまでループ
 	do {
-		is_adjust = false;	// ループフラグのリセット
+		is_adjust = false;					// ループフラグのリセット
+		before_v = after_distance = 0.f;	// 前回ループの値をリセット
 		for( uint16_t num = 0; num < 255; num++ ) {
 			// パスの取得
 			if( is_return == false ) {
@@ -97,19 +98,38 @@ void Route_AdjustTurnParameter( int8_t param, int8_t is_return )
 			// ターンパラメータの取得
 			turn_v = Motion_GetSlalomVelocity(path.type, turn_param[num]);
 			before_distance = Motion_GetSlalomBeforeDistance(path.type, path.direction, turn_param[num]);
-			if( path.type >= turn_90v && path.type <= turn_135out ) {
-				if( turn_v > before_v ) acceleration = param_diagonal[param].acceleration;
-				else					acceleration = param_diagonal[param].deceleration;
-				distance = 45.f*SQRT2 * path.straight + before_distance + after_distance;
+			if( num == 0 ) {
+				acceleration = param_straight[param].acceleration;
+				if( is_return == false ) {
+					distance = 45.f * path.straight + before_distance + START_OFFSET - 5.f;
+				} else {
+					distance = 45.f * path.straight + before_distance - START_OFFSET - 5.f;
+				}
 			} else {
-				if( turn_v > before_v ) acceleration = param_straight[param].acceleration;
-				else					acceleration = param_straight[param].deceleration;
-				distance = 45.f * path.straight + before_distance + after_distance;
+				// 直線走行
+				if( turn_large <= path.type && path.type <= turn_135in ) {
+					if( turn_v > before_v ) acceleration = param_straight[param].acceleration;
+					else					acceleration = param_straight[param].deceleration;
+					distance = 45.f * path.straight + before_distance + after_distance;
+				// 斜め走行
+				} else {
+					if( turn_v > before_v ) acceleration = param_diagonal[param].acceleration;
+					else					acceleration = param_diagonal[param].deceleration;
+					distance = 45.f*SQRT2 * path.straight + before_distance + after_distance;
+				}
+				// スリップ区間の確保
+				distance -= MAX(distance * SLIP_RATE, SECTION_WALL_EDGE);
 			}
 
-			// スリップ区間の確保
-			distance -= MAX(distance * SLIP_RATE, SECTION_WALL_EDGE);
-
+			// デバッグ用
+/*			Path_Display(path);
+			if( path.type == turn_180 || path.type == turn_45in || path.type == turn_90v
+					|| ((path.type == turn_large || path.type == turn_135in || path.type == turn_45out) && path.direction == LEFT) ) {
+				printf("\t");
+			} else;
+			printf("\t%4.0f, %4.0f, %5.0f, %4.1f, %4.1f, %5.1f, %4.1f, %1d\r\n", before_v, turn_v, acceleration,
+					before_distance, after_distance, distance, (turn_v - before_v) * (turn_v - before_v) / (2*acceleration), turn_param[num]);
+*/
 			// ターン速度の調整
 			if( (turn_v - before_v) * (turn_v - before_v) / (2*acceleration) > distance ) {
 				if( turn_v < before_v ) {	// 減速距離が足りない場合一つ前のターンを遅くする
@@ -125,15 +145,6 @@ void Route_AdjustTurnParameter( int8_t param, int8_t is_return )
 				}
 			} else;
 
-			// デバッグ用
-/*			Path_Display(path);
-			if( path.type == turn_180 || path.type == turn_45in || path.type == turn_90v
-					|| ((path.type == turn_large || path.type == turn_45out) && path.direction == LEFT) ) {
-				printf("\t");
-			} else;
-			printf("\t%4.0f, %5.0f, %5.1f, %4.1f, %1d\r\n", turn_v, acceleration, distance,
-					(turn_v - before_v) * (turn_v - before_v) / (2*acceleration), turn_param[num]);
-*/
 			// 一つ前のターンパラメータを取得
 			before_v = turn_v;
 			after_distance = Motion_GetSlalomAfterDistance(path.type, path.direction, turn_param[num]);
@@ -212,18 +223,18 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 		// スタートからの直線走行
 		} else if( num == 0 ) {
 			if( path.straight == 0 ) {
-				Control_SetMode(ADJUST);
+				Control_SetMode(TURN);
 			} else {
 				Control_SetMode(FASTEST);
+				if( is_return == false ) {
+					Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity,
+							45.f*path.straight + START_OFFSET - MAX((45.f*path.straight + START_OFFSET) * SLIP_RATE, SECTION_WALL_EDGE) );
+				} else {
+					Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity,
+							45.f*path.straight - MAX(45.f*path.straight * SLIP_RATE, SECTION_WALL_EDGE) - START_OFFSET );
+				}
+				Motion_WaitStraight();
 			}
-			if( is_return == false ) {
-				Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity,
-						45.f*path.straight + START_OFFSET - MAX((45.f*path.straight + START_OFFSET) * SLIP_RATE, SECTION_WALL_EDGE) );
-			} else {
-				Motion_StartStraight( acc_straight, dec_straight, max_straight, turn_velocity,
-						45.f*path.straight - MAX(45.f*path.straight * SLIP_RATE, SECTION_WALL_EDGE) - 11.f );
-			}
-			Motion_WaitStraight();
 		// ゴールまでの直線走行
 		} else if( path.type == goal ) {
 			if( (Position_GetIsGoal(0, 0) == false) && (Position_GetIsGoal(GOAL_X, GOAL_Y) == false) ) {

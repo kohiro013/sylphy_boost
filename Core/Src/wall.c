@@ -189,7 +189,8 @@ void Wall_UpdateEdge( void )
 		distance_edge_sr = Vehicle_GetTotalDistance();
 	} else {
 		sen_sr.is_edge = false;
-		if( Vehicle_GetTotalDistance() - distance_edge_sr > ZONE_DISABLE_EDGE ) {
+		if( (Vehicle_GetTotalDistance() < ZONE_DISABLE_EDGE) 	// 一区画目からのターン開始時に壁切れを検知するため
+				|| (Vehicle_GetTotalDistance() - distance_edge_sr > ZONE_DISABLE_EDGE) ) {
 			distance_min_r = MIN(distance_min_r, sen_sr.distance);
 		} else;
 	}
@@ -201,7 +202,8 @@ void Wall_UpdateEdge( void )
 		distance_edge_sl = Vehicle_GetTotalDistance();
 	} else {
 		sen_sl.is_edge = false;
-		if( Vehicle_GetTotalDistance() - distance_edge_sl > ZONE_DISABLE_EDGE ) {
+		if( (Vehicle_GetTotalDistance() < ZONE_DISABLE_EDGE) 	// 一区画目からのターン開始時に壁切れを検知するため
+				|| (Vehicle_GetTotalDistance() - distance_edge_sl > ZONE_DISABLE_EDGE) ) {
 			distance_min_l = MIN(distance_min_l, sen_sl.distance);
 		} else;
 	}
