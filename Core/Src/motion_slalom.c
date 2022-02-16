@@ -231,7 +231,7 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 		} else;
 		
 		// スラローム
-		Control_SetMode( TURN );
+		Control_SetMode( ROTATE );
 		Vehicle_SetTimer( MIN(offset_distance, before_distance)/turn_v );
 		while( (Control_GetMode() != FAULT) && (t < (before_distance + after_distance)/turn_v + 1.f/cycle_slalom) ) {
 			t = Vehicle_GetTimer();
@@ -369,5 +369,59 @@ float Motion_GetSlalomAfterDistance( int8_t type, int8_t direction, int8_t param
 	} else {
 		return( init_slalom[type-1][param].after );
 	}
+}
+
+/* ---------------------------------------------------------------
+	超信地旋回の開始関数
+--------------------------------------------------------------- */
+void Motion_StartRotate( float degree, int8_t direction )
+{
+	volatile float t		= 0.0f;
+	volatile float angle	= DEG2RAD(degree);
+
+	amplitude_slalom		= (direction == RIGHT ? -1 : 1) * 12.0f;
+	cycle_slalom 			= ABS(amplitude_slalom) * NAPEIR_INTGRAL / angle;
+	before_distance = after_distance = 0.f;
+
+	// フェールセーフ
+	if( Control_GetMode() != FAULT ) {
+		Control_SetMode(ROTATE);
+	} else {
+		return;
+	}
+
+	// 各パラメータのリセット
+	Vehicle_ResetStraight();
+	Vehicle_ResetTurning();
+	Vehicle_ResetIntegral();
+	Control_ResetFilterDistance();
+	IMU_ResetGyroAngle_Z();
+	LL_mDelay(200);
+	Control_ResetEncoderDeviation();
+	Control_ResetGyroDeviation();
+	Control_ResetAngleDeviation();
+	Control_ResetSensorDeviation();
+	Control_ResetFrontSensorDeviation();
+
+	// 超信地旋回
+	Vehicle_ResetTimer();
+	while( (Control_GetMode() != FAULT) && (t < 1.0f/cycle_slalom) ) {
+		// 現在時間の取得
+		t = Vehicle_GetTimer();
+	}
+
+	// 各パラメータのリセット
+	cycle_slalom = amplitude_slalom = 0.f;
+	LL_mDelay(200);
+	Vehicle_ResetStraight();
+	Vehicle_ResetTurning();
+	Vehicle_ResetIntegral();
+	Control_ResetFilterDistance();
+	IMU_ResetGyroAngle_Z();
+	Control_ResetEncoderDeviation();
+	Control_ResetSensorDeviation();
+	Control_ResetFrontSensorDeviation();
+	Wall_ResetEdgeDistance();
+	Wall_ResetEdgeMinDistance();
 }
 

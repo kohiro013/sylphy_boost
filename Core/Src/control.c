@@ -6,8 +6,8 @@
 #define FAILSAFE_GYRO				(2500.0f)	// フェイルセーフの角速度閾値
 
 #define LIMIT_V_CONTROL				(8000.0F)	// エンコーダの速度制限値
-#define LIMIT_GYRO_CONTROL			(2000.0F)	// ジャイロの角速度制限値
-#define LIMIT_ANGLE_CONTROL			(300.0F)	// ジャイロの角度制限値
+#define LIMIT_GYRO_CONTROL			(1000.0F)	// ジャイロの角速度制限値
+#define LIMIT_ANGLE_CONTROL			(1000.0F)	// ジャイロの角度制限値
 #define LIMIT_SENSOR_CONTROL		(500.0F)	// 壁センサの角速度制限値
 #define LIMIT_DIAGONAL_CONTROL		(600.0F)	// 壁センサの角速度制限値（斜め）
 #define LIMIT_FWALL_V_CONTROL		(800.f)		// 前壁制御の速度制限値
@@ -18,13 +18,13 @@
 #define K_ANGLE						(136.f)
 
 // 各制御のPIDゲイン										P	  I		 D
-volatile const t_control_gain	gain_enc		 = {  25.f,  0.6f,  0.00f	};	// エンコーダの速度ゲイン
-volatile const t_control_gain	gain_gyro		 = { 200.f, 40.f,   0.01f	};	// ジャイロの角速度ゲイン
-volatile const t_control_gain	gain_angle		 = {   0.f,  0.f,   0.f  	};	// ジャイロの角度ゲイン
-volatile const t_control_gain	gain_straight	 = {2000.f,  2.f,  15.f  	};	// 壁制御の角速度ゲイン
-volatile const t_control_gain	gain_diagonal	 = {1000.f,  0.f,  15.f  	};	// 斜め壁制御の角速度ゲイン
-volatile const t_control_gain	gain_fwall_v	 = { 500.f,  2.f,   2.f   	};	// 前壁制御の速度ゲイン
-volatile const t_control_gain	gain_fwall_omega = {1000.f,  5.f,   2.f   	};	// 前壁制御の角速度ゲイン
+volatile const t_control_gain	gain_enc		 = {   25.f,  0.5f,  0.00f	};	// エンコーダの速度ゲイン
+volatile const t_control_gain	gain_gyro		 = {  200.f, 30.f,   0.02f	};	// ジャイロの角速度ゲイン
+volatile const t_control_gain	gain_angle		 = {12000.f,  0.f,   0.f  	};	// ジャイロの角度ゲイン
+volatile const t_control_gain	gain_straight	 = { 2000.f,  2.f,  15.f  	};	// 壁制御の角速度ゲイン
+volatile const t_control_gain	gain_diagonal	 = { 1000.f,  0.f,  15.f  	};	// 斜め壁制御の角速度ゲイン
+volatile const t_control_gain	gain_fwall_v	 = {  500.f,  2.f,   2.f   	};	// 前壁制御の速度ゲイン
+volatile const t_control_gain	gain_fwall_omega = { 1000.f,  5.f,   2.f   	};	// 前壁制御の角速度ゲイン
 
 // ローカル関数群
 void 	Control_UpdateFilterVelocity( void );
@@ -113,6 +113,8 @@ float Control_GetValue_Angular( void )
 		return fwall_omega.control_value;
 	} else if( control_mode == SEARCH || control_mode == FASTEST || control_mode == DIAGONAL ) {
 		return (gyro.control_value + angle.control_value + sensor.control_value);
+	} else if ( control_mode == ROTATE ){
+		return gyro.control_value;
 	} else {
 		return (gyro.control_value + angle.control_value);
 	}
@@ -223,7 +225,7 @@ void Control_UpdateAngleDeviation( void )
 		angle.dif_deviation -= angle.deviation;
 		angle.intg_deviation += (angle.deviation - (val_control - angle.control_value) / gain_gyro.ki);
 	} else if( control_mode == SEARCH || control_mode == FASTEST ) {
-		angle.dif_deviation = angle.intg_deviation = 0.f;
+		angle.deviation = angle.dif_deviation = angle.intg_deviation = 0.f;
 	} else if( control_mode == DIAGONAL ) {
 		angle.dif_deviation -= angle.deviation;
 		angle.intg_deviation += (angle.deviation - (val_control - angle.control_value) / gain_gyro.ki);
@@ -268,7 +270,7 @@ void Control_UpdateSensorDeviation( void )
 			sensor.deviation = -2 * Wall_GetDeviation(RIGHT);
 		} else {
 			if( Wall_GetDeviation(LEFT) == false && Wall_GetDeviation(RIGHT) == false ) {
-				sensor.deviation = -2 * (K_DISTANCE * Vehicle_GetGap() + K_ANGLE * IMU_GetGyroAngle_Z());
+//				sensor.deviation = -2 * (K_DISTANCE * Vehicle_GetGap() + K_ANGLE * IMU_GetGyroAngle_Z());
 			} else {
 				sensor.deviation = 0.f;
 			}

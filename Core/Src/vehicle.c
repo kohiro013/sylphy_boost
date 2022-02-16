@@ -39,7 +39,7 @@ void Vehicle_UpdateDynamics( void )
 	d += v * SYSTEM_PERIOD;
 	total_distance += v * SYSTEM_PERIOD;
 
-	if( Control_GetMode() == TURN ) {
+	if( Control_GetMode() == TURN || Control_GetMode() == ROTATE ) {
 		alpha = Motion_SetSlalomAngularAcceleration(t);
 	} else;
 	omega += alpha * SYSTEM_PERIOD;
@@ -49,16 +49,16 @@ void Vehicle_UpdateDynamics( void )
 		if( (Wall_GetDistance(FRONT+LEFT) > 45.f) || (Wall_GetDistance(FRONT+RIGHT) > 45.f) ) {
 			if( Wall_GetEdge(LEFT) == true || Wall_GetEdge(RIGHT) == true ) {
 				if( ABS(Wall_GetEdgeDistance(0xff)) < 20.f ) {
-					gap = (0.82f * Wall_GetEdgeDistance(0xff) + 1.18f) / 2.f;
+//					gap = (0.82f * Wall_GetEdgeDistance(0xff) + 1.18f) / 2.f;
 					theta = 0.f;
-					IMU_SetGyroAngle_Z(-atan2f(Wall_GetEdgeDistance(0xff) + 2.6f, 84.f));
+//					IMU_SetGyroAngle_Z(-atan2f(Wall_GetEdgeDistance(0xff) + 2.6f, 84.f));
 				} else;
 			} else if( (Wall_GetDeviation(LEFT) != 0) && (Wall_GetDeviation(RIGHT) != 0) ) {
-				gap = (-Wall_GetDeviation(LEFT) + Wall_GetDeviation(RIGHT)) / 2;
+//				gap = (Wall_GetDeviation(RIGHT) - Wall_GetDeviation(LEFT)) / 2;
 			} else if( Wall_GetDeviation(LEFT) != 0 ) {
-				gap = -Wall_GetDeviation(LEFT);
+//				gap = -Wall_GetDeviation(LEFT);
 			} else if( Wall_GetDeviation(RIGHT) != 0 ) {
-				gap = Wall_GetDeviation(RIGHT);
+//				gap = Wall_GetDeviation(RIGHT);
 			} else {
 
 			}
