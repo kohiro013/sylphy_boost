@@ -8,7 +8,7 @@
 #define EDGE_PILLAR_SL	(-3.0f)	// 直線時における左の壁切れ距離
 #define EDGE_PILLAR_SR	(-4.0f)	// 直線時における右の壁切れ距離
 
-#define EDGE_WALL_DL	(5.0f)	// 斜め時における左の壁切れ距離
+#define EDGE_WALL_DL	(3.0f)	// 斜め時における左の壁切れ距離
 #define EDGE_WALL_DR	(4.0f)	// 斜め時における右の壁切れ距離
 #define EDGE_PILLAR_DL	(3.0f)	// 斜め時における左の壁切れ距離
 #define EDGE_PILLAR_DR	(4.0f)	// 斜め時における右の壁切れ距離
@@ -225,9 +225,9 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 
 		// スラローム前の左右壁で後距離を補正する
 		if( direction == RIGHT && Wall_GetIsMaze(LEFT) == true ) {
-			after_distance -= (Wall_GetDistance(LEFT) - 42.f);
+//			after_distance -= (Wall_GetDistance(LEFT) - 42.f);
 		} else if( direction == LEFT && Wall_GetIsMaze(RIGHT) == true ) {
-			after_distance -= (Wall_GetDistance(RIGHT) - 42.f);
+//			after_distance -= (Wall_GetDistance(RIGHT) - 42.f);
 		} else;
 		
 		// スラローム
@@ -271,9 +271,9 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 	// 通常時のターン
 	} else {
 		// 斜め脱出時に壁制御で姿勢が崩れないように斜めの壁制御を切る
-		if( type >= turn_90v && type <= turn_135out ) {
+//		if( type >= turn_90v && type <= turn_135out ) {
 			Control_SetMode(TURN);
-		} else;
+//		} else;
 
 		// 壁切れまで直進
 		Wall_ResetEdgeMinDistance();
@@ -281,10 +281,10 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 
 		// 最短走行で設定した加速度で加速しきれない場合に加速度を増加させる
 		float before_velocity = Vehicle_GetVelocity();
-		if( fastest_a > (turn_v - before_velocity) * (turn_v - before_velocity) / (2*before_distance) ) {
+		if( fastest_a > ABS(turn_v * turn_v - before_velocity * before_velocity) / (2*before_distance) ) {
 			acceleration = fastest_a;
 		} else {
-			acceleration = (turn_v - before_velocity) * (turn_v - before_velocity) / (2*before_distance);
+			acceleration = ABS(turn_v * turn_v - before_velocity * before_velocity) / (2*before_distance);
 		}
 		
 		// 各パラメータのリセット
