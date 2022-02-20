@@ -142,10 +142,13 @@ void Adjust_RunAlignment( void )
 --------------------------------------------------------------- */
 void Adjust_RunSlalom( int8_t type, int8_t direction, int8_t param )
 {
-	const float	acceleration = 6000.f;
-	float 		turn_velocity;
-	float		after_distance;
+	float	acceleration;
+	float 	turn_velocity;
+	float	after_distance;
 
+	t_init_straight temp = Route_GetParameters(FASTEST, param);
+	acceleration = temp.acceleration;
+	Motion_SetSlalomAcceleration(acceleration);
 	turn_velocity = Motion_GetSlalomVelocity( type, param );
 	after_distance = Motion_GetSlalomAfterDistance( type, direction, param );
 
@@ -180,25 +183,25 @@ void Adjust_RunSlalom( int8_t type, int8_t direction, int8_t param )
 		Motion_StartSlalom( type, direction, param );
 		Motion_WaitSlalom( type, direction, param );
 		Control_SetMode( ADJUST );
-		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 45.f*SQRT2 + after_distance );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 90.f*SQRT2 + after_distance );
 
 	// 斜め脱出スラローム
 	} else if( type == turn_45out || type == turn_135out ) {
-		Motion_StartStraight( acceleration, acceleration, turn_velocity, turn_velocity, 45.f*SQRT2 - 20.f );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, turn_velocity, 90.f*SQRT2 - 20.f );
 		Motion_WaitStraight();
 		Motion_StartSlalom( type, direction, param );
 		Motion_WaitSlalom( type, direction, param );
 		Control_SetMode( ADJUST );
-		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 45.f + after_distance );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 90.f + after_distance );
 
 	// 斜め90度スラローム
 	} else if( type == turn_90v || type == turn_kojima ) {
-		Motion_StartStraight( acceleration, acceleration, turn_velocity, turn_velocity, 45.f*SQRT2 - 20.f );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, turn_velocity, 90.f*SQRT2 - 20.f );
 		Motion_WaitStraight();
 		Motion_StartSlalom( type, direction, param );
 		Motion_WaitSlalom( type, direction, param );
 		Control_SetMode( ADJUST );
-		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 45.f*SQRT2 + after_distance );
+		Motion_StartStraight( acceleration, acceleration, turn_velocity, 0.f, 90.f*SQRT2 + after_distance );
 
 	} else;
 
