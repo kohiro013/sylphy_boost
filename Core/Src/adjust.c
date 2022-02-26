@@ -5,22 +5,34 @@
 /* ---------------------------------------------------------------
 	PIDゲインの調整関数
 --------------------------------------------------------------- */
-void Adjust_RunPID( int8_t section )
+void Adjust_RunPID( int8_t param )
 {
-	const float acceleration = 12000.f;
-	const float deceleration = 12000.f;
-	const float max_velocity = 3000.f;
+	t_init_straight temp = Route_GetParameters(FASTEST, param);
+	const float acceleration = temp.acceleration;
+	const float deceleration = temp.deceleration;
+	const float max_velocity = temp.max_velocity;
+
+	const float turn_velocity  = Motion_GetSlalomVelocity(turn_large, param);
+	const float after_distance = Motion_GetSlalomAfterDistance(turn_large, LEFT, param);
+
+	// 吸引ファンの起動
+	if( param > 0 ) {
+		SuctionFan_Start();
+		LL_mDelay( 200 );
+	} else;
 
 	Control_SetMode( FASTEST );
-	Motion_StartStraight( acceleration, deceleration, max_velocity, 0.f, 90.f*section + START_OFFSET );
+	Motion_StartStraight( acceleration, deceleration, turn_velocity, turn_velocity, 90.f - 15.f + START_OFFSET );
 	Motion_WaitStraight();
-//	LL_mDelay( 500 );
 
-	Motion_StartRotate( 180.f, RIGHT );
+	Motion_StartSlalom( turn_large, LEFT, param );
+	Motion_WaitSlalom( turn_large, LEFT, param );
 
 	Control_SetMode( FASTEST );
-	Motion_StartStraight( acceleration, deceleration, max_velocity, 0.f, 90.f*section + START_OFFSET );
+	Motion_StartStraight( acceleration, deceleration, max_velocity, 0.f, after_distance + 90.f*27.f + 11.f );
 	Motion_WaitStraight();
+
+	SuctionFan_Stop();
 	LL_mDelay( 200 );
 }
 
