@@ -5,15 +5,15 @@
 /* ---------------------------------------------------------------
 	PIDゲインの調整関数
 --------------------------------------------------------------- */
-void Adjust_RunPID( int8_t param )
+void Adjust_RunPID( int8_t mode, int8_t param )
 {
-	t_init_straight temp = Route_GetParameters(FASTEST, param);
+	t_init_straight temp = Route_GetParameters(mode, param);
 	const float acceleration = temp.acceleration;
 	const float deceleration = temp.deceleration;
 	const float max_velocity = temp.max_velocity;
 
-	const float turn_velocity  = Motion_GetSlalomVelocity(turn_large, param);
-	const float after_distance = Motion_GetSlalomAfterDistance(turn_large, LEFT, param);
+	float 		turn_velocity = 0.f;
+	float 		after_distance = 0.f;
 
 	// 吸引ファンの起動
 	if( param > 0 ) {
@@ -21,16 +21,48 @@ void Adjust_RunPID( int8_t param )
 		LL_mDelay( 200 );
 	} else;
 
-	Control_SetMode( FASTEST );
-	Motion_StartStraight( acceleration, deceleration, turn_velocity, turn_velocity, 90.f - 15.f + START_OFFSET );
-	Motion_WaitStraight();
+	if( mode == FASTEST ) {
+		turn_velocity  = Motion_GetSlalomVelocity(turn_large, param);
+		after_distance = Motion_GetSlalomAfterDistance(turn_large, LEFT, param);
 
-	Motion_StartSlalom( turn_large, LEFT, param );
-	Motion_WaitSlalom( turn_large, LEFT, param );
+		Control_SetMode( FASTEST );
+		Motion_StartStraight( acceleration, deceleration, turn_velocity, turn_velocity, 90.f - 15.f + START_OFFSET );
+		Motion_WaitStraight();
 
-	Control_SetMode( FASTEST );
-	Motion_StartStraight( acceleration, deceleration, max_velocity, 0.f, after_distance + 90.f*27.f + 11.f );
-	Motion_WaitStraight();
+		Motion_StartSlalom( turn_large, LEFT, param );
+		Motion_WaitSlalom( turn_large, LEFT, param );
+
+		Control_SetMode( FASTEST );
+		Motion_StartStraight( acceleration, deceleration, max_velocity, 0.f, after_distance + 90.f*27.f + 11.f );
+		Motion_WaitStraight();
+
+	} else if( mode == DIAGONAL ) {
+		turn_velocity  = Motion_GetSlalomVelocity(turn_135in, param);
+		after_distance = Motion_GetSlalomAfterDistance(turn_135in, LEFT, param);
+
+		Control_SetMode( ADJUST );
+		Motion_StartStraight( acceleration, deceleration, turn_velocity, turn_velocity, 90.f - 15.f + START_OFFSET );
+		Motion_WaitStraight();
+
+		Motion_StartSlalom( turn_135in, RIGHT, param );
+		Motion_WaitSlalom( turn_135in, RIGHT, param );
+		turn_velocity  = Motion_GetSlalomVelocity(turn_45out, param);
+
+		Control_SetMode( DIAGONAL );
+		Motion_StartStraight( acceleration, deceleration, max_velocity, turn_velocity, after_distance + 45.f*SQRT2*21.f - 15.f );
+		Motion_WaitStraight();
+
+		Motion_StartSlalom( turn_45out, RIGHT, param );
+		Motion_WaitSlalom( turn_45out, RIGHT, param );
+
+		Motion_StartSlalom( turn_135in, RIGHT, param );
+		Motion_WaitSlalom( turn_135in, RIGHT, param );
+
+		Control_SetMode( DIAGONAL );
+		Motion_StartStraight( acceleration, deceleration, max_velocity, 0.f, after_distance + 45.f*SQRT2*23.f + 11.f );
+		Motion_WaitStraight();
+
+	} else;
 
 	SuctionFan_Stop();
 	LL_mDelay( 200 );
