@@ -27,8 +27,8 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define REF_FRONT_L			(120.f)		// 前左センサのリファレンス
 #define REF_FRONT_R			(120.f)		// 前右センサのリファレンス
 
-#define TH_CONTROL_FRONT_L	(130.f)		// 前左センサの制御閾値
-#define TH_CONTROL_FRONT_R	(130.f)		// 前右センサの制御閾値
+#define TH_CONTROL_FRONT_L	(120.f)		// 前左センサの制御閾値
+#define TH_CONTROL_FRONT_R	(120.f)		// 前右センサの制御閾値
 
 // 前壁制御関連定義
 #define REF_FWALL_L			(35.f)		// 前左センサのリファレンス
@@ -271,7 +271,7 @@ float Wall_GetDeviation( uint8_t dir )
 				if( sen_fr.distance < TH_CONTROL_FRONT_R ) {
 					deviation = sen_fr.distance - REF_FRONT_R;
 				} else {
-					deviation = 0;
+					deviation = 0.f;
 				}
 			}
 		break;
