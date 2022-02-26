@@ -6,23 +6,19 @@
 #define FAILSAFE_GYRO				(2500.0f)	// フェイルセーフの角速度閾値
 
 #define LIMIT_V_CONTROL				(8000.0F)	// エンコーダの速度制限値
-#define LIMIT_GYRO_CONTROL			(1000.0F)	// ジャイロの角速度制限値
-#define LIMIT_ANGLE_CONTROL			(1000.0F)	// ジャイロの角度制限値
+#define LIMIT_GYRO_CONTROL			(2000.0F)	// ジャイロの角速度制限値
+#define LIMIT_ANGLE_CONTROL			(2000.0F)	// ジャイロの角度制限値
 #define LIMIT_SENSOR_CONTROL		(500.0F)	// 壁センサの角速度制限値
 #define LIMIT_DIAGONAL_CONTROL		(600.0F)	// 壁センサの角速度制限値（斜め）
 #define LIMIT_FWALL_V_CONTROL		(800.f)		// 前壁制御の速度制限値
 #define LIMIT_FWALL_OMEGA_CONTROL	(300.f)		// 前壁制御の角速度制限値
 
-#define D_SIDEWALL					(0.9f)
-#define K_DISTANCE					(1.f)
-#define K_ANGLE						(136.f)
-
 // 各制御のPIDゲイン										P	  I		 D
-volatile const t_control_gain	gain_enc		 = {   25.f,  0.5f,  0.00f	};	// エンコーダの速度ゲイン
-volatile const t_control_gain	gain_gyro		 = {  200.f, 30.f,   0.02f	};	// ジャイロの角速度ゲイン
+volatile const t_control_gain	gain_enc		 = {   50.f,  2.f,   0.f	};	// エンコーダの速度ゲイン
+volatile const t_control_gain	gain_gyro		 = {  200.f, 20.f,   0.02f	};	// ジャイロの角速度ゲイン
 volatile const t_control_gain	gain_angle		 = {12000.f,  0.f,   0.f  	};	// ジャイロの角度ゲイン
-volatile const t_control_gain	gain_straight	 = { 2000.f,  2.f,  15.f  	};	// 壁制御の角速度ゲイン
-volatile const t_control_gain	gain_diagonal	 = { 1000.f,  0.f,  15.f  	};	// 斜め壁制御の角速度ゲイン
+volatile const t_control_gain	gain_straight	 = {  500.f,  0.f,  80.f  	};	// 壁制御の角速度ゲイン
+volatile const t_control_gain	gain_diagonal	 = { 1000.f,  0.f,  80.f  	};	// 斜め壁制御の角速度ゲイン
 volatile const t_control_gain	gain_fwall_v	 = {  500.f,  2.f,   2.f   	};	// 前壁制御の速度ゲイン
 volatile const t_control_gain	gain_fwall_omega = { 1000.f,  5.f,   2.f   	};	// 前壁制御の角速度ゲイン
 
@@ -229,9 +225,6 @@ void Control_UpdateAngleDeviation( void )
 	} else if( control_mode == DIAGONAL ) {
 		angle.dif_deviation -= angle.deviation;
 		angle.intg_deviation += (angle.deviation - (val_control - angle.control_value) / gain_gyro.ki);
-		if( (Wall_GetDeviation(FRONT+LEFT) != 0) || (Wall_GetDeviation(FRONT+RIGHT) != 0) ) {
-			angle.intg_deviation *= D_SIDEWALL;
-		} else;
 	} else{
 		angle.deviation = 0.f;
 		angle.dif_deviation = 0.f;
@@ -260,25 +253,21 @@ void Control_UpdateSensorDeviation( void )
 	// 探索・最短時の直線壁制御
 	if( (control_mode == SEARCH) || (control_mode == FASTEST) ) {
 		// 両壁ありの場合
-		if( (Wall_GetDeviation(LEFT) != 0) && (Wall_GetDeviation(RIGHT) != 0) ) {
+		if( (Wall_GetDeviation(LEFT) != 0.f) && (Wall_GetDeviation(RIGHT) != 0.f) ) {
 			sensor.deviation = Wall_GetDeviation(LEFT) - Wall_GetDeviation(RIGHT);
 		// 左壁のみありの場合
-		} else if( Wall_GetDeviation(LEFT) != 0 ) {
+		} else if( Wall_GetDeviation(LEFT) != 0.f ) {
 			sensor.deviation = 2 * Wall_GetDeviation(LEFT);
 		// 右壁のみありの場合
-		} else if( Wall_GetDeviation(RIGHT) != 0 ) {
+		} else if( Wall_GetDeviation(RIGHT) != 0.f ) {
 			sensor.deviation = -2 * Wall_GetDeviation(RIGHT);
 		} else {
-			if( Wall_GetDeviation(LEFT) == false && Wall_GetDeviation(RIGHT) == false ) {
-//				sensor.deviation = -2 * (K_DISTANCE * Vehicle_GetGap() + K_ANGLE * IMU_GetGyroAngle_Z());
-			} else {
-				sensor.deviation = 0.f;
-			}
+			sensor.deviation = 2 * (SENSOR_LENGTH * (Vehicle_GetAngle() - IMU_GetGyroAngle_Z()) - Vehicle_GetGap());
 		}
 		sensor.dif_deviation -= sensor.deviation;
 		sensor.intg_deviation += (sensor.deviation - (val_control - sensor.control_value) / gain_straight.kp);
 		sensor.error += sensor.deviation;
-		val_control = -(gain_straight.kd + K_DISTANCE / K_ANGLE * filter_v) * IMU_GetGyro_Z() + gain_straight.kp / K_ANGLE * sensor.deviation;
+		val_control = -(gain_straight.kd + filter_v / SENSOR_LENGTH) * IMU_GetGyro_Z() + gain_straight.kp / SENSOR_LENGTH * sensor.deviation;
 
 		if( Vehicle_GetVelocity() < 50.f ) {
 			Vehicle_ResetTurning();
@@ -302,7 +291,7 @@ void Control_UpdateSensorDeviation( void )
 			sensor.dif_deviation -= sensor.deviation;
 			sensor.intg_deviation += (sensor.deviation - (val_control - sensor.control_value) / gain_diagonal.kp);
 			sensor.error += sensor.deviation;
-			val_control = -(gain_diagonal.kd + K_DISTANCE / K_ANGLE * filter_v) * IMU_GetGyro_Z() + gain_diagonal.kp / K_ANGLE * sensor.deviation;
+			val_control = -(gain_diagonal.kd + filter_v / SENSOR_LENGTH) * IMU_GetGyro_Z() + gain_diagonal.kp / SENSOR_LENGTH * sensor.deviation;
 		// 両柱なしの場合
 		} else {
 			sensor.deviation = sensor.intg_deviation = sensor.dif_deviation = 0;
