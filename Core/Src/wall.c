@@ -62,18 +62,20 @@ typedef struct {
 	volatile uint8_t	is_edge;		// 壁切れか否か
 } t_control_wall;
 
-volatile static float			correct_A[4];
-volatile static float			correct_B[4];
+volatile static float	correct_A[4];
+volatile static float	correct_B[4];
 
 volatile static t_control_wall	sen_fr;
 volatile static t_control_wall 	sen_sr;
 volatile static t_control_wall	sen_sl;
 volatile static t_control_wall 	sen_fl;
 
-volatile static float 			distance_min_l = CORRECT_DISTANCE_MAX;
-volatile static float 			distance_min_r = CORRECT_DISTANCE_MAX;
-volatile static float 			distance_edge_sl 	 = 0.f;
-volatile static float 			distance_edge_sr 	 = 0.f;
+volatile static float 	distance_min_l = CORRECT_DISTANCE_MAX;
+volatile static float 	distance_min_r = CORRECT_DISTANCE_MAX;
+volatile static float 	distance_edge_sl 		= 0.f;
+volatile static float 	distance_edge_sl_old 	= 0.f;
+volatile static float 	distance_edge_sr 		= 0.f;
+volatile static float 	distance_edge_sr_old 	= 0.f;
 
 /* ---------------------------------------------------------------
 	壁センサ値を距離に変換する補正係数の計算関数
@@ -186,6 +188,7 @@ void Wall_UpdateEdge( void )
 	if( sen_sr.distance > distance_min_r / TH_EDGE_RATE && sen_sr.distance > TH_EDGE_MIN ) {
 		sen_sr.is_edge = true;
 		distance_min_r = CORRECT_DISTANCE_MAX;
+		distance_edge_sr_old = distance_edge_sr;
 		distance_edge_sr = Vehicle_GetTotalDistance();
 	} else {
 		sen_sr.is_edge = false;
@@ -199,6 +202,7 @@ void Wall_UpdateEdge( void )
 	if( sen_sl.distance > distance_min_l / TH_EDGE_RATE && sen_sl.distance > TH_EDGE_MIN ) {
 		sen_sl.is_edge = true;
 		distance_min_l = CORRECT_DISTANCE_MAX;
+		distance_edge_sl_old = distance_edge_sl;
 		distance_edge_sl = Vehicle_GetTotalDistance();
 	} else {
 		sen_sl.is_edge = false;
@@ -364,9 +368,9 @@ uint8_t Wall_GetEdge( uint8_t dir )
 float Wall_GetEdgeDistance( int8_t dir )
 {
 	if( dir == LEFT ) {
-		return distance_edge_sl;
+		return distance_edge_sl - distance_edge_sl_old;
 	} else if( dir == RIGHT ) {
-		return distance_edge_sr;
+		return distance_edge_sr - distance_edge_sr_old;
 	} else;
 	return (distance_edge_sr - distance_edge_sl);
 }
@@ -374,6 +378,7 @@ float Wall_GetEdgeDistance( int8_t dir )
 void Wall_ResetEdgeDistance( void )
 {
 	distance_edge_sl = distance_edge_sr = 0.f;
+	distance_edge_sl_old = distance_edge_sr_old = 0.f;
 }
 
 /* ---------------------------------------------------------------
