@@ -91,7 +91,7 @@ void mode_adjust( int8_t param ) {
 				LL_mDelay( 500 );
 				IMU_ResetReference();
 				resetAllParams();
-				Adjust_RunTireDiameter( 31 );
+				Adjust_RunTireDiameter( 28 );
 			} else {
 				Adjust_RunGyroSensitivity(20, sw_side);
 			}
@@ -117,7 +117,7 @@ void mode_adjust( int8_t param ) {
 				LL_mDelay( 500 );
 				IMU_ResetReference();
 				resetAllParams();
-				Adjust_RunPID( 20 );
+				Adjust_RunPID( FASTEST, 8 );
 			} else if( sw_side == LEFT ){
 				Adjust_RunComb( 8 );
 			} else {
@@ -146,7 +146,7 @@ void mode_adjust( int8_t param ) {
 void mode_turn_adjust( int8_t param ) {
 	int8_t 	sw_side = resetStartPreparation();
 	if( sw_side == FRONT ) return;
-	Adjust_RunSlalom( param+1, sw_side, 0 );
+	Adjust_RunSlalom( param+1, sw_side, 7 );
 }
 
 /* ---------------------------------------------------------------

@@ -50,6 +50,9 @@ void Vehicle_UpdateDynamics( void )
 			if( Wall_GetEdge(LEFT) == true || Wall_GetEdge(RIGHT) == true ) {
 				if( ABS(Wall_GetEdgeDistance(0xff)) < 20.f ) {
 					gap = -42.f * Wall_GetEdgeDistance(0xff) / (90.f - 7.f);
+					if( Wall_GetEdgeDistance(0xff) != 0.f ) {
+						IMU_SetGyroAngle_Z(theta - atanf((sqrtf(7056.f + Wall_GetEdgeDistance(0xff) * Wall_GetEdgeDistance(0xff)) - 84.f) / Wall_GetEdgeDistance(0xff)));
+					} else;
 				} else;
 			} else {
 				gap += Control_GetFilterVelocity() * arm_sin_f32(theta - IMU_GetGyroAngle_Z()) * SYSTEM_PERIOD;
