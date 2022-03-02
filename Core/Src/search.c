@@ -26,7 +26,7 @@ int8_t Search_Rotate( t_maze local_maze )
 			if( local_maze.bit.north == false && local_maze.bit.west == true ) {
 				Motion_StartRotate( 90.f, LEFT );
 				Control_WaitFrontWallCorrection();
-				Control_SetMode( TURN );
+				Control_SetMode( ROTATE );
 				Motion_StartRotate( 180.f, RIGHT );
 			} else {
 				Motion_StartRotate( 90.f, RIGHT );
@@ -38,7 +38,7 @@ int8_t Search_Rotate( t_maze local_maze )
 			if( local_maze.bit.north == false && local_maze.bit.east == true ) {
 				Motion_StartRotate( 90.f, RIGHT );
 				Control_WaitFrontWallCorrection();
-				Control_SetMode( TURN );
+				Control_SetMode( ROTATE );
 				Motion_StartRotate( 180.f, LEFT );
 			} else {
 				Motion_StartRotate( 90.f, LEFT );
@@ -50,15 +50,15 @@ int8_t Search_Rotate( t_maze local_maze )
 			if( local_maze.bit.east == true ) {
 				Motion_StartRotate( 90.f, RIGHT );
 				Control_WaitFrontWallCorrection();
-				Control_SetMode( TURN );
+				Control_SetMode( ROTATE );
 				Motion_StartRotate( 90.f, RIGHT );
 			} else if( local_maze.bit.west == true ) {
 				Motion_StartRotate( 90.f, LEFT );
 				Control_WaitFrontWallCorrection();
-				Control_SetMode( TURN );
+				Control_SetMode( ROTATE );
 				Motion_StartRotate( 90.f, LEFT );
 			} else {
-				Control_SetMode( TURN );
+				Control_SetMode( ROTATE );
 				Motion_StartRotate( 180.f, LEFT );
 			}
 			Control_ResetGyroDeviation();
@@ -189,6 +189,7 @@ void Search_Run( int8_t gx, int8_t gy, uint8_t type )
 				Motion_StartStraight( param_search.acceleration, param_search.deceleration, turn_velocity, 0.f, 56.f );
 			}
 			Motion_WaitStraight();
+			Control_SetMode( ROTATE );
 			LL_mDelay( 200 );
 
 			// ポテンシャルマップ生成

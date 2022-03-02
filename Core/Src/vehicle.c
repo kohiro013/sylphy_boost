@@ -49,13 +49,18 @@ void Vehicle_UpdateDynamics( void )
 		if( (Wall_GetDistance(FRONT+LEFT) > 45.f) || (Wall_GetDistance(FRONT+RIGHT) > 45.f) ) {
 			if( Wall_GetEdge(LEFT) == true || Wall_GetEdge(RIGHT) == true ) {
 				if( ABS(Wall_GetEdgeDistance(0xff)) < 20.f ) {
-					gap = -42.f * Wall_GetEdgeDistance(0xff) / (90.f - 7.f);
+					if( Control_GetMode() == FASTEST ) {
+						gap = -42.f * Wall_GetEdgeDistance(0xff) / (90.f - 7.f);
+					} else;
+
 					if( Wall_GetEdgeDistance(0xff) != 0.f ) {
 						IMU_SetGyroAngle_Z(theta - atanf((sqrtf(7056.f + Wall_GetEdgeDistance(0xff) * Wall_GetEdgeDistance(0xff)) - 84.f) / Wall_GetEdgeDistance(0xff)));
 					} else;
 				} else;
 			} else {
-				gap += Control_GetFilterVelocity() * arm_sin_f32(theta - IMU_GetGyroAngle_Z()) * SYSTEM_PERIOD;
+				if( ABS(gap) < 0.5f ) {
+					gap += Control_GetFilterVelocity() * arm_sin_f32(theta - IMU_GetGyroAngle_Z()) * SYSTEM_PERIOD;
+				} else;
 			}
 		} else;
 	} else {

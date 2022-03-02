@@ -7,6 +7,7 @@
 
 #define LIMIT_V_CONTROL				(8000.0F)	// エンコーダの速度制限値
 #define LIMIT_GYRO_CONTROL			(2000.0F)	// ジャイロの角速度制限値
+#define LIMIT_ROTATE_CONTROL		(800.0F)	// ジャイロの角速度制限値
 #define LIMIT_ANGLE_CONTROL			(2000.0F)	// ジャイロの角度制限値
 #define LIMIT_SENSOR_CONTROL		(500.0F)	// 壁センサの角速度制限値
 #define LIMIT_DIAGONAL_CONTROL		(600.0F)	// 壁センサの角速度制限値（斜め）
@@ -15,7 +16,8 @@
 
 // 各制御のPIDゲイン										P	  I		 D
 volatile const t_control_gain	gain_enc		 = {   50.f,  2.f,   0.f	};	// エンコーダの速度ゲイン
-volatile const t_control_gain	gain_gyro		 = {  200.f, 20.f,   0.02f	};	// ジャイロの角速度ゲイン
+volatile const t_control_gain	gain_gyro		 = {  200.f, 20.f,   0.f	};	// 最短時のジャイロの角速度ゲイン
+volatile const t_control_gain	gain_rotate		 = {   50.f, 10.f,	 0.f	};	// 探索時のジャイロの角速度ゲイン
 volatile const t_control_gain	gain_angle		 = {12000.f,  0.f,   0.f  	};	// ジャイロの角度ゲイン
 volatile const t_control_gain	gain_straight	 = {  500.f,  0.f,  80.f  	};	// 壁制御の角速度ゲイン
 volatile const t_control_gain	gain_diagonal	 = {  500.f,  0.f,  80.f  	};	// 斜め壁制御の角速度ゲイン
@@ -181,23 +183,35 @@ void Control_UpdateGyroDeviation( void )
 {
 	static volatile float	val_control = 0.f;
 
+	// ジャイロ角速度の偏差計算
 	gyro.deviation = Vehicle_GetAngularVelocity() - IMU_GetGyro_Z();
-	if( control_mode == TURN || control_mode == ROTATE || control_mode == ADJUST ){
-		gyro.dif_deviation -= gyro.control_value;
-		gyro.intg_deviation += (gyro.deviation - (val_control - gyro.control_value) / gain_gyro.kp);
+
+	// 最短時
+	if( control_mode == FASTEST || control_mode == DIAGONAL ||control_mode == TURN || control_mode == ADJUST ) {
+		if( control_mode == TURN || control_mode == ADJUST ){
+			gyro.dif_deviation -= gyro.control_value;
+			gyro.intg_deviation += (gyro.deviation - (val_control - gyro.control_value) / gain_gyro.kp);
+		} else if( control_mode == FASTEST || control_mode == DIAGONAL ) {
+			gyro.dif_deviation = gyro.intg_deviation = 0.f;
+		} else;
 		gyro.error += gyro.deviation;
-	} else if( control_mode == SEARCH || control_mode == FASTEST ) {
-		gyro.dif_deviation = gyro.intg_deviation = 0.f;
+		val_control = (gain_gyro.kp * gyro.deviation) + (gain_gyro.ki * gyro.intg_deviation) + (gain_gyro.kd * gyro.dif_deviation);
+		gyro.control_value = SIGN( val_control ) * MIN( LIMIT_GYRO_CONTROL, ABS( val_control ) );
+
+	// 探索時
+	} else if( control_mode == SEARCH || control_mode == ROTATE ) {
+		if( control_mode == ROTATE ){
+			gyro.dif_deviation -= gyro.control_value;
+			gyro.intg_deviation += (gyro.deviation - (val_control - gyro.control_value) / gain_rotate.kp);
+		} else if( control_mode == SEARCH ) {
+			gyro.dif_deviation = gyro.intg_deviation = 0.f;
+		} else;
 		gyro.error += gyro.deviation;
-	} else if( control_mode == DIAGONAL ) {
-		gyro.dif_deviation = gyro.intg_deviation = 0.f;
-		gyro.error += gyro.deviation;
+		val_control = (gain_rotate.kp * gyro.deviation) + (gain_rotate.ki * gyro.intg_deviation) + (gain_rotate.kd * gyro.dif_deviation);
+		gyro.control_value = SIGN( val_control ) * MIN( LIMIT_ROTATE_CONTROL, ABS( val_control ) );
 	} else {
-		gyro.dif_deviation = 0.f;
-		gyro.intg_deviation = 0.f;
+		gyro.dif_deviation = gyro.intg_deviation = 0.f;
 	}
-	val_control = (gain_gyro.kp * gyro.deviation) + (gain_gyro.ki * gyro.intg_deviation) + (gain_gyro.kd * gyro.dif_deviation);
-	gyro.control_value = SIGN( val_control ) * MIN( LIMIT_GYRO_CONTROL, ABS( val_control ) );
 }
 
 /* ---------------------------------------------------------------
