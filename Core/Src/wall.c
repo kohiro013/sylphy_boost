@@ -38,8 +38,8 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_FWALL_R	(60.f)		// 前壁制御の前右センサの閾値
 
 // 壁情報関連定義
-#define TH_WALL_SIDE_L		(60.f)		// 横左センサの壁閾値
-#define TH_WALL_SIDE_R		(60.f)		// 横右センサの壁閾値
+#define TH_WALL_SIDE_L		(65.f)		// 横左センサの壁閾値
+#define TH_WALL_SIDE_R		(65.f)		// 横右センサの壁閾値
 #define TH_WALL_FRONT_L		(120.f)		// 前左センサの壁閾値
 #define TH_WALL_FRONT_R		(120.f)		// 前右センサの壁閾値
 
@@ -94,9 +94,15 @@ void Wall_Initialize( void )
 	arm_vlog_f32(CORRECT_VALUE_MIN, correct_log_min, 4);
 
 	for(int8_t i = 0; i < 4; i++) {
-		correct_B[i] = (correct_distance_max[i] * correct_log_min[i]
-				- correct_distance_min[i] * correct_log_max[i]) / (correct_log_max[i] - correct_log_min[i]);
-		correct_A[i] = (correct_distance_max[i] + correct_B[i]) * correct_log_min[i];
+		if( i == 0 || i == 3 ) {
+			correct_B[i] = (correct_distance_max[i]/arm_cos_f32(DEG2RAD(8.4f)) * correct_log_min[i]
+					- correct_distance_min[i]/arm_cos_f32(DEG2RAD(8.4f)) * correct_log_max[i]) / (correct_log_max[i] - correct_log_min[i]);
+			correct_A[i] = (correct_distance_max[i]/arm_cos_f32(DEG2RAD(8.4f)) + correct_B[i]) * correct_log_min[i];
+		} else {
+			correct_B[i] = (correct_distance_max[i]/arm_cos_f32(SENSOR_ANGLE) * correct_log_min[i]
+					- correct_distance_min[i]/arm_cos_f32(SENSOR_ANGLE) * correct_log_max[i]) / (correct_log_max[i] - correct_log_min[i]);
+			correct_A[i] = (correct_distance_max[i]/arm_cos_f32(SENSOR_ANGLE) + correct_B[i]) * correct_log_min[i];
+		}
 	}
 }
 
@@ -114,7 +120,7 @@ void Wall_EstimateDistance( void )
 		sen_fl.distance_old = sen_fl.distance;
 		cast_data = (float)sen_fl.now;
 		arm_vlog_f32(&cast_data, &log_value, 1);
-		sen_fl.distance = MIN(CORRECT_DISTANCE_MAX, correct_A[0] / log_value - correct_B[0]);
+		sen_fl.distance = MIN(CORRECT_DISTANCE_MAX, arm_cos_f32(DEG2RAD(8.4f)) * (correct_A[0] / log_value - correct_B[0]));
 	} else {
 		sen_fl.distance = sen_fl.distance_old = MAX_DISTANCE;
 	}
@@ -123,11 +129,11 @@ void Wall_EstimateDistance( void )
 		sen_sl.distance_old = sen_sl.distance;
 		cast_data = (float)sen_sl.now;
 		arm_vlog_f32(&cast_data, &log_value, 1);
-		if( correct_A[1] / log_value - correct_B[1] > CORRECT_DISTANCE_MAX ) {
+		if( arm_cos_f32(SENSOR_ANGLE) * (correct_A[1] / log_value - correct_B[1]) > CORRECT_DISTANCE_MAX ) {
 			sen_sl.distance = CORRECT_DISTANCE_MAX;
 			distance_min_l = CORRECT_DISTANCE_MAX;
 		} else {
-			sen_sl.distance = correct_A[1] / log_value - correct_B[1];
+			sen_sl.distance = arm_cos_f32(SENSOR_ANGLE) * (correct_A[1] / log_value - correct_B[1]);
 		}
 	} else {
 		sen_sl.distance = sen_sl.distance_old = MAX_DISTANCE;
@@ -137,11 +143,11 @@ void Wall_EstimateDistance( void )
 		sen_sr.distance_old = sen_sr.distance;
 		cast_data = (float)sen_sr.now;
 		arm_vlog_f32(&cast_data, &log_value, 1);
-		if( correct_A[2] / log_value - correct_B[2] > CORRECT_DISTANCE_MAX ) {
+		if( arm_cos_f32(SENSOR_ANGLE) * (correct_A[2] / log_value - correct_B[2]) > CORRECT_DISTANCE_MAX ) {
 			sen_sr.distance = CORRECT_DISTANCE_MAX;
 			distance_min_r = CORRECT_DISTANCE_MAX;
 		} else {
-			sen_sr.distance = correct_A[2] / log_value - correct_B[2];
+			sen_sr.distance = arm_cos_f32(SENSOR_ANGLE) * (correct_A[2] / log_value - correct_B[2]);
 		}
 	} else {
 		sen_sr.distance = sen_sr.distance_old = MAX_DISTANCE;
@@ -151,7 +157,7 @@ void Wall_EstimateDistance( void )
 		sen_fr.distance_old = sen_fr.distance;
 		cast_data = (float)sen_fr.now;
 		arm_vlog_f32(&cast_data, &log_value, 1);
-		sen_fr.distance = MIN(CORRECT_DISTANCE_MAX, correct_A[3] / log_value - correct_B[3]);
+		sen_fr.distance = MIN(CORRECT_DISTANCE_MAX, arm_cos_f32(DEG2RAD(8.4f)) * (correct_A[3] / log_value - correct_B[3]));
 	} else {
 		sen_fr.distance = sen_fr.distance_old = MAX_DISTANCE;
 	}
