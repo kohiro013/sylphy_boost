@@ -58,7 +58,7 @@ void Vehicle_UpdateDynamics( void )
 					} else;
 				} else;
 			} else {
-				if( ABS(gap) < 0.5f ) {
+				if( Control_GetMode() == FASTEST ) {
 					gap += Control_GetFilterVelocity() * arm_sin_f32(theta - IMU_GetGyroAngle_Z()) * SYSTEM_PERIOD;
 				} else;
 			}
