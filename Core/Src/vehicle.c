@@ -48,7 +48,7 @@ void Vehicle_UpdateDynamics( void )
 	if( Control_GetMode() == SEARCH || Control_GetMode() == FASTEST ) {
 		if( (Wall_GetDistance(FRONT+LEFT) > 45.f) || (Wall_GetDistance(FRONT+RIGHT) > 45.f) ) {
 			if( Wall_GetEdge(LEFT) == true || Wall_GetEdge(RIGHT) == true ) {
-				if( ABS(Wall_GetEdgeDistance(0xff)) < 20.f ) {
+				if( ABS(Wall_GetEdgeDistance(0xff)) < 25.f && total_distance > 45.f + START_OFFSET ) {
 					if( Control_GetMode() == FASTEST ) {
 						gap = -42.f * Wall_GetEdgeDistance(0xff) / (90.f - 7.f);
 					} else;
@@ -58,7 +58,7 @@ void Vehicle_UpdateDynamics( void )
 					} else;
 				} else;
 			} else {
-				if( Control_GetMode() == FASTEST ) {
+				if( ABS(gap) > 0.5f ) {
 					gap += Control_GetFilterVelocity() * arm_sin_f32(theta - IMU_GetGyroAngle_Z()) * SYSTEM_PERIOD;
 				} else;
 			}
