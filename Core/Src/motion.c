@@ -85,22 +85,22 @@ float Motion_SetStraightAcceleration( float t )
 {
 	volatile float a = 0.f;
 
-	// 壁切れ
-	if( Control_GetMode() == SEARCH ) {
-		if( Wall_GetEdge( RIGHT ) == true ) {
-			cycle_const -= (((45.f + OFFSET_EDGE_RIGHT) - Vehicle_GetDistance()) / Motion_GetSlalomVelocity(turn_90, 0));
-			LED_ToggleLightBinary(0x01);
-		} else if( Wall_GetEdge( LEFT ) == true ) {
-			cycle_const -= (((45.f + OFFSET_EDGE_LEFT) - Vehicle_GetDistance()) / Motion_GetSlalomVelocity(turn_90, 0));
-			LED_ToggleLightBinary(0x08);
-		} else;
-	} else;
-
 	// 加速時
 	if( t < cycle_accel ) {
 		a = amplitude_accel * mynapier(t / cycle_accel);
 	// 最高速度時
 	} else if( t < cycle_accel + cycle_const ) {
+		// 壁切れ
+		if( Control_GetMode() == SEARCH ) {
+			if( Wall_GetEdge( RIGHT ) == true ) {
+				cycle_const -= (((45.f + OFFSET_EDGE_RIGHT) - Vehicle_GetDistance()) / Motion_GetSlalomVelocity(turn_90, 0));
+				LED_ToggleLightBinary(0x01);
+			} else if( Wall_GetEdge( LEFT ) == true ) {
+				cycle_const -= (((45.f + OFFSET_EDGE_LEFT) - Vehicle_GetDistance()) / Motion_GetSlalomVelocity(turn_90, 0));
+				LED_ToggleLightBinary(0x08);
+			} else;
+		} else;
+
 		a = 0.f;
 	// 減速時
 	} else if( t < cycle_accel + cycle_const + cycle_slow ) {
