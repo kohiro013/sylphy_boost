@@ -251,7 +251,9 @@ t_path Route_StartPathSequence( int8_t param, int8_t is_return )
 			Motion_WaitStraight();
 		// 連続ターン間の直線走行
 		} else if( path.straight == 0 ) {
-			Control_SetMode(TURN);
+			if( path.type >= turn_90v && path.type <= turn_135out ) {
+				Control_SetMode(ADJUST);
+			} else;
 //			Motion_StartStraight( acc_straight, dec_straight, turn_velocity, turn_velocity,
 //					after_distance - MAX(after_distance * SLIP_RATE, SECTION_WALL_EDGE) );
 //			Motion_WaitStraight();
