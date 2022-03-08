@@ -299,6 +299,12 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 		if( type == turn_180 ) {
 			amplitude_slalom = SIGN(amplitude_slalom) * turn_v / (0.4925f * (Wall_GetEdgeMinDistance(direction) - 42.f) + init_slalom[type-1][param].radius - 0.1f);
 			cycle_slalom = (ABS(amplitude_slalom) * NAPEIR_INTGRAL) / DEG2RAD(init_slalom[type-1][param].degree);
+		} else if( type == turn_135in ) {
+			if( direction == LEFT ) {
+				before_distance = MAX(0.f, before_distance - (45.f + EDGE_WALL_SL) / 42.f * (42.f - Wall_GetEdgeMinDistance(LEFT )));
+			} else {
+				before_distance = MAX(0.f, before_distance - (45.f + EDGE_WALL_SR) / 42.f * (42.f - Wall_GetEdgeMinDistance(RIGHT)));
+			}
 		} else;
 
 		// 前距離
