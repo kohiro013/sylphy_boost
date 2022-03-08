@@ -224,15 +224,16 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 		} else;
 
 		// スラローム前の左右壁で後距離を補正する
+		before_distance = MAX(0.f, before_distance - offset_distance);
 		if( direction == RIGHT && Wall_GetIsMaze(LEFT) == true ) {
-//			after_distance -= (Wall_GetDistance(LEFT) - 42.f);
+//			after_distance = MAX(0.f, after_distance - (Wall_GetDistance(LEFT) - 42.f));
 		} else if( direction == LEFT && Wall_GetIsMaze(RIGHT) == true ) {
-//			after_distance -= (Wall_GetDistance(RIGHT) - 42.f);
+//			after_distance = MAX(0.f, after_distance - (Wall_GetDistance(RIGHT) - 42.f));
 		} else;
 		
 		// スラローム
 		Control_SetMode( ROTATE );
-		Vehicle_SetTimer( MIN(offset_distance, before_distance)/turn_v );
+		Vehicle_ResetTimer();
 		while( (Control_GetMode() != FAULT) && (t < (before_distance + after_distance)/turn_v + 1.f/cycle_slalom) ) {
 			t = Vehicle_GetTimer();
 			if( t < before_distance/turn_v ) {
@@ -293,6 +294,12 @@ void Motion_WaitSlalom( int8_t type, int8_t direction, int8_t param )
 		Control_ResetFilterDistance();
 		Control_ResetSensorDeviation();
 		Control_SetMode( TURN );
+
+		// 横位置からターンの補正
+		if( type == turn_180 ) {
+			amplitude_slalom = SIGN(amplitude_slalom) * turn_v / (0.4925f * (Wall_GetEdgeMinDistance(direction) - 42.f) + init_slalom[type-1][param].radius - 0.1f);
+			cycle_slalom = (ABS(amplitude_slalom) * NAPEIR_INTGRAL) / DEG2RAD(init_slalom[type-1][param].degree);
+		} else;
 
 		// 前距離
 		while( Control_GetMode() != FAULT && Vehicle_GetDistance() < before_distance ) {
