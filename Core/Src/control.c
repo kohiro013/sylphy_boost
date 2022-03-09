@@ -16,12 +16,12 @@
 
 // 各制御のPIDゲイン										P	  I		 D
 volatile const t_control_gain	gain_enc		 = {   50.f,  2.f,   0.f	};	// エンコーダの速度ゲイン
-volatile const t_control_gain	gain_gyro		 = {  200.f, 20.f,   0.f	};	// 最短時のジャイロの角速度ゲイン
-volatile const t_control_gain	gain_rotate		 = {   50.f, 10.f,	 0.f	};	// 探索時のジャイロの角速度ゲイン
-volatile const t_control_gain	gain_angle		 = {12000.f,  0.f,   0.f  	};	// ジャイロの角度ゲイン
+volatile const t_control_gain	gain_gyro		 = {  200.f, 20.f,   0.02f	};	// 最短時のジャイロの角速度ゲイン
+volatile const t_control_gain	gain_rotate		 = {  100.f,  5.f,	 0.f	};	// 探索時のジャイロの角速度ゲイン
+volatile const t_control_gain	gain_angle		 = {15000.f,  0.f,   0.f  	};	// ジャイロの角度ゲイン
 volatile const t_control_gain	gain_straight	 = {  500.f,  0.f,  80.f  	};	// 壁制御の角速度ゲイン
 volatile const t_control_gain	gain_diagonal	 = {  500.f,  0.f,  80.f  	};	// 斜め壁制御の角速度ゲイン
-volatile const t_control_gain	gain_fwall_v	 = {  500.f,  2.f,   2.f   	};	// 前壁制御の速度ゲイン
+volatile const t_control_gain	gain_fwall_v	 = {  100.f,  2.f,   2.f   	};	// 前壁制御の速度ゲイン
 volatile const t_control_gain	gain_fwall_omega = { 1000.f,  5.f,   2.f   	};	// 前壁制御の角速度ゲイン
 
 // ローカル関数群
@@ -112,7 +112,7 @@ float Control_GetValue_Angular( void )
 	} else if( control_mode == SEARCH || control_mode == FASTEST || control_mode == DIAGONAL ) {
 		return (gyro.control_value + angle.control_value + sensor.control_value);
 	} else if ( control_mode == ROTATE ){
-		return gyro.control_value;
+		return gyro.control_value + angle.control_value/2.f;
 	} else {
 		return (gyro.control_value + angle.control_value);
 	}
