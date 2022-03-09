@@ -392,8 +392,7 @@ void Motion_StartRotate( float degree, int8_t direction )
 	volatile float t		= 0.0f;
 	volatile float angle	= DEG2RAD(degree);
 
-	amplitude_slalom		= (direction == RIGHT ? -1 : 1) * 12.0f;
-	cycle_slalom 			= ABS(amplitude_slalom) * NAPEIR_INTGRAL / angle;
+	turn_v = init_slalom[0][0].velocity;
 	before_distance = after_distance = 0.f;
 
 	// フェールセーフ
@@ -404,17 +403,20 @@ void Motion_StartRotate( float degree, int8_t direction )
 	}
 
 	// 各パラメータのリセット
+	IMU_ResetGyroAngle_Z();
 	Vehicle_ResetStraight();
 	Vehicle_ResetTurning();
 	Vehicle_ResetIntegral();
 	Control_ResetFilterDistance();
-	IMU_ResetGyroAngle_Z();
-	LL_mDelay(200);
+	LL_mDelay(100);
 	Control_ResetEncoderDeviation();
 	Control_ResetGyroDeviation();
 	Control_ResetAngleDeviation();
 	Control_ResetSensorDeviation();
 	Control_ResetFrontSensorDeviation();
+
+	amplitude_slalom = (direction == RIGHT ? -1 : 1) * 12.0f;
+	cycle_slalom = ABS(amplitude_slalom) * NAPEIR_INTGRAL / angle;
 
 	// 超信地旋回
 	Vehicle_ResetTimer();
@@ -425,12 +427,12 @@ void Motion_StartRotate( float degree, int8_t direction )
 
 	// 各パラメータのリセット
 	cycle_slalom = amplitude_slalom = 0.f;
-	LL_mDelay(200);
+	LL_mDelay(100);
+	IMU_ResetGyroAngle_Z();
 	Vehicle_ResetStraight();
 	Vehicle_ResetTurning();
 	Vehicle_ResetIntegral();
 	Control_ResetFilterDistance();
-	IMU_ResetGyroAngle_Z();
 	Control_ResetEncoderDeviation();
 	Control_ResetSensorDeviation();
 	Control_ResetFrontSensorDeviation();

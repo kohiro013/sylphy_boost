@@ -84,7 +84,6 @@ void Adjust_RunTireDiameter( int8_t section )
 --------------------------------------------------------------- */
 void Adjust_RunGyroSensitivity( uint8_t count, int8_t direction )
 {
-	Control_SetMode( ROTATE );
 	for( int i = 0; i < count; i++ ) {
 		Motion_StartRotate( 180.f, direction );
 	}
