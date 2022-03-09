@@ -6,9 +6,9 @@
 	#include <string.h>
 	#include "arm_math.h"
 
-	#define GOAL_X				(1)
-	#define GOAL_Y				(0)
-	#define GOAL_SIZE			(2)
+	#define GOAL_X				(8)
+	#define GOAL_Y				(28)
+	#define GOAL_SIZE			(1)
 	#define MAZE_X				(32)
 	#define MAZE_Y				(32)
 
@@ -17,10 +17,12 @@
 	#define G					(9.80665f)		// 重量加速度[m/s^2]
 	#define MASS				(14.0f)			// 質量[g]
 	#define INERTIA				(2000.f)		// 慣性モーメント[g*mm^2]
-	#define TIRE				(13.21f)		// タイヤの直径[mm] (小さくすると距離が延びる)
+	#define TIRE				(13.04f)		// タイヤの直径[mm] (小さくすると距離が延びる)
 	#define TREAD				(17.0f)			// 重心からタイヤまでの距離
-	#define CF					(1000000.0F)	// コーナリングフォース [g/rad]
+	#define CF					(0.5f)			// コーナリングフォース [g/rad]
 	#define START_OFFSET		(42.f - 31.f)	// スタートラインまでの距離 [mm]
+	#define SENSOR_LENGTH		(25.f)			// 横壁センサの重心からの距離 [mm]
+	#define SENSOR_ANGLE		DEG2RAD(36.9f)	// 横壁センサの取付角度 [deg]
 
 //	#define PI					(3.1415926f)		// 円周率
 	#define SQRT2				(1.41421356237f)	// ルート2
