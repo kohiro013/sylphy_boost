@@ -67,7 +67,7 @@ void mode_fastest( int8_t param ) {
 		case 5:
 		case 6:
 		case 7:
-			Fastest_RunSimple( param, sw_side == RIGHT );
+			Fastest_RunSimple( param + 1, sw_side == RIGHT );
 		break;
 	}
 }
@@ -146,7 +146,7 @@ void mode_adjust( int8_t param ) {
 void mode_turn_adjust( int8_t param ) {
 	int8_t 	sw_side = resetStartPreparation();
 	if( sw_side == FRONT ) return;
-	Adjust_RunSlalom( param+1, sw_side, 7 );
+	Adjust_RunSlalom( param+1, sw_side, 0 );
 }
 
 /* ---------------------------------------------------------------
