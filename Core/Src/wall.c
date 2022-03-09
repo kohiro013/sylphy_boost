@@ -4,8 +4,8 @@
 
 // キャリブレーション関連定義
 #define CORRECT_DISTANCE_MAX			(135.f)
-const float	CORRECT_VALUE_MAX[4]		= { 3457, 3528, 3542, 3395 };
-const float	CORRECT_VALUE_MIN[4]		= {  563,  302,  587,  490 };
+const float	CORRECT_VALUE_MAX[4]		= { 3457, 3528, 3508, 3395 };
+const float	CORRECT_VALUE_MIN[4]		= {  563,  302,  424,  490 };
 
 const float	CORRECT_DISTANCE_FRONT[2] 	= { 87.0f, 35.0f };	// 前後の壁に押し当てたときの位置
 const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押し当てたときの位置
@@ -20,7 +20,7 @@ const float	CORRECT_DISTANCE_SIDE[2] 	= { 65.0f, 19.0f };	// 左右の壁に押�
 #define TH_CONTROL_CLOSE_FL	(30.f)		// 前壁に近づき過ぎたときの閾値
 #define TH_CONTROL_CLOSE_FR	(30.f)		//
 
-#define TH_CONTROL_CUT		(0.1)			// 現在値と一個前の値との偏差閾値
+#define TH_CONTROL_CUT		(0.1f)		// 現在値と一個前の値との偏差閾値
 #define TH_CONTROL_BAND		(10)		// リファレンスのデッドバンド
 
 // 斜め制御関連定義
@@ -70,8 +70,10 @@ volatile static t_control_wall 	sen_sr;
 volatile static t_control_wall	sen_sl;
 volatile static t_control_wall 	sen_fl;
 
-volatile static float 	distance_min_l = CORRECT_DISTANCE_MAX;
-volatile static float 	distance_min_r = CORRECT_DISTANCE_MAX;
+volatile static float	edge_min_l		= CORRECT_DISTANCE_MAX;
+volatile static float	edge_min_r		= CORRECT_DISTANCE_MAX;
+volatile static float 	distance_min_l	= CORRECT_DISTANCE_MAX;
+volatile static float 	distance_min_r	= CORRECT_DISTANCE_MAX;
 volatile static float 	distance_edge_sl 		= 0.f;
 volatile static float 	distance_edge_sl_old 	= 0.f;
 volatile static float 	distance_edge_sr 		= 0.f;
@@ -193,6 +195,7 @@ void Wall_UpdateEdge( void )
 	// 右センサの壁切れ判定
 	if( sen_sr.distance > distance_min_r / TH_EDGE_RATE && sen_sr.distance > TH_EDGE_MIN ) {
 		sen_sr.is_edge = true;
+		edge_min_r = distance_min_r;
 		distance_min_r = CORRECT_DISTANCE_MAX;
 		distance_edge_sr_old = distance_edge_sr;
 		distance_edge_sr = Vehicle_GetTotalDistance();
@@ -207,6 +210,7 @@ void Wall_UpdateEdge( void )
 	// 左センサの壁切れ判定
 	if( sen_sl.distance > distance_min_l / TH_EDGE_RATE && sen_sl.distance > TH_EDGE_MIN ) {
 		sen_sl.is_edge = true;
+		edge_min_l = distance_min_l;
 		distance_min_l = CORRECT_DISTANCE_MAX;
 		distance_edge_sl_old = distance_edge_sl;
 		distance_edge_sl = Vehicle_GetTotalDistance();
@@ -222,8 +226,8 @@ void Wall_UpdateEdge( void )
 float Wall_GetEdgeMinDistance( int8_t dir )
 {
 	switch( dir ) {
-		case RIGHT:			return( distance_min_r );	break;
-		case LEFT:			return( distance_min_l );	break;
+		case RIGHT:			return( edge_min_r );	break;
+		case LEFT:			return( edge_min_l );	break;
 	}
 	return 0;
 }
@@ -231,6 +235,7 @@ float Wall_GetEdgeMinDistance( int8_t dir )
 void Wall_ResetEdgeMinDistance( void )
 {
 	distance_min_l = distance_min_r = CORRECT_DISTANCE_MAX;
+	edge_min_l = edge_min_r = CORRECT_DISTANCE_MAX;
 }
 
 /* ---------------------------------------------------------------
